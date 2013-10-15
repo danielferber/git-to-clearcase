@@ -15,7 +15,12 @@
 
     <root level="all">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="SWING" />
     </root>
-
+    
+    <logger name="br.com.danielferber.gittocc.git.GitHistoryBuilder" level="info">
+        <appender-ref ref="SWING" />
+    </logger>
+    <logger name="br.com.danielferber.gittocc.git.GitProcess" level="info">
+        <appender-ref ref="SWING" />
+    </logger>
 </configuration>

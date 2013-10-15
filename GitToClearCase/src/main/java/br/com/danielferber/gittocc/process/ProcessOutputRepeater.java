@@ -10,6 +10,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  * Repeats the encoded text output stream of a Process to interested Readers and Writers.

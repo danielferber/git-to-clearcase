@@ -15,13 +15,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  *
  * @author X7WS
  */
 public class GitProcess {
-    
+
     final String name;
     final String commandLine;
     final Process process;
@@ -29,33 +31,37 @@ public class GitProcess {
     final ProcessOutputRepeater errRepeater;
     final Logger logger;
     boolean started = false;
-    
+
+    final static Marker STDOUT_MARKER = MarkerFactory.getMarker("out");
+    final static Marker STDERR_MARKER = MarkerFactory.getMarker("err");
+    final static Marker COMMAND_MARKER = MarkerFactory.getMarker("cmd");
+
     public GitProcess(String name, List<String> commands, Process process) {
         this.name = name;
         this.commandLine = formatCommandLine(commands);
-        
+
         this.logger = LoggerFactory.getLogger(GitProcess.class, name);
-        this.logger.info("{}: {}", name, commandLine);
-        
+        this.logger.info(COMMAND_MARKER, "{}: {}", name, commandLine);
+
         this.outRepeater = new ProcessOutputRepeater(process.getInputStream());
         this.outRepeater.with(new LineSplittingWriter() {
             @Override
             protected void processLine(String line) {
-                logger.debug(line);
+                logger.debug(STDOUT_MARKER, line);
             }
         });
-        
+
         this.errRepeater = new ProcessOutputRepeater(process.getErrorStream());
         this.errRepeater.with(new LineSplittingWriter() {
             @Override
             protected void processLine(String line) {
-                logger.debug(line);
+                logger.debug(STDERR_MARKER, line);
             }
         });
-        
+
         this.process = process;
     }
-    
+
     public synchronized void start() {
         if (!started) {
             started = true;
@@ -63,33 +69,33 @@ public class GitProcess {
             this.errRepeater.start();
         }
     }
-    
+
     public Scanner createOutScanner() throws IOException {
         return new Scanner(outRepeater.split());
     }
-    
+
     public Scanner createErrScanner() throws IOException {
         return new Scanner(errRepeater.split());
     }
-    
+
     public Reader createOutReader() throws IOException {
         return outRepeater.split();
     }
-    
+
     public Reader createErrReader() throws IOException {
         return errRepeater.split();
     }
-    
+
     public GitProcess addOutWriter(Writer w) {
         this.outRepeater.with(w);
         return this;
     }
-    
+
     public GitProcess addErrWriter(Writer w) {
         this.errRepeater.with(w);
         return this;
     }
-    
+
     private static String formatCommandLine(List<String> commands) {
         String executable = new File(commands.get(0)).getName();
         StringBuilder sb = new StringBuilder(executable);
@@ -101,7 +107,7 @@ public class GitProcess {
         }
         return sb.toString();
     }
-    
+
     public void waitFor() throws IOException {
         start();
         try {
@@ -114,7 +120,7 @@ public class GitProcess {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+
         try {
             process.waitFor();
         } catch (InterruptedException ex) {

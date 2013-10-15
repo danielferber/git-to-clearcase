@@ -6,16 +6,21 @@ package br.com.danielferber.gittocc;
 
 //import br.com.danielferber.gittocc.cc.ClearToolActivity;
 //import br.com.danielferber.gittocc.cc.ClearToolDriver;
+import br.com.danielferber.gittocc.git.GitCommander;
 import br.com.danielferber.gittocc.git.GitHistory;
+import br.com.danielferber.gittocc.git.GitHistoryBuilder;
 import br.com.danielferber.gittocc.git.GitProcessBuilder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import java.awt.Component;
 import java.io.File;
-import java.util.concurrent.Executor;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
-import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -28,20 +33,25 @@ public class MainFrame extends javax.swing.JFrame {
     Future<?> tarefa;
     final ExecutorService tarefaExecutor = Executors.newCachedThreadPool();
     final DefaultListModel logListModel = new DefaultListModel();
+
     /**
      * Creates new form MainFrame
      */
     public MainFrame() {
         initComponents();
         SwingAppender.add(new SwingAppender.Handler() {
+            Queue<ILoggingEvent> queue = new ConcurrentLinkedQueue<ILoggingEvent>();
+
             public void handle(final ILoggingEvent e) {
+                queue.add(e);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         logListModel.addElement(e);
                     }
-                });            
+                });
             }
         });
+        jList1.setCellRenderer(new LogListCellRenderer());
     }
 
     /**
@@ -164,7 +174,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -172,17 +182,65 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        synchronized (this) {
+            if (tarefa != null && !tarefa.isDone()) {
+                /* A tarefa ainda está executando. */
+                tarefa.cancel(true);
+            } else {
+                final File gitDir = new File(jTextField1.getText());
+                final File gitExecutable = new File(jTextField3.getText());
+                final File ccDir = new File(jTextField2.getText());
+                final File ccExecutable = new File(jTextField4.getText());
 
-        if (tarefa == null || tarefa.isDone()) {
-            File gitDir = new File(jTextField1.getText());
-            File gitExecutable = new File(jTextField3.getText());
-            File ccDir = new File(jTextField2.getText());
-            File ccExecutable = new File(jTextField4.getText());
-            jButton1.setText("Cancelar");
-            tarefa = tarefaExecutor.submit(new TarefaSincronizacao(tarefaExecutor, gitDir, gitExecutable, ccDir, ccExecutable));
-        } else if (!tarefa.isDone()) {
-            tarefa.cancel(true);
-            jButton1.setText("Atualizar");
+                if (!gitDir.exists() || !gitDir.isDirectory()) {
+                    JOptionPane.showMessageDialog(this, "O caminho do repositório GIT não existe ou não é um diretório.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+                }
+                if (!gitExecutable.exists() || !gitExecutable.isFile() || !gitExecutable.canExecute()) {
+                    JOptionPane.showMessageDialog(this, "O caminho da ferramenta GIT não existe ou não é arquivo executável.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+                }
+                if (!ccDir.exists() || !ccDir.isDirectory()) {
+                    JOptionPane.showMessageDialog(this, "O caminho da view Clearcase não existe ou não é um diretório.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+                }
+                if (!ccExecutable.exists() || !ccExecutable.isFile() || !ccExecutable.canExecute()) {
+                    JOptionPane.showMessageDialog(this, "O caminho da ferramenta ClearTool não existe ou não é arquivo executável.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+                }
+                tarefa = tarefaExecutor.submit(new Runnable() {
+                    public void run() {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                jButton1.setText("Cancelar");
+                            }
+                        });
+                        try {
+                            final GitProcessBuilder gitProcessBuilder = new GitProcessBuilder(gitDir, gitExecutable);
+                            final GitCommander gitCommander = new GitCommander(gitProcessBuilder);
+                            final GitHistoryBuilder historyBuilder = new GitHistoryBuilder(gitCommander, "58c7698e496e0c09b0de9d87ce8cab27d3507b46");
+                            final GitHistory gitHistory = historyBuilder.call();
+                        } catch (final Exception e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    String mensagem = "Falha ao sincronizar view ClearCase com repositório GIT.\n" + e.getMessage();
+                                    Exception ee = e;
+                                    while (ee.getCause() != null && ee.getCause() != ee) {
+                                        ee = (Exception) ee.getCause();
+                                        mensagem += "\n" + ee.getMessage();
+                                    }
+                                    JOptionPane.showMessageDialog(MainFrame.this, mensagem, "Erro na sincronização", JOptionPane.ERROR_MESSAGE);
+                                }
+                            });
+                        } finally {
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    jButton1.setText("Atualizar");
+                                }
+                            });
+                            synchronized (MainFrame.this) {
+                                tarefa = null;
+                            }
+                        }
+                    }
+                });
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -204,26 +262,4 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
-
-//    private void executarComparacao() {
-//
-//        try {
-//
-//            JOptionPane.showMessageDialog(this,
-//                    "Clearcase atualizado com sucesso",
-//                    "Sincronizar código fonte",
-//                    JOptionPane.INFORMATION_MESSAGE);
-//        } catch (Exception e) {
-//            String mensagem = "Falha ao sincronizar ClearCase.\n" + e.getMessage();
-//            while (e.getCause() != null && e.getCause() != e) {
-//                e = (Exception) e.getCause();
-//                mensagem += "\n" + e.getMessage();
-//            }
-//            JOptionPane.showMessageDialog(this,
-//                    mensagem,
-//                    "Sincronizar código fonte",
-//                    JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//    }
 }
