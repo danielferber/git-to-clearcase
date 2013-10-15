@@ -4,6 +4,7 @@
  */
 package br.com.danielferber.gittocc.git;
 
+import br.com.danielferber.gittocc.io.ProcessBuilderWrapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,34 +14,23 @@ import java.util.List;
  *
  * @author X7WS
  */
-public class GitProcessBuilder {
+public class GitProcessBuilder extends ProcessBuilderWrapper<GitProcessBuilder, GitProcess> {
 
-    final File gitDir;
-    final File gitExecutable;
-    final ProcessBuilder processBuilder;
     String command;
-    String name;
     final List<String> parameters = new ArrayList<String>();
     final List<String> options = new ArrayList<String>();
     final List<String> arguments = new ArrayList<String>();
 
-    public GitProcessBuilder(File gitDir, File gitExecutable) {
-        this.gitDir = gitDir;
-        this.gitExecutable = gitExecutable;
-        this.processBuilder = new ProcessBuilder(gitExecutable.getAbsolutePath());
-        this.processBuilder.directory(gitDir.getAbsoluteFile());
-    }
-
-    public File getGitDir() {
-        return gitDir;
+    public GitProcessBuilder(File executionDirectory, File executableFile) {
+        super(executionDirectory, executableFile);
     }
 
     public GitProcessBuilder reset(String name) {
+        super.reset(name);
         this.parameters.clear();
         this.options.clear();
         this.arguments.clear();
         this.command = null;
-        this.name = name;
         return this;
     }
 
@@ -49,25 +39,8 @@ public class GitProcessBuilder {
         return this;
     }
 
-    public GitProcessBuilder rawOption(String option) {
-        options.add(option);
-        return this;
-    }
-
     public GitProcessBuilder option(String option) {
-        options.add("--"+option);
-        return this;
-    }
-
-    public GitProcessBuilder rawParam(String parameter) {
-        parameters.add(parameter);
-        return this;
-    }
-
-    public GitProcessBuilder rawParams(String... parameters) {
-        for (String string : parameters) {
-            this.parameters.add(string);
-        }
+        options.add("--" + option);
         return this;
     }
 
@@ -93,20 +66,20 @@ public class GitProcessBuilder {
         return this;
     }
 
-    public GitProcess create() throws IOException {
+    @Override
+    protected List<String> composeCommandLine() {
         List<String> commandLine = new ArrayList<String>(options.size() + parameters.size() + arguments.size() + 2);
-        commandLine.add(gitExecutable.getAbsolutePath());
+        commandLine.add(executableFile.getAbsolutePath());
         commandLine.addAll(options);
         commandLine.add(command);
         commandLine.addAll(parameters);
         commandLine.addAll(arguments);
-        processBuilder.command(commandLine);
-        GitProcess gitProcess = new GitProcess(name, commandLine, processBuilder.start());
-        return gitProcess;
+        return commandLine;
     }
 
-    public static String getProperty(String name, String defaultValue) {
-        return System.getProperty("git." + name, defaultValue);
+    @Override
+    protected GitProcess createProcessWrapper(String name, String commandLine, Process process) {
+        return new GitProcess(name, commandLine, process);
     }
 
     public GitProcessBuilder noPage() {

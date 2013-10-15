@@ -6,9 +6,15 @@ package br.com.danielferber.gittocc.git;
 
 import br.com.danielferber.gittocc.io.ProcessWrapper;
 import br.com.danielferber.gittocc.process.LineSplittingWriter;
+import br.com.danielferber.gittocc.process.ProcessOutputRepeater;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -17,14 +23,14 @@ import org.slf4j.MarkerFactory;
  *
  * @author X7WS
  */
-public class GitProcess extends ProcessWrapper {
+public class ClearToolProcess extends ProcessWrapper {
 
     final Logger logger;
-    final static Marker STDOUT_MARKER = MarkerFactory.getMarker("git_out");
-    final static Marker STDERR_MARKER = MarkerFactory.getMarker("git_err");
-    final static Marker COMMAND_MARKER = MarkerFactory.getMarker("git_cmd");
+    final static Marker STDOUT_MARKER = MarkerFactory.getMarker("ct_out");
+    final static Marker STDERR_MARKER = MarkerFactory.getMarker("ct_err");
+    final static Marker COMMAND_MARKER = MarkerFactory.getMarker("ct_cmd");
 
-    public GitProcess(String name, String commandLine, Process process) {
+    public ClearToolProcess(String name, String commandLine, Process process) {
         super(name, commandLine, process);
         
         this.logger = LoggerFactory.getLogger(GitProcess.class, name);
@@ -43,11 +49,8 @@ public class GitProcess extends ProcessWrapper {
         });
     }
 
+    @Override
     public void waitFor() throws IOException {
         super.waitFor();
-
-        if (process.exitValue() != 0) {
-            throw new IOException("Processo falhou: " + name);
-        }
     }
 }
