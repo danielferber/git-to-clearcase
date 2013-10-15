@@ -27,6 +27,8 @@ public class LogListCellRenderer extends JLabel implements ListCellRenderer, Ser
     private static final Border SAFE_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
     private static final Border DEFAULT_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
     protected static Border noFocusBorder = DEFAULT_NO_FOCUS_BORDER;
+    private static final Color vermelhin = new Color(0xCC, 0x33, 0x66);
+    private static final Color verdin = new Color(0x33, 0x99, 0x66);
 
     /**
      * Constructs a default renderer object for an item in a list.
@@ -91,12 +93,12 @@ public class LogListCellRenderer extends JLabel implements ListCellRenderer, Ser
             fg = list.getForeground();
             
             if (e.getMarker() != null) {
-                if (e.getMarker().getName().equals("cmd")) {
+                if (e.getMarker().getName().equals("git_cmd")) {
                     font = font.deriveFont(font.getStyle() | Font.BOLD);
                 } else if (e.getMarker().getName().equals("METER_MSG_OK")) {
-                    fg = Color.GREEN;
+                    fg = verdin;
                 } else if (e.getMarker().getName().equals("METER_MSG_FAIL")) {
-                    fg = Color.RED;
+                    fg = vermelhin;
                 }
             }
         }
