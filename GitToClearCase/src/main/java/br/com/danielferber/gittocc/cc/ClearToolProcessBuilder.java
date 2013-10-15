@@ -6,10 +6,8 @@ package br.com.danielferber.gittocc.cc;
 
 import br.com.danielferber.gittocc.io.ProcessBuilderWrapper;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import br.com.danielferber.gittocc.git.ClearToolProcess;
 
 /**
  *
@@ -25,7 +23,9 @@ public class ClearToolProcessBuilder extends ProcessBuilderWrapper<ClearToolProc
         super(vobDir, ctExecutable);
     }
 
+    @Override
     public ClearToolProcessBuilder reset(String name) {
+        super.reset(name);
 //        this.parameters.clear();
 //        this.options.clear();
         this.arguments.clear();
@@ -33,10 +33,10 @@ public class ClearToolProcessBuilder extends ProcessBuilderWrapper<ClearToolProc
         return this;
     }
 
-//    public GitProcessBuilder command(String command) {
-//        this.command = command;
-//        return this;
-//    }
+    public ClearToolProcessBuilder command(String command) {
+        this.command = command;
+        return this;
+    }
 //
 //    public GitProcessBuilder option(String option) {
 //        options.add("--"+option);
@@ -79,5 +79,20 @@ public class ClearToolProcessBuilder extends ProcessBuilderWrapper<ClearToolProc
     @Override
     protected ClearToolProcess createProcessWrapper(String name, String commandLine, Process process) {
         return new ClearToolProcess(name, commandLine, process);
+    }
+
+    public ClearToolProcessBuilder preserveTime() {
+        arguments.add("-ptime");
+        return this;
+    }
+
+    public ClearToolProcessBuilder noComment() {
+        arguments.add("-nc");
+        return this;
+    }
+
+    public ClearToolProcessBuilder force() {
+        arguments.add("-force");
+        return this;
     }
 }

@@ -2,19 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc.git;
+package br.com.danielferber.gittocc.cc;
 
+import br.com.danielferber.gittocc.git.GitProcess;
 import br.com.danielferber.gittocc.io.ProcessWrapper;
 import br.com.danielferber.gittocc.process.LineSplittingWriter;
-import br.com.danielferber.gittocc.process.ProcessOutputRepeater;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
