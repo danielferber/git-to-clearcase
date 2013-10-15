@@ -13,7 +13,12 @@ import br.com.danielferber.gittocc.git.GitProcessBuilder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import java.awt.Component;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Queue;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,6 +83,14 @@ public class MainFrame extends javax.swing.JFrame {
         jList1 = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jLabel1.setText("Git working directory:");
 
@@ -191,19 +204,31 @@ public class MainFrame extends javax.swing.JFrame {
                 final File gitExecutable = new File(jTextField3.getText());
                 final File ccDir = new File(jTextField2.getText());
                 final File ccExecutable = new File(jTextField4.getText());
+                final File ccCommitStampFile = new File(ccDir, "commit.txt");
+                final String previousCommit;
 
-                if (!gitDir.exists() || !gitDir.isDirectory()) {
-                    JOptionPane.showMessageDialog(this, "O caminho do repositório GIT não existe ou não é um diretório.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+                try {
+                    if (!gitDir.exists() || !gitDir.isDirectory()) {
+                        throw new IOException("O caminho do repositório Git não existe ou não é um diretório.");
+                    }
+                    if (!gitExecutable.exists() || !gitExecutable.isFile() || !gitExecutable.canExecute()) {
+                        throw new IOException("O caminho da ferramenta GIT não existe ou não é arquivo executável.");
+                    }
+                    if (!ccDir.exists() || !ccDir.isDirectory()) {
+                        throw new IOException("O caminho da view Clearcase não existe ou não é um diretório.");
+                    }
+                    if (!ccExecutable.exists() || !ccExecutable.isFile() || !ccExecutable.canExecute()) {
+                        throw new IOException("O caminho da ferramenta ClearTool não existe ou não é arquivo executável.");
+                    }
+                    if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile() || !gitExecutable.canRead()) {
+                        throw new IOException("O caminho da marca na vob Clearcase não existe ou não é um arquivo válido.");
+                    }
+                    previousCommit = new Scanner(ccCommitStampFile).next();
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
-                if (!gitExecutable.exists() || !gitExecutable.isFile() || !gitExecutable.canExecute()) {
-                    JOptionPane.showMessageDialog(this, "O caminho da ferramenta GIT não existe ou não é arquivo executável.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
-                }
-                if (!ccDir.exists() || !ccDir.isDirectory()) {
-                    JOptionPane.showMessageDialog(this, "O caminho da view Clearcase não existe ou não é um diretório.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
-                }
-                if (!ccExecutable.exists() || !ccExecutable.isFile() || !ccExecutable.canExecute()) {
-                    JOptionPane.showMessageDialog(this, "O caminho da ferramenta ClearTool não existe ou não é arquivo executável.", "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
-                }
+
                 tarefa = tarefaExecutor.submit(new Runnable() {
                     public void run() {
                         SwingUtilities.invokeLater(new Runnable() {
@@ -247,6 +272,14 @@ public class MainFrame extends javax.swing.JFrame {
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        loadFieldValues();
+    }//GEN-LAST:event_formWindowOpened
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        saveFiledValue();
+    }//GEN-LAST:event_formWindowClosed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
@@ -262,4 +295,64 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
+
+    private void loadFieldValues() {
+        File userDir = new File(System.getProperty("user.dir"));
+        File propertiesFile = new File(userDir, "gittocc.properties");
+
+        if (!propertiesFile.exists()) {
+            return;
+        }
+
+        FileInputStream fi = null;
+        try {
+            fi = new FileInputStream(propertiesFile);
+
+            Properties p = new Properties();
+            p.load(fi);
+            jTextField1.setText(p.getProperty("git.repository", ""));
+            jTextField2.setText(p.getProperty("cc.vob", ""));
+            jTextField3.setText(p.getProperty("git.executable", ""));
+            jTextField4.setText(p.getProperty("cc.executable", ""));
+            fi.close();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(MainFrame.this, e.getLocalizedMessage(), "Salvar propriedades", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (fi != null) {
+                try {
+                    fi.close();
+                } catch (IOException e) {
+                    // ignore;
+                }
+            }
+        }
+    }
+
+    private void saveFiledValue() {
+        File userDir = new File(System.getProperty("user.dir"));
+        File propertiesFile = new File(userDir, "gittocc.properties");
+
+        FileOutputStream of = null;
+        try {
+            of = new FileOutputStream(propertiesFile);
+
+            Properties p = new Properties();
+            p.setProperty("git.repository", jTextField1.getText());
+            p.setProperty("cc.vob", jTextField2.getText());
+            p.setProperty("git.executable", jTextField3.getText());
+            p.setProperty("cc.executable", jTextField4.getText());
+            p.store(of, "Git to ClearCase");
+            of.close();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(MainFrame.this, e.getLocalizedMessage(), "Salvar propriedades", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            if (of != null) {
+                try {
+                    of.close();
+                } catch (IOException e) {
+                    // ignore;
+                }
+            }
+        }
+    }
 }
