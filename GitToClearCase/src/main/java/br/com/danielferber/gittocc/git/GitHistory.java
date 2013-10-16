@@ -18,6 +18,7 @@ public class GitHistory {
     final String fromCommit;
     final String toCommit;
     final String report;
+    final File repositoryDir;
     final List<File> filesAdded = new ArrayList<File>();
     final List<File> filesDeleted = new ArrayList<File>();
     final List<File> filesModified = new ArrayList<File>();
@@ -26,12 +27,25 @@ public class GitHistory {
     final List<File> filesCopiedFrom = new ArrayList<File>();
     final List<File> filesCopiedTo = new ArrayList<File>();
 
-    public GitHistory(String fromCommit, String toCommit, String report) {
+    public GitHistory(File repositoryDir, String fromCommit, String toCommit, String report) {
         this.fromCommit = fromCommit;
         this.toCommit = toCommit;
         this.report = report;
+        this.repositoryDir = repositoryDir;
     }
-    
+
+    public File getRepositoryDir() {
+        return repositoryDir;
+    }
+
+    public String getFromCommit() {
+        return fromCommit;
+    }
+
+    public String getToCommit() {
+        return toCommit;
+    }
+
     public String getReport() {
         return report;
     }

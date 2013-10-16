@@ -6,21 +6,24 @@
         <!-- encoders are assigned the type
         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
-            <pattern>%d{dd/MM HH:mm:ss} %-5level %logger{15} - %msg%n</pattern>
+            <!-- <pattern>%d{dd/MM HH:mm:ss} %-5level %logger{15} - %msg%n</pattern>-->
+            <pattern>%-5level %logger{15} - %msg%n</pattern>-->        
         </encoder>
     </appender>
 
     <appender name="SWING" class="br.com.danielferber.gittocc.SwingAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <logger name="br.com.danielferber.gittocc.git.GitProcess" />
+            <level>info</level>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <logger name="br.com.danielferber.gittocc.git.GitHistoryBuilder" />
+            <level>info</level>
+        </filter>    
     </appender>
 
     <root level="all">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="SWING" />
     </root>
-    
-    <logger name="br.com.danielferber.gittocc.git.GitHistoryBuilder" level="info">
-        <appender-ref ref="SWING" />
-    </logger>
-    <logger name="br.com.danielferber.gittocc.git.GitProcess" level="info">
-        <appender-ref ref="SWING" />
-    </logger>
 </configuration>

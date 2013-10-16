@@ -6,6 +6,9 @@ package br.com.danielferber.gittocc;
 
 //import br.com.danielferber.gittocc.cc.ClearToolActivity;
 //import br.com.danielferber.gittocc.cc.ClearToolDriver;
+import br.com.danielferber.gittocc.cc.ClearToolCommander;
+import br.com.danielferber.gittocc.cc.ClearToolProcessBuilder;
+import br.com.danielferber.gittocc.cc.VobUpdater;
 import br.com.danielferber.gittocc.git.GitCommander;
 import br.com.danielferber.gittocc.git.GitHistory;
 import br.com.danielferber.gittocc.git.GitHistoryBuilder;
@@ -247,9 +250,11 @@ public class MainFrame extends javax.swing.JFrame {
                         });
                         try {
                             final GitProcessBuilder gitProcessBuilder = new GitProcessBuilder(gitDir, gitExecutable);
-                            final GitCommander gitCommander = new GitCommander(gitProcessBuilder);
-                            final GitHistoryBuilder historyBuilder = new GitHistoryBuilder(gitCommander, "58c7698e496e0c09b0de9d87ce8cab27d3507b46");
+                            final GitHistoryBuilder historyBuilder = new GitHistoryBuilder(gitProcessBuilder, gitDir, previousCommit);
                             final GitHistory gitHistory = historyBuilder.call();
+                            final ClearToolProcessBuilder clearToolProcessBuilder = new ClearToolProcessBuilder(ccDir, ccExecutable);
+                            final VobUpdater vobUpdater = new VobUpdater(gitHistory, clearToolProcessBuilder, ccDir);
+                            vobUpdater.call();
                         } catch (final Exception e) {
                             SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
@@ -283,7 +288,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField3ActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-//        loadFieldValues();
+        loadFieldValues();
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
@@ -301,7 +306,6 @@ public class MainFrame extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         saveFiledValue();
     }//GEN-LAST:event_formWindowClosing
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
