@@ -73,6 +73,8 @@ public class VobUpdater implements Callable<Void> {
         
         commander.remove(gitHistory.getFilesDeleted());
         
+        // write new commit to file
+        
         commander.checkinAll();
         return null;
     }

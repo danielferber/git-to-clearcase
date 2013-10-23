@@ -14,11 +14,13 @@ import br.com.danielferber.gittocc.git.GitHistory;
 import br.com.danielferber.gittocc.git.GitHistoryBuilder;
 import br.com.danielferber.gittocc.git.GitProcessBuilder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.Scanner;
@@ -30,7 +32,10 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.compiler.STException;
 
 /**
  *
@@ -71,73 +76,340 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        jTabbedPane6 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel8 = new javax.swing.JPanel();
+        gitRepositoryDirField = new javax.swing.JTextField();
+        gitExecutableField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
+        ccVobDirField = new javax.swing.JTextField();
+        ccExecutableField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        configurationValidationMessageField = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        ccCreateActivityField = new javax.swing.JCheckBox();
+        ccActivityHeadlineSampleField = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        ccActivityHeadlinePatternField = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList2 = new javax.swing.JList();
+        jLabel10 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        sessionVersionField = new javax.swing.JSpinner();
+        jLabel3 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+        jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowActivated(java.awt.event.WindowEvent evt) {
-                formWindowActivated(evt);
-            }
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
             }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
-            public void windowDeactivated(java.awt.event.WindowEvent evt) {
-                formWindowDeactivated(evt);
-            }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
         });
 
-        jLabel1.setText("Git working directory:");
+        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Git"));
+
+        gitRepositoryDirField.setText("K:\\git\\jconsuelo-sync");
+        gitRepositoryDirField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                configurationFieldKeyTyped(evt);
+            }
+        });
+
+        gitExecutableField.setText("C:\\Users\\x7ws\\Programas\\PortableGit\\bin\\git.exe");
+        gitExecutableField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gitExecutableFieldActionPerformed(evt);
+            }
+        });
+        gitExecutableField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                configurationFieldKeyTyped(evt);
+            }
+        });
+
+        jLabel4.setText("Executável GIT:");
+
+        jLabel13.setText("Git working directory:");
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(gitRepositoryDirField))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(gitExecutableField)))
+                .addContainerGap())
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(gitRepositoryDirField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(gitExecutableField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 8, Short.MAX_VALUE))
+        );
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("ClearCase"));
+
+        ccVobDirField.setText("K:\\CcViews\\X7WS_JCONSUELO_UCM_DVL_MI00248890_SYNC\\JCONSUELO\\Fontes");
+        ccVobDirField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                configurationFieldKeyTyped(evt);
+            }
+        });
+
+        ccExecutableField.setText("C:\\Program Files\\IBM\\RationalSDLC\\ClearCase\\bin\\cleartool.exe");
+        ccExecutableField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ccExecutableFieldKeyTyped(evt);
+            }
+        });
+
+        jLabel5.setText("Executável ClearTool:");
 
         jLabel2.setText("Clear Case UCM view:");
 
-        jTextField1.setText("K:\\git\\jconsuelo-sync");
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ccVobDirField))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ccExecutableField, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(ccVobDirField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(ccExecutableField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 9, Short.MAX_VALUE))
+        );
 
-        jTextField2.setText("K:\\CcViews\\X7WS_JCONSUELO_UCM_DVL_MI00248890_SYNC\\JCONSUELO\\Fontes");
+        configurationValidationMessageField.setText("As configurações estão corretas.");
 
-        jButton1.setText("Atualizar");
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(configurationValidationMessageField)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(configurationValidationMessageField)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(91, Short.MAX_VALUE))
+        );
+
+        jTabbedPane6.addTab("Configurações", jPanel1);
+
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Atividade ClearCase"));
+
+        ccCreateActivityField.setSelected(true);
+        ccCreateActivityField.setText("Criar nova atividade ClearCase");
+
+        ccActivityHeadlineSampleField.setEditable(false);
+
+        jLabel11.setText("Exemplo:");
+
+        ccActivityHeadlinePatternField.setText("[NTI272977] Teste <counter> <date> (<git-commit>)");
+        ccActivityHeadlinePatternField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ccActivityHeadlinePatternFieldKeyTyped(evt);
+            }
+        });
+
+        jList2.setBackground(javax.swing.UIManager.getDefaults().getColor("Panel.background"));
+        jList2.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "<date>", "<counter>", "<git-commit>", "<git-date>" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jList2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jList2.setFocusable(false);
+        jList2.setLayoutOrientation(javax.swing.JList.VERTICAL_WRAP);
+        jList2.setVisibleRowCount(0);
+        jScrollPane2.setViewportView(jList2);
+
+        jLabel10.setText("Título:");
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ccActivityHeadlinePatternField, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(ccCreateActivityField)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ccActivityHeadlineSampleField)))
+                .addContainerGap())
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addComponent(ccCreateActivityField)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ccActivityHeadlinePatternField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(ccActivityHeadlineSampleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jButton1.setText("Executar Sincronização");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jLabel3.setText("Configurações:");
+        sessionVersionField.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
 
-        jLabel4.setText("Executável GIT:");
+        jLabel3.setText("Versão:");
 
-        jTextField3.setText("C:\\Users\\x7ws\\Programas\\PortableGit\\bin\\git.exe");
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
+        );
 
-        jLabel5.setText("Executável ClearTool:");
+        jTabbedPane6.addTab("Sincronização", jPanel5);
 
-        jTextField4.setText("C:\\Program Files\\IBM\\RationalSDLC\\ClearCase\\bin\\cleartool.exe");
+        jButton2.setText("Executar Relatório");
 
-        jLabel6.setText("Console:");
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(435, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(255, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addContainerGap())
+        );
+
+        jTabbedPane6.addTab("Relatório", jPanel2);
 
         jList1.setModel(logListModel);
         jScrollPane1.setViewportView(jList1);
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane6.addTab("Execução", jPanel6);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -145,62 +417,15 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel6))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jTabbedPane6)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jTabbedPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -212,10 +437,10 @@ public class MainFrame extends javax.swing.JFrame {
                 /* A tarefa ainda está executando. */
                 tarefa.cancel(true);
             } else {
-                final File gitDir = new File(jTextField1.getText());
-                final File gitExecutable = new File(jTextField3.getText());
-                final File ccDir = new File(jTextField2.getText());
-                final File ccExecutable = new File(jTextField4.getText());
+                final File gitDir = new File(gitRepositoryDirField.getText());
+                final File gitExecutable = new File(gitExecutableField.getText());
+                final File ccDir = new File(ccVobDirField.getText());
+                final File ccExecutable = new File(ccExecutableField.getText());
                 final File ccCommitStampFile = new File(ccDir, "commit.txt");
                 final String previousCommit;
 
@@ -283,43 +508,66 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void gitExecutableFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gitExecutableFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_gitExecutableFieldActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         loadFieldValues();
+        updateActivityHeadlineSample();
     }//GEN-LAST:event_formWindowOpened
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        saveFiledValue();
+        saveFiledValues();
     }//GEN-LAST:event_formWindowClosed
 
-    private void formWindowDeactivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowDeactivated
-//        saveFiledValue();
-    }//GEN-LAST:event_formWindowDeactivated
-
-    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-//        loadFieldValues();
-    }//GEN-LAST:event_formWindowActivated
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        saveFiledValue();
+        saveFiledValues();
     }//GEN-LAST:event_formWindowClosing
+
+    private void configurationFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_configurationFieldKeyTyped
+        updateConfigurationValidation();
+    }//GEN-LAST:event_configurationFieldKeyTyped
+
+    private void ccExecutableFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ccExecutableFieldKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ccExecutableFieldKeyTyped
+
+    private void ccActivityHeadlinePatternFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ccActivityHeadlinePatternFieldKeyTyped
+        updateActivityHeadlineSample();
+    }//GEN-LAST:event_ccActivityHeadlinePatternFieldKeyTyped
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField ccActivityHeadlinePatternField;
+    private javax.swing.JTextField ccActivityHeadlineSampleField;
+    private javax.swing.JCheckBox ccCreateActivityField;
+    private javax.swing.JTextField ccExecutableField;
+    private javax.swing.JTextField ccVobDirField;
+    private javax.swing.JLabel configurationValidationMessageField;
+    private javax.swing.JTextField gitExecutableField;
+    private javax.swing.JTextField gitRepositoryDirField;
     private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JList jList1;
+    private javax.swing.JList jList2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane6;
+    private javax.swing.JSpinner sessionVersionField;
     // End of variables declaration//GEN-END:variables
 
     private void loadFieldValues() {
@@ -336,10 +584,14 @@ public class MainFrame extends javax.swing.JFrame {
 
             Properties p = new Properties();
             p.load(fi);
-            jTextField1.setText(p.getProperty("git.repository", ""));
-            jTextField2.setText(p.getProperty("cc.vob", ""));
-            jTextField3.setText(p.getProperty("git.executable", ""));
-            jTextField4.setText(p.getProperty("cc.executable", ""));
+            gitRepositoryDirField.setText(p.getProperty("git.repository", ""));
+            gitExecutableField.setText(p.getProperty("git.executable", ""));
+            ccVobDirField.setText(p.getProperty("cc.vob", ""));
+            ccExecutableField.setText(p.getProperty("cc.executable", ""));
+            ccCreateActivityField.setSelected(Boolean.parseBoolean(p.getProperty("cc.activity.create", "true")));
+            ccActivityHeadlinePatternField.setText(p.getProperty("cc.activity.pattern", "<git-commit>"));
+            final String sessionVersionStr = p.getProperty("session.version", "1");
+            ((SpinnerNumberModel)sessionVersionField.getModel()).setValue(Long.parseLong(sessionVersionStr));
             fi.close();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(MainFrame.this, e.getLocalizedMessage(), "Salvar propriedades", JOptionPane.ERROR_MESSAGE);
@@ -354,7 +606,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
-    private void saveFiledValue() {
+    private void saveFiledValues() {
         File userDir = new File(System.getProperty("user.dir"));
         File propertiesFile = new File(userDir, "gittocc.properties");
 
@@ -363,10 +615,14 @@ public class MainFrame extends javax.swing.JFrame {
             of = new FileOutputStream(propertiesFile);
 
             Properties p = new Properties();
-            p.setProperty("git.repository", jTextField1.getText());
-            p.setProperty("cc.vob", jTextField2.getText());
-            p.setProperty("git.executable", jTextField3.getText());
-            p.setProperty("cc.executable", jTextField4.getText());
+            p.setProperty("git.repository", gitRepositoryDirField.getText());
+            p.setProperty("git.executable", gitExecutableField.getText());
+            p.setProperty("cc.vob", ccVobDirField.getText());
+            p.setProperty("cc.executable", ccExecutableField.getText());
+            p.setProperty("cc.activity.create", Boolean.toString(ccCreateActivityField.isSelected()));
+            p.setProperty("cc.activity.pattern", ccActivityHeadlinePatternField.getText());
+            final long sessionVersion = ((SpinnerNumberModel)sessionVersionField.getModel()).getNumber().longValue();
+            p.setProperty("session.version", Long.toString(sessionVersion));
             p.store(of, "Git to ClearCase");
             of.close();
         } catch (IOException e) {
@@ -379,6 +635,80 @@ public class MainFrame extends javax.swing.JFrame {
                     // ignore;
                 }
             }
+        }
+    }
+
+    private void updateActivityHeadlineSample() {
+        try {
+            ST sampleHeader = new ST(ccActivityHeadlinePatternField.getText());
+            sampleHeader.add("date", new Date());
+            sampleHeader.add("counter", 8);
+            sampleHeader.add("git-commit", "ABCDE");
+            sampleHeader.add("git-date", new Date(2013, 10, 20));
+            ccActivityHeadlineSampleField.setText(sampleHeader.render());
+            ccActivityHeadlineSampleField.setForeground(jPanel5.getForeground());
+        } catch (STException e) {
+            ccActivityHeadlineSampleField.setText(e.getLocalizedMessage());
+            ccActivityHeadlineSampleField.setForeground(Color.red);
+        }
+    }
+
+    private void updateConfigurationValidation() {
+        final File gitDir = new File(gitRepositoryDirField.getText());
+        final File gitExecutable = new File(gitExecutableField.getText());
+        final File ccDir = new File(ccVobDirField.getText());
+        final File ccExecutable = new File(ccExecutableField.getText());
+        final File ccCommitStampFile = new File(ccDir, "commit.txt");
+
+        String errorMessage = null;
+        if (!gitDir.exists() || !gitDir.isDirectory()) {
+            if (errorMessage == null) {
+                errorMessage = "O caminho do repositório Git não existe ou não é um diretório.";
+            }
+            gitRepositoryDirField.setForeground(Color.red);
+        } else {
+            gitRepositoryDirField.setForeground(jPanel1.getForeground());
+        }
+
+        if (!gitExecutable.exists() || !gitExecutable.isFile() || !gitExecutable.canExecute()) {
+            if (errorMessage == null) {
+                errorMessage = "O caminho da ferramenta GIT não existe ou não é arquivo executável.";
+            }
+            gitExecutableField.setForeground(Color.red);
+        } else {
+            gitExecutableField.setForeground(jPanel1.getForeground());
+        }
+
+        if (!ccDir.exists() || !ccDir.isDirectory()) {
+            if (errorMessage == null) {
+                errorMessage = "O caminho da view Clearcase não existe ou não é um diretório.";
+            }
+            ccVobDirField.setForeground(Color.red);
+        } else {
+            ccVobDirField.setForeground(jPanel1.getForeground());
+        }
+
+        if (!ccExecutable.exists() || !ccExecutable.isFile() || !ccExecutable.canExecute()) {
+            if (errorMessage == null) {
+                errorMessage = "O caminho da ferramenta ClearTool não existe ou não é arquivo executável.";
+            }
+            ccExecutableField.setForeground(Color.red);
+        } else {
+            ccExecutableField.setForeground(jPanel1.getForeground());
+        }
+
+        if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile() || !gitExecutable.canRead()) {
+            if (errorMessage == null) {
+                errorMessage = "O caminho da marca na vob Clearcase não existe ou não é um arquivo válido.";
+            }
+        }
+
+        if (errorMessage != null) {
+            configurationValidationMessageField.setText(errorMessage);
+            configurationValidationMessageField.setForeground(Color.red);
+        } else {
+            configurationValidationMessageField.setText("As configurações estão corretas.");
+            configurationValidationMessageField.setForeground(jPanel1.getForeground());
         }
     }
 }

@@ -116,8 +116,9 @@ public class ClearToolCommander {
         }
 
         outer:
-        while (!dirsToMake.isEmpty() && !filesToMake.isEmpty()) {
-            for (File dir : dirsToCheckout) {
+        while (!dirsToMake.isEmpty() || !filesToMake.isEmpty()) {
+            while (!dirsToCheckout.isEmpty()) {
+                final File dir = dirsToCheckout.pollFirst();
                 pb.reset("checkout").command("checkout").preserveTime().noComment().argument(dir.getPath()).create().waitFor();
                 dirsCheckedOut.add(dir);
             }
@@ -129,7 +130,7 @@ public class ClearToolCommander {
                     @Override
                     protected void processLine(String line) {
                         Matcher checkoutMatcher = mkdirCheckoutPattern.matcher(line);
-                        if (checkoutMatcher.matches()) {
+                        if (checkoutMatcher.find()) {
                             File dir = new File(checkoutMatcher.group(1));
                             dirsCheckedOut.add(dir);
                         }
@@ -139,7 +140,7 @@ public class ClearToolCommander {
                     @Override
                     protected void processLine(String line) {
                         Matcher needCheckoutMatcher = mkdirNeedCheckoutPattern.matcher(line);
-                        if (needCheckoutMatcher.matches()) {
+                        if (needCheckoutMatcher.find()) {
                             File dir = new File(needCheckoutMatcher.group(1));
                             dirsToCheckout.add(dir);
                             dirsToMake.add(dirToMake);
@@ -149,13 +150,23 @@ public class ClearToolCommander {
             }
 
             while (dirsToCheckout.isEmpty() && !filesToMake.isEmpty()) {
-                final File fileToMake = dirsToMake.pollFirst();
+                final File fileToMake = filesToMake.pollFirst();
                 pb.reset("mkfile").command("mkelem").noComment().arguments("-eltype", "file").argument(fileToMake.getPath()).create()
+                        .addOutWriter(new LineSplittingWriter() {
+                    @Override
+                    protected void processLine(String line) {
+                        Matcher checkoutMatcher = mkfileCheckoutPattern.matcher(line);
+                        if (checkoutMatcher.find()) {
+                            File dir = new File(checkoutMatcher.group(1));
+                            filesCheckedOut.add(dir);
+                        }
+                    }
+                })
                         .addErrWriter(new LineSplittingWriter() {
                     @Override
                     protected void processLine(String line) {
                         Matcher needCheckoutMatcher = mkdirNeedCheckoutPattern.matcher(line);
-                        if (needCheckoutMatcher.matches()) {
+                        if (needCheckoutMatcher.find()) {
                             File dir = new File(needCheckoutMatcher.group(1));
                             dirsToCheckout.add(dir);
                             filesToMake.add(fileToMake);
@@ -165,6 +176,7 @@ public class ClearToolCommander {
             }
         }
     }
-    static Pattern mkdirCheckoutPattern = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\".");
-    static Pattern mkdirNeedCheckoutPattern = Pattern.compile("cleartool: Error: Can't modify directory \"(.*)\" because it is not checked out.");
+    static final Pattern mkfileCheckoutPattern = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\".");
+    static final Pattern mkdirCheckoutPattern = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\".");
+    static final Pattern mkdirNeedCheckoutPattern = Pattern.compile("cleartool: Error: Can\'t modify directory \"(.*)\" because it is not checked out\\.");
 }
