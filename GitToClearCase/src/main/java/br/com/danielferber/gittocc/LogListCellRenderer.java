@@ -95,6 +95,8 @@ public class LogListCellRenderer extends JLabel implements ListCellRenderer, Ser
             if (e.getMarker() != null) {
                 if (e.getMarker().getName().equals("git_cmd")) {
                     font = font.deriveFont(font.getStyle() | Font.BOLD);
+                } else if (e.getMarker().getName().equals("ct_cmd")) {
+                    font = font.deriveFont(font.getStyle() | Font.BOLD);
                 } else if (e.getMarker().getName().equals("METER_MSG_OK")) {
                     fg = verdin;
                 } else if (e.getMarker().getName().equals("METER_MSG_FAIL")) {

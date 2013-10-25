@@ -19,28 +19,8 @@ import org.slf4j.MarkerFactory;
  */
 public class GitProcess extends ProcessWrapper {
 
-    final Logger logger;
-    final static Marker STDOUT_MARKER = MarkerFactory.getMarker("git_out");
-    final static Marker STDERR_MARKER = MarkerFactory.getMarker("git_err");
-    final static Marker COMMAND_MARKER = MarkerFactory.getMarker("git_cmd");
-
     public GitProcess(String name, String commandLine, Process process) {
         super(name, commandLine, process);
-        
-        this.logger = LoggerFactory.getLogger(GitProcess.class, name);
-        this.logger.info(COMMAND_MARKER, "{}: {}", name, commandLine);
-        this.outRepeater.with(new LineSplittingWriter() {
-            @Override
-            protected void processLine(String line) {
-                logger.debug(STDOUT_MARKER, line);
-            }
-        });
-        this.errRepeater.with(new LineSplittingWriter() {
-            @Override
-            protected void processLine(String line) {
-                logger.debug(STDERR_MARKER, line);
-            }
-        });
     }
 
     public void waitFor() throws IOException {
@@ -49,5 +29,5 @@ public class GitProcess extends ProcessWrapper {
         if (process.exitValue() != 0) {
             throw new IOException("Processo falhou: " + name);
         }
-    }
+    }    
 }

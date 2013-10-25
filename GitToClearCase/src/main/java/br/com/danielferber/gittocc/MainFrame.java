@@ -58,7 +58,7 @@ public class MainFrame extends javax.swing.JFrame {
                 queue.add(e);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        logListModel.addElement(e);
+                        logListModel.add(0,e);
                     }
                 });
             }
@@ -98,14 +98,19 @@ public class MainFrame extends javax.swing.JFrame {
         jList2 = new javax.swing.JList();
         jLabel10 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        sessionVersionField = new javax.swing.JSpinner();
-        jLabel3 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        ccDeleteEmptyDirsField = new javax.swing.JCheckBox();
         executionPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
+        jButton3 = new javax.swing.JButton();
         reportPanel = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jButton4 = new javax.swing.JButton();
+        sessionVersionField = new javax.swing.JSpinner();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -330,26 +335,39 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        sessionVersionField.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Operações de sincronização"));
 
-        jLabel3.setText("Versão:");
+        ccDeleteEmptyDirsField.setSelected(true);
+        ccDeleteEmptyDirsField.setText("Apagar diretórios vazios");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(ccDeleteEmptyDirsField)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(ccDeleteEmptyDirsField)
+                .addGap(0, 20, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout synchronizationPanelLayout = new javax.swing.GroupLayout(synchronizationPanel);
         synchronizationPanel.setLayout(synchronizationPanelLayout);
         synchronizationPanelLayout.setHorizontalGroup(
             synchronizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(synchronizationPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, synchronizationPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(synchronizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, synchronizationPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                .addGroup(synchronizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(synchronizationPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         synchronizationPanelLayout.setVerticalGroup(
@@ -357,11 +375,9 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(synchronizationPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(synchronizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -371,6 +387,8 @@ public class MainFrame extends javax.swing.JFrame {
         jList1.setModel(logListModel);
         jScrollPane1.setViewportView(jList1);
 
+        jButton3.setText("Cancelar");
+
         javax.swing.GroupLayout executionPanelLayout = new javax.swing.GroupLayout(executionPanel);
         executionPanel.setLayout(executionPanelLayout);
         executionPanelLayout.setHorizontalGroup(
@@ -379,39 +397,67 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton3))
         );
         executionPanelLayout.setVerticalGroup(
             executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(executionPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton3))
         );
 
         jTabbedPane6.addTab("Execução", executionPanel);
 
-        jButton2.setText("Executar Relatório");
+        jButton2.setText("Preparar Relatório");
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane3.setViewportView(jTextArea1);
+
+        jButton4.setText("Efetivar");
+
+        sessionVersionField.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+
+        jLabel3.setText("Versão:");
 
         javax.swing.GroupLayout reportPanelLayout = new javax.swing.GroupLayout(reportPanel);
         reportPanel.setLayout(reportPanelLayout);
         reportPanelLayout.setHorizontalGroup(
             reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportPanelLayout.createSequentialGroup()
-                .addContainerGap(435, Short.MAX_VALUE)
-                .addComponent(jButton2)
+            .addGroup(reportPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3)
+                    .addGroup(reportPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 237, Short.MAX_VALUE)
+                        .addComponent(jButton4)))
                 .addContainerGap())
         );
         reportPanelLayout.setVerticalGroup(
             reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reportPanelLayout.createSequentialGroup()
-                .addContainerGap(255, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addContainerGap())
+            .addGroup(reportPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton4)
+                    .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton2)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane6.addTab("Relatório", reportPanel);
-
-        jButton3.setText("Cancelar");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -419,11 +465,7 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane6)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton3)))
+                .addComponent(jTabbedPane6)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -431,8 +473,6 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -481,6 +521,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField ccActivityHeadlinePatternField;
     private javax.swing.JTextField ccActivityHeadlineSampleField;
     private javax.swing.JCheckBox ccCreateActivityField;
+    private javax.swing.JCheckBox ccDeleteEmptyDirsField;
     private javax.swing.JTextField ccExecutableField;
     private javax.swing.JTextField ccVobDirField;
     private javax.swing.JPanel configurationPanel;
@@ -491,6 +532,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
@@ -500,12 +542,15 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JList jList1;
     private javax.swing.JList jList2;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane6;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JSpinner sessionVersionField;
     private javax.swing.JPanel synchronizationPanel;
@@ -531,8 +576,7 @@ public class MainFrame extends javax.swing.JFrame {
             ccExecutableField.setText(p.getProperty("cc.executable", ""));
             ccCreateActivityField.setSelected(Boolean.parseBoolean(p.getProperty("cc.activity.create", "true")));
             ccActivityHeadlinePatternField.setText(p.getProperty("cc.activity.pattern", "<git-commit>"));
-            final String sessionVersionStr = p.getProperty("session.version", "1");
-            ((SpinnerNumberModel) sessionVersionField.getModel()).setValue(Long.parseLong(sessionVersionStr));
+            ccDeleteEmptyDirsField.setSelected(Boolean.parseBoolean(p.getProperty("cc.operarion.deleteEmptyDirs", "true")));
             fi.close();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(MainFrame.this, e.getLocalizedMessage(), "Salvar propriedades", JOptionPane.ERROR_MESSAGE);
@@ -562,8 +606,7 @@ public class MainFrame extends javax.swing.JFrame {
             p.setProperty("cc.executable", ccExecutableField.getText());
             p.setProperty("cc.activity.create", Boolean.toString(ccCreateActivityField.isSelected()));
             p.setProperty("cc.activity.pattern", ccActivityHeadlinePatternField.getText());
-            final long sessionVersion = ((SpinnerNumberModel) sessionVersionField.getModel()).getNumber().longValue();
-            p.setProperty("session.version", Long.toString(sessionVersion));
+            p.setProperty("cc.operarion.deleteEmptyDirs", Boolean.toString(ccDeleteEmptyDirsField.isSelected()));
             p.store(of, "Git to ClearCase");
             of.close();
         } catch (IOException e) {
@@ -597,7 +640,7 @@ public class MainFrame extends javax.swing.JFrame {
         final File gitExecutable = new File(gitExecutableField.getText());
         final File ccDir = new File(ccVobDirField.getText());
         final File ccExecutable = new File(ccExecutableField.getText());
-        final File ccCommitStampFile = new File(ccDir, "commit.txt");
+        final File ccCommitStampFile = new File(ccDir, "atualizacao-hash.txt");
 
         String errorMessage = null;
         isConfigurationValid = true;
@@ -667,7 +710,7 @@ public class MainFrame extends javax.swing.JFrame {
                 final File gitExecutable = new File(gitExecutableField.getText());
                 final File ccDir = new File(ccVobDirField.getText());
                 final File ccExecutable = new File(ccExecutableField.getText());
-                final File ccCommitStampFile = new File(ccDir, "commit.txt");
+                final File ccCommitStampFile = new File(ccDir, "atualizacao-hash.txt");
                 final String previousCommit;
 
                 try {
@@ -717,12 +760,8 @@ public class MainFrame extends javax.swing.JFrame {
 
                             vobUpdater.setHeadline(MessageFormat.format(ccActivityHeadlinePatternField.getText(), map));
                             vobUpdater.setCreateActivity(ccCreateActivityField.isSelected());
+                            vobUpdater.setDeleteEmptyDirs(ccDeleteEmptyDirsField.isSelected());
                             vobUpdater.call();
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    sessionVersionField.getModel().setValue(sessionVersionField.getModel().getNextValue());
-                                }
-                            });
 
                         } catch (final Exception e) {
                             SwingUtilities.invokeLater(new Runnable() {

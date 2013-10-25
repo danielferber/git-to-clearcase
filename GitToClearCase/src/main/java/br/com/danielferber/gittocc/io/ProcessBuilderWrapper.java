@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author X7WS
  */
-public abstract class ProcessBuilderWrapper<Wrapper extends ProcessBuilderWrapper, Wrapper2 extends ProcessWrapper> {
+public abstract class ProcessBuilderWrapper<ProcessBuilderType extends ProcessBuilderWrapper, ProcessType extends ProcessWrapper> {
 
     protected final File executionDirectory;
     protected final File executableFile;
@@ -27,17 +27,18 @@ public abstract class ProcessBuilderWrapper<Wrapper extends ProcessBuilderWrappe
         this.processBuilder.directory(executionDirectory.getAbsoluteFile());
     }
 
-    public Wrapper reset(String name) {
+    public ProcessBuilderType reset(String name) {
         this.name = name;
-        return (Wrapper) this;
+        return (ProcessBuilderType) this;
     }
 
-    public Wrapper2 create() throws IOException {
-        List<String> commandLine = composeCommandLine();
-        String commandLineStr = formatCommandLine(commandLine);
-        processBuilder.command(commandLine);
-        Wrapper2 gitProcess = createProcessWrapper(name, commandLineStr, processBuilder.start());
-        return gitProcess;
+    public ProcessType create() throws IOException {
+        processBuilder.command(composeCommandLine());
+        ProcessType processWrapper = createProcessWrapper(
+                createName(), 
+                formatCommandLine(processBuilder.command()), 
+                createProcess());
+        return processWrapper;
     }
 
     private static String formatCommandLine(List<String> commands) {
@@ -54,5 +55,13 @@ public abstract class ProcessBuilderWrapper<Wrapper extends ProcessBuilderWrappe
 
     protected abstract List<String> composeCommandLine();
 
-    protected abstract Wrapper2 createProcessWrapper(String name, String commandLine, Process process);
+    protected abstract ProcessType createProcessWrapper(String name, String commandLine, Process process);
+
+    protected Process createProcess() throws IOException {
+        return processBuilder.start();
+    }
+
+    protected String createName() {
+        return name;
+    }
 }

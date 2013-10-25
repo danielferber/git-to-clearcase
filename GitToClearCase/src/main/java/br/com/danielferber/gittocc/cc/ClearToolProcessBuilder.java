@@ -4,16 +4,24 @@
  */
 package br.com.danielferber.gittocc.cc;
 
-import br.com.danielferber.gittocc.io.ProcessBuilderWrapper;
+import br.com.danielferber.gittocc.git.GitProcessBuilder;
+import br.com.danielferber.gittocc.io.LoggingProcessBuilder;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  *
  * @author X7WS
  */
-public class ClearToolProcessBuilder extends ProcessBuilderWrapper<ClearToolProcessBuilder, ClearToolProcess> {
+public class ClearToolProcessBuilder extends LoggingProcessBuilder<ClearToolProcessBuilder, ClearToolProcess> {
+
     String command;
 //    final List<String> parameters = new ArrayList<String>();
 //    final List<String> options = new ArrayList<String>();
@@ -67,7 +75,7 @@ public class ClearToolProcessBuilder extends ProcessBuilderWrapper<ClearToolProc
 
     @Override
     protected List<String> composeCommandLine() {
-        List<String> commandLine = new ArrayList<String>(/* options.size() + parameters.size() +*/ arguments.size() + 2);
+        List<String> commandLine = new ArrayList<String>(/* options.size() + parameters.size() +*/arguments.size() + 2);
         commandLine.add(executableFile.getAbsolutePath());
 //        commandLine.addAll(options);
         commandLine.add(command);
@@ -94,5 +102,34 @@ public class ClearToolProcessBuilder extends ProcessBuilderWrapper<ClearToolProc
     public ClearToolProcessBuilder force() {
         arguments.add("-force");
         return this;
+    }
+
+    final static Marker STDOUT_MARKER = MarkerFactory.getMarker("ct_out");
+    final static Marker STDERR_MARKER = MarkerFactory.getMarker("ct_err");
+    final static Marker COMMAND_MARKER = MarkerFactory.getMarker("ct_cmd");
+
+    @Override
+    protected Marker createCommandMarker() {
+        return COMMAND_MARKER;
+    }
+
+    @Override
+    protected Marker createStdErrMarker() {
+        return STDERR_MARKER;
+    }
+
+    @Override
+    protected Marker createStdOutMarker() {
+        return STDOUT_MARKER;
+    }
+
+    @Override
+    protected Meter createMeter() {
+        return MeterFactory.getMeter(ClearToolProcessBuilder.class, name);
+    }
+
+    @Override
+    protected Logger createLogger() {
+        return LoggerFactory.getLogger(ClearToolProcessBuilder.class, name);
     }
 }

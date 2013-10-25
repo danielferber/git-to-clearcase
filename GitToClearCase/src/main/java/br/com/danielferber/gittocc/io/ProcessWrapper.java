@@ -5,6 +5,7 @@
 package br.com.danielferber.gittocc.io;
 
 import br.com.danielferber.gittocc.process.ProcessOutputRepeater;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -12,6 +13,7 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+import org.slf4j.Logger;
 
 /**
  *
@@ -35,6 +37,14 @@ public class ProcessWrapper {
         this.process = process;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getCommandLine() {
+        return commandLine;
+    }
+    
     public synchronized void start() {
         if (!started) {
             started = true;

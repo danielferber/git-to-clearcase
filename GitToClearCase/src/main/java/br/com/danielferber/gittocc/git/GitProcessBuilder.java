@@ -4,17 +4,22 @@
  */
 package br.com.danielferber.gittocc.git;
 
-import br.com.danielferber.gittocc.io.ProcessBuilderWrapper;
+import br.com.danielferber.gittocc.io.LoggingProcessBuilder;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  *
  * @author X7WS
  */
-public class GitProcessBuilder extends ProcessBuilderWrapper<GitProcessBuilder, GitProcess> {
+public class GitProcessBuilder extends LoggingProcessBuilder<GitProcessBuilder, GitProcess> {
 
     String command;
     final List<String> parameters = new ArrayList<String>();
@@ -95,5 +100,33 @@ public class GitProcessBuilder extends ProcessBuilderWrapper<GitProcessBuilder, 
     public GitProcessBuilder verbose() {
         parameter("verbose");
         return this;
+    }
+    final static Marker STDOUT_MARKER = MarkerFactory.getMarker("git_out");
+    final static Marker STDERR_MARKER = MarkerFactory.getMarker("git_err");
+    final static Marker COMMAND_MARKER = MarkerFactory.getMarker("git_cmd");
+
+    @Override
+    protected Marker createCommandMarker() {
+        return COMMAND_MARKER;
+    }
+
+    @Override
+    protected Marker createStdErrMarker() {
+        return STDERR_MARKER;
+    }
+
+    @Override
+    protected Marker createStdOutMarker() {
+        return STDOUT_MARKER;
+    }
+
+    @Override
+    protected Meter createMeter() {
+        return MeterFactory.getMeter(GitProcessBuilder.class, name);
+    }
+
+    @Override
+    protected Logger createLogger() {
+        return LoggerFactory.getLogger(GitProcessBuilder.class, name);
     }
 }

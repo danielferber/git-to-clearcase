@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration debug="true">
-
+    <timestamp key="monthId" datePattern="yyyy-MM"/>
+    
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <append>true</append>
+        <file>log-${monthId}.txt</file>
+        <encoder>
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+            <pattern>%5level %date{dd HH:mm} %logger{30}:  message %mdc</pattern>
+        </encoder>
+    </appender>
+    
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are assigned the type
         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
@@ -17,13 +27,14 @@
             <level>info</level>
         </filter>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <logger name="br.com.danielferber.gittocc.git.GitHistoryBuilder" />
+            <logger name="br.com.danielferber.gittocc.cc.ClearToolProcess" />
             <level>info</level>
-        </filter>    
+        </filter>
     </appender>
 
     <root level="all">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="SWING" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>
