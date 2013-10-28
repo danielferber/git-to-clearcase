@@ -5,15 +5,10 @@
 package br.com.danielferber.gittocc.io;
 
 import br.com.danielferber.gittocc.process.ProcessOutputRepeater;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Scanner;
-import org.slf4j.Logger;
 
 /**
  *

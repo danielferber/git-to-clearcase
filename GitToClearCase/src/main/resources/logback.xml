@@ -3,6 +3,15 @@
 <configuration debug="true">
     <timestamp key="monthId" datePattern="yyyy-MM"/>
     
+    <appender name="FILE-METER" class="ch.qos.logback.core.FileAppender">
+        <append>true</append>
+        <file>meter-${HOSTNAME}-${monthId}.txt</file>
+        <encoder>
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+            <pattern>%message%n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <append>true</append>
         <file>log-${monthId}.txt</file>
@@ -21,20 +30,34 @@
         </encoder>
     </appender>
 
-    <appender name="SWING" class="br.com.danielferber.gittocc.SwingAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <logger name="br.com.danielferber.gittocc.git.GitProcess" />
-            <level>info</level>
+    <appender name="SWING-INTEGRATION" class="br.com.danielferber.gittocc.SwingAppender">
+        <!-- Para os loggers dos processos externos, mantém somente a linha de comando e descarta o resto. -->
+        <filter class="br.com.danielferber.gittocc.logback.MarkerFilter">
+            <marker>ct_cmd</marker>
+            <onMatch>ACCEPT</onMatch>
         </filter>
+        <filter class="br.com.danielferber.gittocc.logback.MarkerFilter">
+            <marker>git_cmd</marker>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="br.com.danielferber.gittocc.logback.LoggerNameFilter">
+            <loggerName>br.com.danielferber.gittocc.git.GitProcess</loggerName>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="br.com.danielferber.gittocc.logback.LoggerNameFilter">
+            <loggerName>br.com.danielferber.gittocc.cc.ClearToolProcess</loggerName>
+            <onMatch>DENY</onMatch>
+        </filter>
+        
+        <!-- Para os demais casos, mostra somente mensagens de info. -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <logger name="br.com.danielferber.gittocc.cc.ClearToolProcess" />
             <level>info</level>
         </filter>
     </appender>
 
     <root level="all">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="SWING" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="SWING-INTEGRATION" />
+        <appender-ref ref="FILE-METER" />
     </root>
 </configuration>

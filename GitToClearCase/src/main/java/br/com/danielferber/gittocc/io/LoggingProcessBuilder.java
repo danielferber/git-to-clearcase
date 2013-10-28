@@ -21,7 +21,7 @@ public abstract class LoggingProcessBuilder<ProcessBuilderType extends LoggingPr
     public LoggingProcessBuilder(File executionDirectory, File executableFile) {
         super(executionDirectory, executableFile);
     }
-    
+
     @Override
     protected Process createProcess() throws IOException {
         meter.start();
@@ -29,11 +29,14 @@ public abstract class LoggingProcessBuilder<ProcessBuilderType extends LoggingPr
         new Thread() {
             @Override
             public void run() {
-                try {
-                    process.waitFor();
-                    meter.ok("exitValue", process.exitValue());
-                } catch (InterruptedException ex) {
-                    meter.fail(ex);
+                while (true) {
+                    try {
+                        process.waitFor();
+                        meter.ok("exitValue", process.exitValue());
+                        break;
+                    } catch (InterruptedException e) {
+                        // ignorar
+                    }
                 }
             }
         }.start();
@@ -63,16 +66,17 @@ public abstract class LoggingProcessBuilder<ProcessBuilderType extends LoggingPr
     @Override
     public ProcessType create() throws IOException {
         meter = createMeter();
-        final ProcessType processWrapper = super.create();
-
         final Logger logger = createLogger();
-        logger.info(createCommandMarker(), "{}: {}", name, processWrapper.commandLine);
+
+        final ProcessType processWrapper = super.create();
+        logger.debug(createCommandMarker(), "{}: {}", name, processWrapper.commandLine);
+
         processWrapper.outRepeater.with(new LineSplittingWriter() {
-            final Marker stdoutMerker = createStdOutMarker();
+            final Marker stdoutMarker = createStdOutMarker();
 
             @Override
             protected void processLine(String line) {
-                logger.debug(stdoutMerker, line);
+                logger.trace(stdoutMarker, line);
             }
         });
         processWrapper.errRepeater.with(new LineSplittingWriter() {
@@ -80,7 +84,7 @@ public abstract class LoggingProcessBuilder<ProcessBuilderType extends LoggingPr
 
             @Override
             protected void processLine(String line) {
-                logger.debug(stderrMarker, line);
+                logger.trace(stderrMarker, line);
             }
         });
         return processWrapper;

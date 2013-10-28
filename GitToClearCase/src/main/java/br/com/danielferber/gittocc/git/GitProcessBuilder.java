@@ -122,11 +122,11 @@ public class GitProcessBuilder extends LoggingProcessBuilder<GitProcessBuilder, 
 
     @Override
     protected Meter createMeter() {
-        return MeterFactory.getMeter(GitProcessBuilder.class, name);
+        return MeterFactory.getMeter(GitProcess.class, name);
     }
 
     @Override
     protected Logger createLogger() {
-        return LoggerFactory.getLogger(GitProcessBuilder.class, name);
+        return LoggerFactory.getLogger(GitProcess.class, name);
     }
 }

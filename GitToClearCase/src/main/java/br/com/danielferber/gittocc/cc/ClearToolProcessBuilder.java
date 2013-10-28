@@ -125,11 +125,11 @@ public class ClearToolProcessBuilder extends LoggingProcessBuilder<ClearToolProc
 
     @Override
     protected Meter createMeter() {
-        return MeterFactory.getMeter(ClearToolProcessBuilder.class, name);
+        return MeterFactory.getMeter(ClearToolProcess.class, name);
     }
 
     @Override
     protected Logger createLogger() {
-        return LoggerFactory.getLogger(ClearToolProcessBuilder.class, name);
+        return LoggerFactory.getLogger(ClearToolProcess.class, name);
     }
 }
