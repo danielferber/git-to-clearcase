@@ -11,10 +11,7 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -35,9 +32,9 @@ public class VobUpdater implements Callable<Void> {
     String headline = null;
     boolean deleteEmptyDirs = false;
 
-    public VobUpdater(GitHistory gitHistory, ClearToolProcessBuilder pb, File vodDir) {
+    public VobUpdater(GitHistory gitHistory, ClearToolCommander commander, File vodDir) {
         this.gitHistory = gitHistory;
-        this.commander = new ClearToolCommander(pb);
+        this.commander = commander;
         this.vodDir = vodDir;
         this.commitFile = new File(vodDir, "commit.txt");
     }

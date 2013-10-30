@@ -19,8 +19,8 @@ public class GitHistoryBuilder implements Callable<GitHistory> {
     final String fromCommit;
     final File repositoryDir;
 
-    public GitHistoryBuilder(GitProcessBuilder pb, File repositoryDir, String fromCommit) {
-        this.gitCommander = new GitCommander(pb);
+    public GitHistoryBuilder(GitCommander gitCommander, File repositoryDir, String fromCommit) {
+        this.gitCommander = gitCommander;
         this.fromCommit = fromCommit;
         this.repositoryDir = repositoryDir;
     }

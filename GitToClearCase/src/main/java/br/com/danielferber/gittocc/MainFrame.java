@@ -6,8 +6,10 @@ package br.com.danielferber.gittocc;
 
 //import br.com.danielferber.gittocc.cc.ClearToolActivity;
 //import br.com.danielferber.gittocc.cc.ClearToolDriver;
+import br.com.danielferber.gittocc.cc.ClearToolCommander;
 import br.com.danielferber.gittocc.cc.ClearToolProcessBuilder;
 import br.com.danielferber.gittocc.cc.VobUpdater;
+import br.com.danielferber.gittocc.git.GitCommander;
 import br.com.danielferber.gittocc.git.GitHistory;
 import br.com.danielferber.gittocc.git.GitHistoryBuilder;
 import br.com.danielferber.gittocc.git.GitProcessBuilder;
@@ -16,10 +18,10 @@ import com.ibm.icu.text.MessageFormat;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.FieldPosition;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +34,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
 /**
@@ -88,6 +89,9 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         configurationValidationMessageField = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        relArquivoHistoricoField = new javax.swing.JTextField();
         synchronizationPanel = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         ccCreateActivityField = new javax.swing.JCheckBox();
@@ -105,7 +109,7 @@ public class MainFrame extends javax.swing.JFrame {
         jList1 = new javax.swing.JList();
         jButton3 = new javax.swing.JButton();
         reportPanel = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        jbPrepararRelatorio = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jButton4 = new javax.swing.JButton();
@@ -232,18 +236,49 @@ public class MainFrame extends javax.swing.JFrame {
 
         configurationValidationMessageField.setText("As configurações estão corretas.");
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Relatório"));
+
+        jLabel1.setText("Arquivo relatório:");
+
+        relArquivoHistoricoField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                configurationFieldKeyTyped(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(relArquivoHistoricoField, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(relArquivoHistoricoField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 35, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout configurationPanelLayout = new javax.swing.GroupLayout(configurationPanel);
         configurationPanel.setLayout(configurationPanelLayout);
         configurationPanelLayout.setHorizontalGroup(
             configurationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, configurationPanelLayout.createSequentialGroup()
+            .addGroup(configurationPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(configurationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, configurationPanelLayout.createSequentialGroup()
+                .addGroup(configurationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(configurationPanelLayout.createSequentialGroup()
                         .addComponent(configurationValidationMessageField)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         configurationPanelLayout.setVerticalGroup(
@@ -255,7 +290,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(91, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(51, 51, 51))
         );
 
         jTabbedPane6.addTab("Configurações", configurationPanel);
@@ -412,7 +449,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         jTabbedPane6.addTab("Execução", executionPanel);
 
-        jButton2.setText("Preparar Relatório");
+        jbPrepararRelatorio.setText("Preparar Relatório");
+        jbPrepararRelatorio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbPrepararRelatorioActionPerformed(evt);
+            }
+        });
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -437,7 +479,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
+                        .addComponent(jbPrepararRelatorio)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 237, Short.MAX_VALUE)
                         .addComponent(jButton4)))
                 .addContainerGap())
@@ -452,7 +494,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel3)
                         .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton2))
+                        .addComponent(jbPrepararRelatorio))
                     .addComponent(jButton4))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -517,6 +559,11 @@ public class MainFrame extends javax.swing.JFrame {
     private void ccActivityHeadlinePatternFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ccActivityHeadlinePatternFieldKeyTyped
         updateActivityHeadlineSample();
     }//GEN-LAST:event_ccActivityHeadlinePatternFieldKeyTyped
+
+    private void jbPrepararRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPrepararRelatorioActionPerformed
+        runHistorySynchronization();
+    }//GEN-LAST:event_jbPrepararRelatorioActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ccActivityHeadlinePatternField;
     private javax.swing.JTextField ccActivityHeadlineSampleField;
@@ -530,9 +577,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField gitExecutableField;
     private javax.swing.JTextField gitRepositoryDirField;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
@@ -543,6 +590,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JList jList1;
     private javax.swing.JList jList2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
@@ -551,6 +599,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane6;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JButton jbPrepararRelatorio;
+    private javax.swing.JTextField relArquivoHistoricoField;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JSpinner sessionVersionField;
     private javax.swing.JPanel synchronizationPanel;
@@ -577,6 +627,7 @@ public class MainFrame extends javax.swing.JFrame {
             ccCreateActivityField.setSelected(Boolean.parseBoolean(p.getProperty("cc.activity.create", "true")));
             ccActivityHeadlinePatternField.setText(p.getProperty("cc.activity.pattern", "<git-commit>"));
             ccDeleteEmptyDirsField.setSelected(Boolean.parseBoolean(p.getProperty("cc.operarion.deleteEmptyDirs", "true")));
+            relArquivoHistoricoField.setText(p.getProperty("rel.relatorio.file", ""));
             fi.close();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(MainFrame.this, e.getLocalizedMessage(), "Salvar propriedades", JOptionPane.ERROR_MESSAGE);
@@ -607,6 +658,7 @@ public class MainFrame extends javax.swing.JFrame {
             p.setProperty("cc.activity.create", Boolean.toString(ccCreateActivityField.isSelected()));
             p.setProperty("cc.activity.pattern", ccActivityHeadlinePatternField.getText());
             p.setProperty("cc.operarion.deleteEmptyDirs", Boolean.toString(ccDeleteEmptyDirsField.isSelected()));
+            p.setProperty("rel.relatorio.file", relArquivoHistoricoField.getText());
             p.store(of, "Git to ClearCase");
             of.close();
         } catch (IOException e) {
@@ -641,6 +693,8 @@ public class MainFrame extends javax.swing.JFrame {
         final File ccDir = new File(ccVobDirField.getText());
         final File ccExecutable = new File(ccExecutableField.getText());
         final File ccCommitStampFile = new File(ccDir, "atualizacao-hash.txt");
+        final File relArquivoRelatorio = new File(relArquivoHistoricoField.getText());
+        final File ccRelatorioStampFile = new File(ccDir, "relatorio-hash.txt");
 
         String errorMessage = null;
         isConfigurationValid = true;
@@ -683,11 +737,26 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
             ccExecutableField.setForeground(configurationPanel.getForeground());
         }
+        if (!relArquivoRelatorio.exists() || !relArquivoRelatorio.isFile()) {
+            if (errorMessage == null) {
+                errorMessage = "O caminho do arquivo de historico não existe.";
+            }
+            ccExecutableField.setForeground(Color.red);
+            isConfigurationValid = false;
+        } else {
+            ccExecutableField.setForeground(configurationPanel.getForeground());
+        }
 
-        if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile() || !gitExecutable.canRead()) {
+        if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile()) {
             isConfigurationValid = false;
             if (errorMessage == null) {
-                errorMessage = "O caminho da marca na vob Clearcase não existe ou não é um arquivo válido.";
+                errorMessage = "O caminho da marca de sincronização na view Clearcase não existe ou não é um arquivo válido.";
+            }
+        }
+        if (!ccRelatorioStampFile.exists() || !ccRelatorioStampFile.isFile()) {
+            isConfigurationValid = false;
+            if (errorMessage == null) {
+                errorMessage = "O caminho da marca de relatório na view Clearcase não existe ou não é um arquivo válido.";
             }
         }
 
@@ -701,93 +770,253 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void runSynchronization() {
-        synchronized (this) {
-            if (tarefa != null && !tarefa.isDone()) {
-                /* A tarefa ainda está executando. */
-                tarefa.cancel(true);
-            } else {
-                final File gitDir = new File(gitRepositoryDirField.getText());
-                final File gitExecutable = new File(gitExecutableField.getText());
-                final File ccDir = new File(ccVobDirField.getText());
-                final File ccExecutable = new File(ccExecutableField.getText());
-                final File ccCommitStampFile = new File(ccDir, "atualizacao-hash.txt");
-                final String previousCommit;
+        final GitCommander gitCommander;
+        final ClearToolCommander clearToolCommander;
+        final String previousCommit;
+        final File ccDir;
+        final File gitDir;
+        try {
+            gitCommander = getGitCommander();
+            clearToolCommander = getClearToolCommander();
+            previousCommit = getCommitAtualizacao();
+            ccDir = getCcDir();
+            gitDir = getGitDir();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-                try {
-                    if (!gitDir.exists() || !gitDir.isDirectory()) {
-                        throw new IOException("O caminho do repositório Git não existe ou não é um diretório.");
-                    }
-                    if (!gitExecutable.exists() || !gitExecutable.isFile() || !gitExecutable.canExecute()) {
-                        throw new IOException("O caminho da ferramenta GIT não existe ou não é arquivo executável.");
-                    }
-                    if (!ccDir.exists() || !ccDir.isDirectory()) {
-                        throw new IOException("O caminho da view Clearcase não existe ou não é um diretório.");
-                    }
-                    if (!ccExecutable.exists() || !ccExecutable.isFile() || !ccExecutable.canExecute()) {
-                        throw new IOException("O caminho da ferramenta ClearTool não existe ou não é arquivo executável.");
-                    }
-                    if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile() || !gitExecutable.canRead()) {
-                        throw new IOException("O caminho da marca na vob Clearcase não existe ou não é um arquivo válido.");
-                    }
-                    previousCommit = new Scanner(ccCommitStampFile).next();
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                tarefa = tarefaExecutor.submit(new Runnable() {
+        tarefa = tarefaExecutor.submit(new Runnable() {
+            public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                jButton1.setEnabled(false);
-                                jTabbedPane6.setSelectedComponent(executionPanel);
-                                logListModel.clear();
-                            }
-                        });
-                        try {
-                            final GitProcessBuilder gitProcessBuilder = new GitProcessBuilder(gitDir, gitExecutable);
-                            final GitHistoryBuilder historyBuilder = new GitHistoryBuilder(gitProcessBuilder, gitDir, previousCommit);
-                            final GitHistory gitHistory = historyBuilder.call();
-                            final ClearToolProcessBuilder clearToolProcessBuilder = new ClearToolProcessBuilder(ccDir, ccExecutable);
-                            final VobUpdater vobUpdater = new VobUpdater(gitHistory, clearToolProcessBuilder, ccDir);
-                            vobUpdater.setCreateActivity(ccCreateActivityField.isSelected());
-
-                            Map<String, Object> map = new HashMap<String, Object>();
-                            map.put("gitCommitFrom", gitHistory.getFromCommit());
-                            map.put("gitCommitTo", gitHistory.getToCommit());
-                            map.put("sessionDate", new Date());
-                            map.put("sessionCounter", ((Number) sessionVersionField.getValue()).longValue());
-
-                            vobUpdater.setHeadline(MessageFormat.format(ccActivityHeadlinePatternField.getText(), map));
-                            vobUpdater.setCreateActivity(ccCreateActivityField.isSelected());
-                            vobUpdater.setDeleteEmptyDirs(ccDeleteEmptyDirsField.isSelected());
-                            vobUpdater.call();
-
-                        } catch (final Exception e) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    String mensagem = "Falha ao sincronizar view ClearCase com repositório GIT.\n" + e.getMessage();
-                                    Exception ee = e;
-                                    while (ee.getCause() != null && ee.getCause() != ee) {
-                                        ee = (Exception) ee.getCause();
-                                        mensagem += "\n" + ee.getMessage();
-                                    }
-                                    JOptionPane.showMessageDialog(MainFrame.this, mensagem, "Erro na sincronização", JOptionPane.ERROR_MESSAGE);
-                                }
-                            });
-                        } finally {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    jButton1.setEnabled(true);
-                                }
-                            });
-                            synchronized (MainFrame.this) {
-                                tarefa = null;
-                            }
-                        }
+                        jButton1.setEnabled(false);
+                        jTabbedPane6.setSelectedComponent(executionPanel);
+                        logListModel.clear();
                     }
                 });
+                try {
+                    final GitHistoryBuilder historyBuilder = new GitHistoryBuilder(gitCommander, gitDir, previousCommit);
+                    final GitHistory gitHistory = historyBuilder.call();
+                    final VobUpdater vobUpdater = new VobUpdater(gitHistory, clearToolCommander, ccDir);
+                    vobUpdater.setCreateActivity(ccCreateActivityField.isSelected());
+
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    map.put("gitCommitFrom", gitHistory.getFromCommit());
+                    map.put("gitCommitTo", gitHistory.getToCommit());
+                    map.put("sessionDate", new Date());
+                    map.put("sessionCounter", ((Number) sessionVersionField.getValue()).longValue());
+
+                    vobUpdater.setHeadline(MessageFormat.format(ccActivityHeadlinePatternField.getText(), map));
+                    vobUpdater.setCreateActivity(ccCreateActivityField.isSelected());
+                    vobUpdater.setDeleteEmptyDirs(ccDeleteEmptyDirsField.isSelected());
+                    vobUpdater.call();
+
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            String mensagem = "Falha ao sincronizar view ClearCase com repositório GIT.\n" + e.getMessage();
+                            Exception ee = e;
+                            while (ee.getCause() != null && ee.getCause() != ee) {
+                                ee = (Exception) ee.getCause();
+                                mensagem += "\n" + ee.getMessage();
+                            }
+                            JOptionPane.showMessageDialog(MainFrame.this, mensagem, "Erro na sincronização", JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            jButton1.setEnabled(true);
+                        }
+                    });
+                    synchronized (MainFrame.this) {
+                        tarefa = null;
+                    }
+                }
             }
+        });
+    }
+    
+    private void runHistorySynchronization() {
+        final GitCommander gitCommander;
+        final ClearToolCommander clearToolCommander;
+        final String previousHistoricoCommit;
+        final File ccDir;
+        final File gitDir;
+        //
+        final File cCommitStampFile;
+        final File ccRelatorioStampFile;
+        final File ccRelatorioVersaoStampFile;
+        try {
+            cCommitStampFile = getCcCommitStampFile();
+            ccRelatorioStampFile = getCcRelatorioStampFile();
+            ccRelatorioVersaoStampFile = getCcRelatorioVersaoStampFile();
+            
+            gitCommander = getGitCommander();
+            clearToolCommander = getClearToolCommander();
+            previousHistoricoCommit = getCommitHistorico();
+            ccDir = getCcDir();
+            gitDir = getGitDir();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        
+        tarefa = tarefaExecutor.submit(new Runnable() {
+            public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        jButton1.setEnabled(false);
+                        jTabbedPane6.setSelectedComponent(executionPanel);
+                        logListModel.clear();
+                    }
+                });
+                try {
+                    /* Passo 1: Criar atividade no CC
+                    */
+                    clearToolCommander.createActivity("Geração de Histórico de Atividade "+System.currentTimeMillis());
+                    
+                    /* Passo 2: Realizar checkout dos arquivos necessários
+                    */
+                    clearToolCommander.checkout(Arrays.asList(cCommitStampFile, ccRelatorioStampFile, ccRelatorioVersaoStampFile));
+                    
+                    /*
+                    */
+                    //from - Comit do relatorio anterior
+                    //to - Commit da sincronização anterior (previousCommit)
+                    //pattern - A ser definido. Ex %s%n  @see GitHistoryBuilder
+                    String gitCommit = gitCommander.getCurrentCommit();
+                    String content = gitCommander.commitMessagesReport(previousHistoricoCommit, gitCommit, "%s%n");
+                    
+                    System.out.println(content);
+                    
+                    //Classificar as mensagems de commit
+                    
+                    //Gerar o esquema de relatorio HTML
+                    
+                    //Incrementar a versão
+                    
+                    //Append no arquivo de historico
+                    
+                    //Checkin all
+
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            String mensagem = "Falha ao sincronizar view ClearCase com repositório GIT.\n" + e.getMessage();
+                            Exception ee = e;
+                            while (ee.getCause() != null && ee.getCause() != ee) {
+                                ee = (Exception) ee.getCause();
+                                mensagem += "\n" + ee.getMessage();
+                            }
+                            JOptionPane.showMessageDialog(MainFrame.this, mensagem, "Erro na sincronização", JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            jButton1.setEnabled(true);
+                        }
+                    });
+                    synchronized (MainFrame.this) {
+                        tarefa = null;
+                    }
+                }
+            }
+        });
+        
+    }
+
+    private String getCommitAtualizacao() throws IOException, FileNotFoundException {
+        File ccCommitStampFile = getCcCommitStampFile();
+        String previousCommit = new Scanner(ccCommitStampFile).next();
+        return previousCommit;
+    }
+    
+    private String getCommitHistorico() throws IOException, FileNotFoundException {
+        File ccRelatorioStampFile = getCcRelatorioStampFile();
+        String previousCommit = new Scanner(ccRelatorioStampFile).next();
+        return previousCommit;
+    }
+    
+    private ClearToolCommander getClearToolCommander() throws IOException {
+        File ccDir = getCcDir();
+        File ccExecutable = getCcExecutable();
+        ClearToolProcessBuilder clearToolProcessBuilder = new ClearToolProcessBuilder(ccDir, ccExecutable);
+        ClearToolCommander clearToolCommander = new ClearToolCommander(clearToolProcessBuilder);
+        return clearToolCommander;
+    }
+
+    private File getCcCommitStampFile() throws IOException {
+        final File ccCommitStampFile = new File(getCcDir(), "atualizacao-hash.txt");
+        if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile()) {
+            throw new IOException("O caminho da marca de sincronização na view do Clearcase não existe ou não é um arquivo válido.");
+        }
+        return ccCommitStampFile;
+    }
+    
+    private File getCcRelatorioStampFile() throws IOException {
+        final File ccRelatorioStampFile = new File(getCcDir(), "relatorio-hash.txt");
+        if (!ccRelatorioStampFile.exists() || !ccRelatorioStampFile.isFile()) {
+            throw new IOException("O caminho da marca de relatório na view do Clearcase não existe ou não é um arquivo válido.");
+        }
+        return ccRelatorioStampFile;
+    }
+
+    private File getCcRelatorioVersaoStampFile() throws IOException {
+        final File ccRelatorioVersaoStampFile = new File(getCcDir(), "relatorio-versao.txt");
+        if (!ccRelatorioVersaoStampFile.exists() || !ccRelatorioVersaoStampFile.isFile()) {
+            throw new IOException("O caminho da marca de versão do relatório na view do Clearcase não existe ou não é um arquivo válido.");
+        }
+        return ccRelatorioVersaoStampFile;
+    }
+
+    private File getCcExecutable() throws IOException {
+        final File ccExecutable = new File(ccExecutableField.getText());
+        if (!ccExecutable.exists() || !ccExecutable.isFile() || !ccExecutable.canExecute()) {
+            throw new IOException("O caminho da ferramenta ClearTool não existe ou não é arquivo executável.");
+        }
+        return ccExecutable;
+    }
+
+    private File getArquivoHistorico() throws IOException {
+        final File relArquivoHistorico = new File(relArquivoHistoricoField.getText());
+        if (!relArquivoHistorico.exists() || !relArquivoHistorico.isFile()) {
+            throw new IOException("O caminho do arquivo de histórico não existe ou não é arquivo válido.");
+        }
+        return relArquivoHistorico;
+    }
+
+    private File getCcDir() throws IOException {
+        final File ccDir = new File(ccVobDirField.getText());
+        if (!ccDir.exists() || !ccDir.isDirectory()) {
+            throw new IOException("O caminho da view Clearcase não existe ou não é um diretório.");
+        }
+        return ccDir;
+    }
+    
+    private GitCommander getGitCommander() throws IOException {
+        File gitDir = getGitDir();
+        File gitExecutable = getGitExecutable();
+        final GitProcessBuilder gitProcessBuilder = new GitProcessBuilder(gitDir, gitExecutable);
+        GitCommander gitCommander = new GitCommander(gitProcessBuilder);
+        return gitCommander;
+    }
+
+    private File getGitExecutable() throws IOException {
+        final File gitExecutable = new File(gitExecutableField.getText());
+        if (!gitExecutable.exists() || !gitExecutable.isFile() || !gitExecutable.canExecute()) {
+            throw new IOException("O caminho da ferramenta GIT não existe ou não é arquivo executável.");
+        }
+        return gitExecutable;
+    }
+
+    private File getGitDir() throws IOException {
+        final File gitDir = new File(gitRepositoryDirField.getText());
+        if (!gitDir.exists() || !gitDir.isDirectory()) {
+            throw new IOException("O caminho do repositório Git não existe ou não é um diretório.");
+        }
+        return gitDir;
     }
 }
