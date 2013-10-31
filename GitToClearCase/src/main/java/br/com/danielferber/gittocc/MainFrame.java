@@ -9,6 +9,11 @@ package br.com.danielferber.gittocc;
 import br.com.danielferber.gittocc.cc.ClearToolCommander;
 import br.com.danielferber.gittocc.cc.ClearToolProcessBuilder;
 import br.com.danielferber.gittocc.cc.VobUpdater;
+import br.com.danielferber.gittocc.external.History;
+import br.com.danielferber.gittocc.external.HistoryPreviewBuilder;
+import br.com.danielferber.gittocc.external.JConsueloHistoricoBuilder;
+import br.com.danielferber.gittocc.external.JConsueloHistoricoMerge;
+import br.com.danielferber.gittocc.external.JConsueloHistoricoWritter;
 import br.com.danielferber.gittocc.git.GitCommander;
 import br.com.danielferber.gittocc.git.GitHistory;
 import br.com.danielferber.gittocc.git.GitHistoryBuilder;
@@ -24,10 +29,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +53,8 @@ public class MainFrame extends javax.swing.JFrame {
     final ExecutorService tarefaExecutor = Executors.newCachedThreadPool();
     final DefaultListModel logListModel = new DefaultListModel();
     boolean isConfigurationValid = false;
-
+    private String htmlPreview;
+    
     /**
      * Creates new form MainFrame
      */
@@ -59,7 +67,7 @@ public class MainFrame extends javax.swing.JFrame {
                 queue.add(e);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        logListModel.add(0,e);
+                        logListModel.add(0, e);
                     }
                 });
             }
@@ -92,6 +100,8 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         relArquivoHistoricoField = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        relTituloHistorico = new javax.swing.JTextField();
         synchronizationPanel = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         ccCreateActivityField = new javax.swing.JCheckBox();
@@ -110,11 +120,11 @@ public class MainFrame extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         reportPanel = new javax.swing.JPanel();
         jbPrepararRelatorio = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jButton4 = new javax.swing.JButton();
+        jbEfetivarRelatorio = new javax.swing.JButton();
         sessionVersionField = new javax.swing.JSpinner();
         jLabel3 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jePreview = new javax.swing.JEditorPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -246,24 +256,43 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("Título:");
+
+        relTituloHistorico.setText("Sprint {sessionCounter}: Versão 1.{sessionCounter}.{releaseCounter} [{sessionDate}]");
+        relTituloHistorico.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                relTituloHistoricoKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(relArquivoHistoricoField, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(relArquivoHistoricoField, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(relTituloHistorico, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(relTituloHistorico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(relArquivoHistoricoField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 35, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout configurationPanelLayout = new javax.swing.GroupLayout(configurationPanel);
@@ -456,15 +485,26 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
-
-        jButton4.setText("Efetivar");
+        jbEfetivarRelatorio.setText("Efetivar");
+        jbEfetivarRelatorio.setEnabled(false);
+        jbEfetivarRelatorio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbEfetivarRelatorioActionPerformed(evt);
+            }
+        });
 
         sessionVersionField.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+        sessionVersionField.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                sessionVersionFieldStateChanged(evt);
+            }
+        });
 
         jLabel3.setText("Versão:");
+
+        jePreview.setEditable(false);
+        jePreview.setContentType("text/html"); // NOI18N
+        jScrollPane4.setViewportView(jePreview);
 
         javax.swing.GroupLayout reportPanelLayout = new javax.swing.GroupLayout(reportPanel);
         reportPanel.setLayout(reportPanelLayout);
@@ -473,29 +513,29 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(reportPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane4)
                     .addGroup(reportPanelLayout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbPrepararRelatorio)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 237, Short.MAX_VALUE)
-                        .addComponent(jButton4)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 241, Short.MAX_VALUE)
+                        .addComponent(jbEfetivarRelatorio)))
                 .addContainerGap())
         );
         reportPanelLayout.setVerticalGroup(
             reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(reportPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel3)
                         .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jbPrepararRelatorio))
-                    .addComponent(jButton4))
+                    .addComponent(jbEfetivarRelatorio))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -553,7 +593,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_configurationFieldKeyTyped
 
     private void ccExecutableFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ccExecutableFieldKeyTyped
-        // TODO add your handling code here:
+        updateConfigurationValidation();
     }//GEN-LAST:event_ccExecutableFieldKeyTyped
 
     private void ccActivityHeadlinePatternFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ccActivityHeadlinePatternFieldKeyTyped
@@ -561,8 +601,20 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_ccActivityHeadlinePatternFieldKeyTyped
 
     private void jbPrepararRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPrepararRelatorioActionPerformed
-        runHistorySynchronization();
+        runHistoryPreview();
     }//GEN-LAST:event_jbPrepararRelatorioActionPerformed
+
+    private void relTituloHistoricoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_relTituloHistoricoKeyReleased
+        updateActivityHeadlineSample();
+    }//GEN-LAST:event_relTituloHistoricoKeyReleased
+
+    private void sessionVersionFieldStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sessionVersionFieldStateChanged
+        updateVersion();
+    }//GEN-LAST:event_sessionVersionFieldStateChanged
+
+    private void jbEfetivarRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEfetivarRelatorioActionPerformed
+        runHistorySynchronization();
+    }//GEN-LAST:event_jbEfetivarRelatorioActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ccActivityHeadlinePatternField;
@@ -578,7 +630,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField gitRepositoryDirField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -587,6 +638,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JList jList1;
     private javax.swing.JList jList2;
     private javax.swing.JPanel jPanel1;
@@ -596,11 +648,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane6;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JButton jbEfetivarRelatorio;
     private javax.swing.JButton jbPrepararRelatorio;
+    private javax.swing.JEditorPane jePreview;
     private javax.swing.JTextField relArquivoHistoricoField;
+    private javax.swing.JTextField relTituloHistorico;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JSpinner sessionVersionField;
     private javax.swing.JPanel synchronizationPanel;
@@ -680,11 +734,20 @@ public class MainFrame extends javax.swing.JFrame {
         map.put("gitCommitTo", "DEF456");
         map.put("sessionDate", new Date());
         map.put("sessionCounter", ((Number) sessionVersionField.getValue()).longValue());
+        map.put("releaseCounter", ((Number) sessionVersionField.getValue()).longValue());
         try {
             ccActivityHeadlineSampleField.setText(MessageFormat.format(ccActivityHeadlinePatternField.getText(), map));
         } catch (Exception e) {
             ccActivityHeadlineSampleField.setText(e.getLocalizedMessage());
         }
+    }
+    
+    private String getTituloHistorico() throws IOException {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("sessionCounter", ((Number) sessionVersionField.getValue()).longValue());
+        map.put("releaseCounter", getReleaseVersion());
+        map.put("sessionDate", new Date());
+        return MessageFormat.format(relTituloHistorico.getText(), map);
     }
 
     private void updateConfigurationValidation() {
@@ -741,10 +804,10 @@ public class MainFrame extends javax.swing.JFrame {
             if (errorMessage == null) {
                 errorMessage = "O caminho do arquivo de historico não existe.";
             }
-            ccExecutableField.setForeground(Color.red);
+            relArquivoHistoricoField.setForeground(Color.red);
             isConfigurationValid = false;
         } else {
-            ccExecutableField.setForeground(configurationPanel.getForeground());
+            relArquivoHistoricoField.setForeground(configurationPanel.getForeground());
         }
 
         if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile()) {
@@ -837,86 +900,69 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
     }
-    
-    private void runHistorySynchronization() {
+
+    private void runHistoryPreview() {
         final GitCommander gitCommander;
-        final ClearToolCommander clearToolCommander;
-        final String previousHistoricoCommit;
-        final File ccDir;
-        final File gitDir;
         //
-        final File cCommitStampFile;
-        final File ccRelatorioStampFile;
-        final File ccRelatorioVersaoStampFile;
+        final String historicoCommit;
+        final String atualizacaoCommit;
+        final File arquivoHistorico;
         try {
-            cCommitStampFile = getCcCommitStampFile();
-            ccRelatorioStampFile = getCcRelatorioStampFile();
-            ccRelatorioVersaoStampFile = getCcRelatorioVersaoStampFile();
-            
             gitCommander = getGitCommander();
-            clearToolCommander = getClearToolCommander();
-            previousHistoricoCommit = getCommitHistorico();
-            ccDir = getCcDir();
-            gitDir = getGitDir();
+            arquivoHistorico = getArquivoHistorico();
+            historicoCommit = getCommitHistorico();
+            atualizacaoCommit = getCommitAtualizacao();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         tarefa = tarefaExecutor.submit(new Runnable() {
             public void run() {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        jButton1.setEnabled(false);
-                        jTabbedPane6.setSelectedComponent(executionPanel);
+                        jbPrepararRelatorio.setEnabled(false);
+                        jbEfetivarRelatorio.setEnabled(false);
+//                        jTabbedPane6.setSelectedComponent(executionPanel);
                         logListModel.clear();
                     }
                 });
                 try {
-                    /* Passo 1: Criar atividade no CC
+                    /* Passo 1: Recuperar atividades realizadas entre o último histórico efetivado e último commit de atividades
+                     */
+                    String content = gitCommander.commitMessagesReport(historicoCommit, atualizacaoCommit, "%s%n");
+                    if (content == null) { return; }
+                    
+                    /* Passo 2: Classificar as mensagens recuperadas de acordo com o propósito do relatório de histórico a ser gerado
                     */
-                    clearToolCommander.createActivity("Geração de Histórico de Atividade "+System.currentTimeMillis());
+                    Callable<History> historicoBuilder = new JConsueloHistoricoBuilder(content, getTituloHistorico());
+                    History history = historicoBuilder.call();
                     
-                    /* Passo 2: Realizar checkout dos arquivos necessários
+                    /* Passo 3: Processar o documento de histórico de versões em formato HTML (porque é mais bonitinho)
+                     */
+                    Callable<String> previewBuilder = new HistoryPreviewBuilder(history, arquivoHistorico);
+                    htmlPreview = previewBuilder.call();
+                    
+                    /* Passo 4: Atualizar a tela com o relatório a ser gerado
                     */
-                    clearToolCommander.checkout(Arrays.asList(cCommitStampFile, ccRelatorioStampFile, ccRelatorioVersaoStampFile));
-                    
-                    /*
-                    */
-                    //from - Comit do relatorio anterior
-                    //to - Commit da sincronização anterior (previousCommit)
-                    //pattern - A ser definido. Ex %s%n  @see GitHistoryBuilder
-                    String gitCommit = gitCommander.getCurrentCommit();
-                    String content = gitCommander.commitMessagesReport(previousHistoricoCommit, gitCommit, "%s%n");
-                    
-                    System.out.println(content);
-                    
-                    //Classificar as mensagems de commit
-                    
-                    //Gerar o esquema de relatorio HTML
-                    
-                    //Incrementar a versão
-                    
-                    //Append no arquivo de historico
-                    
-                    //Checkin all
-
+                    jePreview.setText(htmlPreview);
+                    jbEfetivarRelatorio.setEnabled(true);
                 } catch (final Exception e) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            String mensagem = "Falha ao sincronizar view ClearCase com repositório GIT.\n" + e.getMessage();
+                            String mensagem = "Falha ao gerar preview do histórico.\n" + e.getMessage();
                             Exception ee = e;
                             while (ee.getCause() != null && ee.getCause() != ee) {
                                 ee = (Exception) ee.getCause();
                                 mensagem += "\n" + ee.getMessage();
                             }
-                            JOptionPane.showMessageDialog(MainFrame.this, mensagem, "Erro na sincronização", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(MainFrame.this, mensagem, "History Preview Error", JOptionPane.ERROR_MESSAGE);
                         }
                     });
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            jButton1.setEnabled(true);
+                            jbPrepararRelatorio.setEnabled(true);
                         }
                     });
                     synchronized (MainFrame.this) {
@@ -925,7 +971,109 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         });
+    }
+    
+    private void runHistorySynchronization() {
+        final ClearToolCommander clearToolCommander;
+        //
+        final String atualizacaoCommit;
+        final File arquivoHistoricoPath;
+        final File ccRelatorioStampFile;
+        final File ccRelatorioVersaoStampFile;
+        final File ccRelatorioReleaseStampFile;
         
+        final Long version;
+        final Long releaseVersion;
+        try {
+            clearToolCommander = getClearToolCommander();
+            ccRelatorioStampFile = getCcRelatorioStampFile();
+            ccRelatorioVersaoStampFile = getCcRelatorioVersaoStampFile();
+            ccRelatorioReleaseStampFile = getCcRelatorioReleaseStampFile();
+            arquivoHistoricoPath = getArquivoHistorico();
+            
+            atualizacaoCommit = getCommitAtualizacao();
+            version = new Long(sessionVersionField.getValue().toString());
+            releaseVersion = getReleaseVersion() + 1L;
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos para efetivar histórico", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        tarefa = tarefaExecutor.submit(new Runnable() {
+            public void run() {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        jbPrepararRelatorio.setEnabled(false);
+                        jbEfetivarRelatorio.setEnabled(false);
+                        logListModel.clear();
+                    }
+                });
+                try {
+                    /* Passo 1: Criar atividade no CC
+                     */
+                    clearToolCommander.createActivity("Geração de Histórico de Atividade "+version+"."+releaseVersion);
+
+                    /* Passo 2: Realizar checkout dos arquivos necessários
+                     */
+                    List<File> checkoutList = Arrays.asList(arquivoHistoricoPath, ccRelatorioVersaoStampFile, ccRelatorioReleaseStampFile);
+                    clearToolCommander.checkout(checkoutList);
+                    
+                    /* Passo 3: Atualizar arquivo de historico e controle de versões
+                     */
+                    Callable<String> mergeCall = new JConsueloHistoricoMerge(arquivoHistoricoPath, jePreview.getText());
+                    String htmlContent = mergeCall.call();
+                    Callable<Boolean> ccWriterUpdate = new JConsueloHistoricoWritter(arquivoHistoricoPath, htmlContent,
+                            ccRelatorioStampFile, atualizacaoCommit,
+                            ccRelatorioVersaoStampFile, version,
+                            ccRelatorioReleaseStampFile, releaseVersion);
+                    boolean success = ccWriterUpdate.call();
+                    
+                    /* Passo 4: Checkin em todos os arquivos
+                    */
+                    clearToolCommander.checkin(checkoutList);
+                    
+                    /* Passo 5: Notificar usuario sobre sucesso a operação
+                    */
+                    JOptionPane.showMessageDialog(
+                            MainFrame.this, success?"Operação executada com sucesso!":"Não foi possível atualizar arquivos de versão do Clear Case",
+                            "History Proccess", success?JOptionPane.INFORMATION_MESSAGE:JOptionPane.ERROR_MESSAGE);
+                    
+                } catch (final Exception e) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            String mensagem = "Falha ao gerar preview do histórico.\n" + e.getMessage();
+                            Exception ee = e;
+                            while (ee.getCause() != null && ee.getCause() != ee) {
+                                ee = (Exception) ee.getCause();
+                                mensagem += "\n" + ee.getMessage();
+                            }
+                            JOptionPane.showMessageDialog(MainFrame.this, mensagem, "History Preview Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            jbPrepararRelatorio.setEnabled(true);
+                        }
+                    });
+                    synchronized (MainFrame.this) {
+                        tarefa = null;
+                    }
+                }
+            }
+        });
+    }
+
+    private Long getReleaseVersion() throws IOException {
+        File ccRelatorioReleaseStampFile = getCcRelatorioReleaseStampFile();
+        String value = new Scanner(ccRelatorioReleaseStampFile).next();
+        return new Long(value);
+    }
+    
+    private Long getVersion() throws IOException {
+        File ccRelatorioVersaoStampFile = getCcRelatorioVersaoStampFile();
+        String value = new Scanner(ccRelatorioVersaoStampFile).next();
+        return new Long(value);
     }
 
     private String getCommitAtualizacao() throws IOException, FileNotFoundException {
@@ -933,13 +1081,13 @@ public class MainFrame extends javax.swing.JFrame {
         String previousCommit = new Scanner(ccCommitStampFile).next();
         return previousCommit;
     }
-    
+
     private String getCommitHistorico() throws IOException, FileNotFoundException {
         File ccRelatorioStampFile = getCcRelatorioStampFile();
         String previousCommit = new Scanner(ccRelatorioStampFile).next();
         return previousCommit;
     }
-    
+
     private ClearToolCommander getClearToolCommander() throws IOException {
         File ccDir = getCcDir();
         File ccExecutable = getCcExecutable();
@@ -955,7 +1103,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         return ccCommitStampFile;
     }
-    
+
     private File getCcRelatorioStampFile() throws IOException {
         final File ccRelatorioStampFile = new File(getCcDir(), "relatorio-hash.txt");
         if (!ccRelatorioStampFile.exists() || !ccRelatorioStampFile.isFile()) {
@@ -965,7 +1113,15 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private File getCcRelatorioVersaoStampFile() throws IOException {
-        final File ccRelatorioVersaoStampFile = new File(getCcDir(), "relatorio-versao.txt");
+        final File ccRelatorioVersaoStampFile = new File(getCcDir(), "relatorio-version.txt");
+        if (!ccRelatorioVersaoStampFile.exists() || !ccRelatorioVersaoStampFile.isFile()) {
+            throw new IOException("O caminho da marca de versão do relatório na view do Clearcase não existe ou não é um arquivo válido.");
+        }
+        return ccRelatorioVersaoStampFile;
+    }
+
+    private File getCcRelatorioReleaseStampFile() throws IOException {
+        final File ccRelatorioVersaoStampFile = new File(getCcDir(), "relatorio-release.txt");
         if (!ccRelatorioVersaoStampFile.exists() || !ccRelatorioVersaoStampFile.isFile()) {
             throw new IOException("O caminho da marca de versão do relatório na view do Clearcase não existe ou não é um arquivo válido.");
         }
@@ -995,7 +1151,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         return ccDir;
     }
-    
+
     private GitCommander getGitCommander() throws IOException {
         File gitDir = getGitDir();
         File gitExecutable = getGitExecutable();
@@ -1018,5 +1174,18 @@ public class MainFrame extends javax.swing.JFrame {
             throw new IOException("O caminho do repositório Git não existe ou não é um diretório.");
         }
         return gitDir;
+    }
+
+    private void updateVersion() {
+        try {
+            Long newValue = new Long(sessionVersionField.getValue().toString());
+            Long currentValue = getVersion();
+            if (newValue < currentValue) {
+                sessionVersionField.setValue(currentValue);
+                JOptionPane.showMessageDialog(MainFrame.this, "A versão não pode retroceder!", "Version update", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(MainFrame.this, "Erro ao recuperar valor da versão: "+e.getMessage(), "Version update", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

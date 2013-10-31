@@ -66,6 +66,10 @@
             <artifactId>icu4j</artifactId>
             <version>52.1</version>
         </dependency>
-            
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+        </dependency>
     </dependencies>
 </project>
