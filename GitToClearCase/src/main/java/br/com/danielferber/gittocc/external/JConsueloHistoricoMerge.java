@@ -15,8 +15,7 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
  * @author a7hs
  */
 public class JConsueloHistoricoMerge implements Callable<String>{
-    private static final String HR_1 = "<hr />";
-    private static final String HR_2 = "<hr/>";
+    private static final String HR_1 = "<hr";
     
     private final File arquivoHistorico;
     private final String novoConteudo;
@@ -55,10 +54,15 @@ public class JConsueloHistoricoMerge implements Callable<String>{
     }
     
     private int getPosicao() {
-        if (novoConteudo.indexOf(HR_1)>0) {
-            return novoConteudo.indexOf(HR_1) + HR_1.length();
+        int posicao = novoConteudo.indexOf(HR_1);
+        while (true) {
+            posicao++;
+            if ('>' == novoConteudo.charAt(posicao)) {
+                posicao++;
+                break;
+            }
         }
-        return novoConteudo.indexOf(HR_2) + HR_2.length();
+        return posicao;
     }
     
 }

@@ -3,6 +3,7 @@ package br.com.danielferber.gittocc.external;
 
 import java.io.File;
 import java.util.concurrent.Callable;
+import javax.swing.JEditorPane;
 import junit.framework.TestCase;
 
 /**
@@ -26,8 +27,11 @@ public class JConsueloHistoricoMergeTest extends TestCase {
     public void testMerge() throws Exception {
         File historicoPath = new File("K:\\CcViews\\JCONSUELO_DVL_a7hs_mi00258482\\JCONSUELO\\Fontes\\Modulos-RCP\\Aplicacao\\Aplicacao_Historico\\src\\historico.html");
         String content = getContent();
+        JEditorPane htmlView = new JEditorPane();
+        htmlView.setContentType("text/html");
+        htmlView.setText(content);
         
-        Callable<String> mergeCall = new JConsueloHistoricoMerge(historicoPath, content);
+        Callable<String> mergeCall = new JConsueloHistoricoMerge(historicoPath, htmlView.getText());
         String novoConteudo = mergeCall.call();
         System.out.println(novoConteudo);
     }
