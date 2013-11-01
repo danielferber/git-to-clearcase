@@ -21,7 +21,7 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
  * @author a7hs
  */
 public class HistoryPreviewBuilder implements Callable<String> {
-    
+    public static final String CHAR_ENCODING = "UTF-8";
     private final History history;
     private final File arquivoHistorico;
 
@@ -108,7 +108,7 @@ public class HistoryPreviewBuilder implements Callable<String> {
 
     private String getHtmlContent(String newContent) throws FileNotFoundException, IOException {
         FileInputStream fis = new FileInputStream(arquivoHistorico);
-        InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+        InputStreamReader isr = new InputStreamReader(fis, CHAR_ENCODING);
         BufferedReader buffer = new BufferedReader(isr);
         StringBuilder sb = new StringBuilder();
         boolean verifyNewContent = true;
@@ -116,7 +116,7 @@ public class HistoryPreviewBuilder implements Callable<String> {
         while ((line=buffer.readLine())!=null) {
             sb.append(line).append("\n");
             if (verifyNewContent) {
-                if ("<hr />".equals(trimToEmpty(line)) || "<hr/>".equals(trimToEmpty(line))) {
+                if (trimToEmpty(line).startsWith("<hr")) {
                     sb.append(newContent).append("\n");
                     verifyNewContent = false;
                 }

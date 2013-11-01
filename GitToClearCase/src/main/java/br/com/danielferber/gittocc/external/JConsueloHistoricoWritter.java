@@ -3,10 +3,10 @@ package br.com.danielferber.gittocc.external;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.Callable;
+import static br.com.danielferber.gittocc.external.HistoryPreviewBuilder.CHAR_ENCODING;
 
 /**
  *
@@ -43,14 +43,10 @@ public class JConsueloHistoricoWritter implements Callable<Boolean>{
               && doFile(releasePath, release.toString());
     }
     
-    private boolean doHistorico() {
-        return doFile(arquivoHistoricoPath, conteudo);
-    }
-    
     private boolean doFile(File file, String content) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
-            OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+            OutputStreamWriter osw = new OutputStreamWriter(fos, CHAR_ENCODING);
             osw.write(content);
             osw.flush();
             osw.close();

@@ -39,6 +39,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -53,7 +55,6 @@ public class MainFrame extends javax.swing.JFrame {
     final ExecutorService tarefaExecutor = Executors.newCachedThreadPool();
     final DefaultListModel logListModel = new DefaultListModel();
     boolean isConfigurationValid = false;
-    private String htmlPreview;
     
     /**
      * Creates new form MainFrame
@@ -502,7 +503,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel3.setText("Versão:");
 
-        jePreview.setEditable(false);
         jePreview.setContentType("text/html"); // NOI18N
         jScrollPane4.setViewportView(jePreview);
 
@@ -528,8 +528,8 @@ public class MainFrame extends javax.swing.JFrame {
             reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(reportPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(reportPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel3)
@@ -683,6 +683,7 @@ public class MainFrame extends javax.swing.JFrame {
             ccDeleteEmptyDirsField.setSelected(Boolean.parseBoolean(p.getProperty("cc.operarion.deleteEmptyDirs", "true")));
             relArquivoHistoricoField.setText(p.getProperty("rel.relatorio.file", ""));
             fi.close();
+            sessionVersionField.setValue( getVersion() );
         } catch (IOException e) {
             JOptionPane.showMessageDialog(MainFrame.this, e.getLocalizedMessage(), "Salvar propriedades", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -941,7 +942,7 @@ public class MainFrame extends javax.swing.JFrame {
                     /* Passo 3: Processar o documento de histórico de versões em formato HTML (porque é mais bonitinho)
                      */
                     Callable<String> previewBuilder = new HistoryPreviewBuilder(history, arquivoHistorico);
-                    htmlPreview = previewBuilder.call();
+                    String htmlPreview = previewBuilder.call();
                     
                     /* Passo 4: Atualizar a tela com o relatório a ser gerado
                     */
@@ -1005,6 +1006,7 @@ public class MainFrame extends javax.swing.JFrame {
                     public void run() {
                         jbPrepararRelatorio.setEnabled(false);
                         jbEfetivarRelatorio.setEnabled(false);
+                        sessionVersionField.setEnabled(false);
                         logListModel.clear();
                     }
                 });
@@ -1037,7 +1039,7 @@ public class MainFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(
                             MainFrame.this, success?"Operação executada com sucesso!":"Não foi possível atualizar arquivos de versão do Clear Case",
                             "History Proccess", success?JOptionPane.INFORMATION_MESSAGE:JOptionPane.ERROR_MESSAGE);
-                    
+                    jePreview.setText("");
                 } catch (final Exception e) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -1054,6 +1056,7 @@ public class MainFrame extends javax.swing.JFrame {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             jbPrepararRelatorio.setEnabled(true);
+                            sessionVersionField.setEnabled(true);
                         }
                     });
                     synchronized (MainFrame.this) {
