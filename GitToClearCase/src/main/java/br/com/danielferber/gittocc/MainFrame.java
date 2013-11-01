@@ -8,16 +8,14 @@ package br.com.danielferber.gittocc;
 //import br.com.danielferber.gittocc.cc.ClearToolDriver;
 import br.com.danielferber.gittocc.cc.ClearToolCommander;
 import br.com.danielferber.gittocc.cc.ClearToolProcessBuilder;
-import br.com.danielferber.gittocc.cc.VobUpdater;
 import br.com.danielferber.gittocc.external.History;
 import br.com.danielferber.gittocc.external.HistoryPreviewBuilder;
 import br.com.danielferber.gittocc.external.JConsueloHistoricoBuilder;
 import br.com.danielferber.gittocc.external.JConsueloHistoricoMerge;
 import br.com.danielferber.gittocc.external.JConsueloHistoricoWritter;
 import br.com.danielferber.gittocc.git.GitCommander;
-import br.com.danielferber.gittocc.git.GitHistory;
-import br.com.danielferber.gittocc.git.GitHistoryBuilder;
 import br.com.danielferber.gittocc.git.GitProcessBuilder;
+import br.com.danielferber.gittocc.sync.SyncTask;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import com.ibm.icu.text.MessageFormat;
 import java.awt.Color;
@@ -54,7 +52,7 @@ public class MainFrame extends javax.swing.JFrame {
     final DefaultListModel logListModel = new DefaultListModel();
     boolean isConfigurationValid = false;
     private String htmlPreview;
-    
+
     /**
      * Creates new form MainFrame
      */
@@ -113,7 +111,9 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        ccDeleteEmptyDirsField = new javax.swing.JCheckBox();
+        gitFetchRemoteField = new javax.swing.JCheckBox();
+        gitFastForwardField = new javax.swing.JCheckBox();
+        gitFastForwardObsField = new javax.swing.JLabel();
         executionPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
@@ -224,7 +224,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ccVobDirField))
+                        .addComponent(ccVobDirField, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE))
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -280,7 +280,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(relTituloHistorico, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -319,9 +319,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         jTabbedPane6.addTab("Configurações", configurationPanel);
@@ -366,7 +366,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ccActivityHeadlinePatternField, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE))
+                        .addComponent(ccActivityHeadlinePatternField, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE))
                     .addComponent(jScrollPane2)
                     .addGroup(jPanel9Layout.createSequentialGroup()
                         .addComponent(ccCreateActivityField)
@@ -401,10 +401,18 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Operações de sincronização"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Git"));
 
-        ccDeleteEmptyDirsField.setSelected(true);
-        ccDeleteEmptyDirsField.setText("Apagar diretórios vazios");
+        gitFetchRemoteField.setText("Obter commits remotos");
+
+        gitFastForwardField.setText("Avançar commits");
+        gitFastForwardField.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                gitFastForwardFieldStateChanged(evt);
+            }
+        });
+
+        gitFastForwardObsField.setText("jLabel7");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -412,14 +420,23 @@ public class MainFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(ccDeleteEmptyDirsField)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(gitFastForwardField)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(gitFastForwardObsField))
+                    .addComponent(gitFetchRemoteField))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(ccDeleteEmptyDirsField)
-                .addGap(0, 20, Short.MAX_VALUE))
+                .addComponent(gitFetchRemoteField)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(gitFastForwardField)
+                    .addComponent(gitFastForwardObsField))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout synchronizationPanelLayout = new javax.swing.GroupLayout(synchronizationPanel);
@@ -440,10 +457,10 @@ public class MainFrame extends javax.swing.JFrame {
             synchronizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(synchronizationPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -461,7 +478,7 @@ public class MainFrame extends javax.swing.JFrame {
             executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(executionPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -471,7 +488,7 @@ public class MainFrame extends javax.swing.JFrame {
             executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(executionPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3))
         );
@@ -536,7 +553,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jbPrepararRelatorio))
                     .addComponent(jbEfetivarRelatorio))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(62, Short.MAX_VALUE))
         );
 
         jTabbedPane6.addTab("Relatório", reportPanel);
@@ -554,8 +571,8 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jTabbedPane6)
+                .addContainerGap())
         );
 
         pack();
@@ -616,17 +633,27 @@ public class MainFrame extends javax.swing.JFrame {
         runHistorySynchronization();
     }//GEN-LAST:event_jbEfetivarRelatorioActionPerformed
 
+    private void gitFastForwardFieldStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_gitFastForwardFieldStateChanged
+        if (gitFastForwardField.isSelected()) {
+            gitFastForwardObsField.setText("(sincronização com a versão mais recente)");
+        } else {
+            gitFastForwardObsField.setText("(sincronização com a versão atualmente em checkout)");
+        }
+    }//GEN-LAST:event_gitFastForwardFieldStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ccActivityHeadlinePatternField;
     private javax.swing.JTextField ccActivityHeadlineSampleField;
     private javax.swing.JCheckBox ccCreateActivityField;
-    private javax.swing.JCheckBox ccDeleteEmptyDirsField;
     private javax.swing.JTextField ccExecutableField;
     private javax.swing.JTextField ccVobDirField;
     private javax.swing.JPanel configurationPanel;
     private javax.swing.JLabel configurationValidationMessageField;
     private javax.swing.JPanel executionPanel;
     private javax.swing.JTextField gitExecutableField;
+    private javax.swing.JCheckBox gitFastForwardField;
+    private javax.swing.JLabel gitFastForwardObsField;
+    private javax.swing.JCheckBox gitFetchRemoteField;
     private javax.swing.JTextField gitRepositoryDirField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
@@ -676,11 +703,14 @@ public class MainFrame extends javax.swing.JFrame {
             p.load(fi);
             gitRepositoryDirField.setText(p.getProperty("git.repository", ""));
             gitExecutableField.setText(p.getProperty("git.executable", ""));
+            gitFastForwardField.setSelected(Boolean.parseBoolean(p.getProperty("git.fastForward", "true")));
+            gitFetchRemoteField.setSelected(Boolean.parseBoolean(p.getProperty("git.fetchRemote", "true")));
+
             ccVobDirField.setText(p.getProperty("cc.vob", ""));
             ccExecutableField.setText(p.getProperty("cc.executable", ""));
             ccCreateActivityField.setSelected(Boolean.parseBoolean(p.getProperty("cc.activity.create", "true")));
             ccActivityHeadlinePatternField.setText(p.getProperty("cc.activity.pattern", "<git-commit>"));
-            ccDeleteEmptyDirsField.setSelected(Boolean.parseBoolean(p.getProperty("cc.operarion.deleteEmptyDirs", "true")));
+
             relArquivoHistoricoField.setText(p.getProperty("rel.relatorio.file", ""));
             fi.close();
         } catch (IOException e) {
@@ -707,11 +737,13 @@ public class MainFrame extends javax.swing.JFrame {
             Properties p = new Properties();
             p.setProperty("git.repository", gitRepositoryDirField.getText());
             p.setProperty("git.executable", gitExecutableField.getText());
+            p.setProperty("git.fastForward", Boolean.toString(gitFastForwardField.isSelected()));
+            p.setProperty("git.fetchRemote", Boolean.toString(gitFetchRemoteField.isSelected()));
+
             p.setProperty("cc.vob", ccVobDirField.getText());
             p.setProperty("cc.executable", ccExecutableField.getText());
             p.setProperty("cc.activity.create", Boolean.toString(ccCreateActivityField.isSelected()));
             p.setProperty("cc.activity.pattern", ccActivityHeadlinePatternField.getText());
-            p.setProperty("cc.operarion.deleteEmptyDirs", Boolean.toString(ccDeleteEmptyDirsField.isSelected()));
             p.setProperty("rel.relatorio.file", relArquivoHistoricoField.getText());
             p.store(of, "Git to ClearCase");
             of.close();
@@ -741,7 +773,7 @@ public class MainFrame extends javax.swing.JFrame {
             ccActivityHeadlineSampleField.setText(e.getLocalizedMessage());
         }
     }
-    
+
     private String getTituloHistorico() throws IOException {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("sessionCounter", ((Number) sessionVersionField.getValue()).longValue());
@@ -835,19 +867,26 @@ public class MainFrame extends javax.swing.JFrame {
     private void runSynchronization() {
         final GitCommander gitCommander;
         final ClearToolCommander clearToolCommander;
-        final String previousCommit;
         final File ccDir;
         final File gitDir;
+        final SyncTask syncTask;
         try {
             gitCommander = getGitCommander();
             clearToolCommander = getClearToolCommander();
-            previousCommit = getCommitAtualizacao();
             ccDir = getCcDir();
             gitDir = getGitDir();
+
+            syncTask = new SyncTask(gitCommander, clearToolCommander, gitDir, ccDir);
+            syncTask.setFastForward(gitFastForwardField.isSelected());
+            syncTask.setFetchFromRemote(gitFetchRemoteField.isSelected());
+            syncTask.setHeadline(ccActivityHeadlinePatternField.getText());
+            syncTask.setCommitFile(getCcCommitStampFile());
+            syncTask.setCreateActivity(ccCreateActivityField.isSelected());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
 
         tarefa = tarefaExecutor.submit(new Runnable() {
             public void run() {
@@ -858,22 +897,9 @@ public class MainFrame extends javax.swing.JFrame {
                         logListModel.clear();
                     }
                 });
+
                 try {
-                    final GitHistoryBuilder historyBuilder = new GitHistoryBuilder(gitCommander, gitDir, previousCommit);
-                    final GitHistory gitHistory = historyBuilder.call();
-                    final VobUpdater vobUpdater = new VobUpdater(gitHistory, clearToolCommander, ccDir);
-                    vobUpdater.setCreateActivity(ccCreateActivityField.isSelected());
-
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    map.put("gitCommitFrom", gitHistory.getFromCommit());
-                    map.put("gitCommitTo", gitHistory.getToCommit());
-                    map.put("sessionDate", new Date());
-                    map.put("sessionCounter", ((Number) sessionVersionField.getValue()).longValue());
-
-                    vobUpdater.setHeadline(MessageFormat.format(ccActivityHeadlinePatternField.getText(), map));
-                    vobUpdater.setCreateActivity(ccCreateActivityField.isSelected());
-                    vobUpdater.setDeleteEmptyDirs(ccDeleteEmptyDirsField.isSelected());
-                    vobUpdater.call();
+                    syncTask.call();
 
                 } catch (final Exception e) {
                     SwingUtilities.invokeLater(new Runnable() {
@@ -911,7 +937,7 @@ public class MainFrame extends javax.swing.JFrame {
             gitCommander = getGitCommander();
             arquivoHistorico = getArquivoHistorico();
             historicoCommit = getCommitHistorico();
-            atualizacaoCommit = getCommitAtualizacao();
+            atualizacaoCommit = getCommitOrigemAtualizacao();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
             return;
@@ -931,20 +957,22 @@ public class MainFrame extends javax.swing.JFrame {
                     /* Passo 1: Recuperar atividades realizadas entre o último histórico efetivado e último commit de atividades
                      */
                     String content = gitCommander.commitMessagesReport(historicoCommit, atualizacaoCommit, "%s%n");
-                    if (content == null) { return; }
-                    
+                    if (content == null) {
+                        return;
+                    }
+
                     /* Passo 2: Classificar as mensagens recuperadas de acordo com o propósito do relatório de histórico a ser gerado
-                    */
+                     */
                     Callable<History> historicoBuilder = new JConsueloHistoricoBuilder(content, getTituloHistorico());
                     History history = historicoBuilder.call();
-                    
+
                     /* Passo 3: Processar o documento de histórico de versões em formato HTML (porque é mais bonitinho)
                      */
                     Callable<String> previewBuilder = new HistoryPreviewBuilder(history, arquivoHistorico);
                     htmlPreview = previewBuilder.call();
-                    
+
                     /* Passo 4: Atualizar a tela com o relatório a ser gerado
-                    */
+                     */
                     jePreview.setText(htmlPreview);
                     jbEfetivarRelatorio.setEnabled(true);
                 } catch (final Exception e) {
@@ -972,7 +1000,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
     }
-    
+
     private void runHistorySynchronization() {
         final ClearToolCommander clearToolCommander;
         //
@@ -981,7 +1009,7 @@ public class MainFrame extends javax.swing.JFrame {
         final File ccRelatorioStampFile;
         final File ccRelatorioVersaoStampFile;
         final File ccRelatorioReleaseStampFile;
-        
+
         final Long version;
         final Long releaseVersion;
         try {
@@ -990,8 +1018,8 @@ public class MainFrame extends javax.swing.JFrame {
             ccRelatorioVersaoStampFile = getCcRelatorioVersaoStampFile();
             ccRelatorioReleaseStampFile = getCcRelatorioReleaseStampFile();
             arquivoHistoricoPath = getArquivoHistorico();
-            
-            atualizacaoCommit = getCommitAtualizacao();
+
+            atualizacaoCommit = getCommitOrigemAtualizacao();
             version = new Long(sessionVersionField.getValue().toString());
             releaseVersion = getReleaseVersion() + 1L;
         } catch (IOException e) {
@@ -1011,13 +1039,13 @@ public class MainFrame extends javax.swing.JFrame {
                 try {
                     /* Passo 1: Criar atividade no CC
                      */
-                    clearToolCommander.createActivity("Geração de Histórico de Atividade "+version+"."+releaseVersion);
+                    clearToolCommander.createActivity("Geração de Histórico de Atividade " + version + "." + releaseVersion);
 
                     /* Passo 2: Realizar checkout dos arquivos necessários
                      */
                     List<File> checkoutList = Arrays.asList(arquivoHistoricoPath, ccRelatorioVersaoStampFile, ccRelatorioReleaseStampFile);
-                    clearToolCommander.checkout(checkoutList);
-                    
+                    clearToolCommander.checkoutFiles(checkoutList);
+
                     /* Passo 3: Atualizar arquivo de historico e controle de versões
                      */
                     Callable<String> mergeCall = new JConsueloHistoricoMerge(arquivoHistoricoPath, jePreview.getText());
@@ -1027,17 +1055,17 @@ public class MainFrame extends javax.swing.JFrame {
                             ccRelatorioVersaoStampFile, version,
                             ccRelatorioReleaseStampFile, releaseVersion);
                     boolean success = ccWriterUpdate.call();
-                    
+
                     /* Passo 4: Checkin em todos os arquivos
-                    */
-                    clearToolCommander.checkin(checkoutList);
-                    
+                     */
+                    clearToolCommander.checkinFiles(checkoutList);
+
                     /* Passo 5: Notificar usuario sobre sucesso a operação
-                    */
+                     */
                     JOptionPane.showMessageDialog(
-                            MainFrame.this, success?"Operação executada com sucesso!":"Não foi possível atualizar arquivos de versão do Clear Case",
-                            "History Proccess", success?JOptionPane.INFORMATION_MESSAGE:JOptionPane.ERROR_MESSAGE);
-                    
+                            MainFrame.this, success ? "Operação executada com sucesso!" : "Não foi possível atualizar arquivos de versão do Clear Case",
+                            "History Proccess", success ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+
                 } catch (final Exception e) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -1069,14 +1097,14 @@ public class MainFrame extends javax.swing.JFrame {
         String value = new Scanner(ccRelatorioReleaseStampFile).next();
         return new Long(value);
     }
-    
+
     private Long getVersion() throws IOException {
         File ccRelatorioVersaoStampFile = getCcRelatorioVersaoStampFile();
         String value = new Scanner(ccRelatorioVersaoStampFile).next();
         return new Long(value);
     }
 
-    private String getCommitAtualizacao() throws IOException, FileNotFoundException {
+    private String getCommitOrigemAtualizacao() throws IOException, FileNotFoundException {
         File ccCommitStampFile = getCcCommitStampFile();
         String previousCommit = new Scanner(ccCommitStampFile).next();
         return previousCommit;
@@ -1185,7 +1213,7 @@ public class MainFrame extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(MainFrame.this, "A versão não pode retroceder!", "Version update", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(MainFrame.this, "Erro ao recuperar valor da versão: "+e.getMessage(), "Version update", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(MainFrame.this, "Erro ao recuperar valor da versão: " + e.getMessage(), "Version update", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

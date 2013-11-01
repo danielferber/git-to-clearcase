@@ -49,6 +49,11 @@ public class GitProcessBuilder extends LoggingProcessBuilder<GitProcessBuilder, 
         return this;
     }
 
+    public GitProcessBuilder shortParameter(String parameter) {
+        parameters.add("-" + parameter);
+        return this;
+    }
+
     public GitProcessBuilder parameter(String parameter) {
         parameters.add("--" + parameter);
         return this;

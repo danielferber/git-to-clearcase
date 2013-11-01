@@ -6,6 +6,21 @@
     <appender name="FILE-METER" class="ch.qos.logback.core.FileAppender">
         <append>true</append>
         <file>meter-${HOSTNAME}-${monthId}.txt</file>
+        <filter class="br.com.danielferber.gittocc.logback.MarkerFilter">
+            <marker>DATA_OK</marker>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="br.com.danielferber.gittocc.logback.MarkerFilter">
+            <marker>DATA_FAIL</marker>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="br.com.danielferber.gittocc.logback.MarkerFilter">
+            <marker>DATA_FAIL</marker>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>none</level>
+        </filter>
         <encoder>
             <outputPatternAsHeader>true</outputPatternAsHeader>
             <pattern>%message%n</pattern>
@@ -59,5 +74,6 @@
         <appender-ref ref="STDOUT" />
         <appender-ref ref="SWING-INTEGRATION" />
         <appender-ref ref="FILE-METER" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>

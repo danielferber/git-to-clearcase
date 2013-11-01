@@ -7,10 +7,8 @@ package br.com.danielferber.gittocc.cc;
 import br.com.danielferber.gittocc.process.LineSplittingWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -35,76 +33,84 @@ public class ClearToolCommander {
         pb.reset("mkactivity").command("mkactivity").arguments("-headline", headline, "-force").create().waitFor();
     }
 
-    void checkout(File file) throws IOException {
-        checkout(Collections.singleton(file));
+    public void checkoutDir(File dir) throws IOException {
+        checkoutDirs(Collections.singleton(dir));
     }
 
-    public void checkout(Collection<File> filesOrDirs) throws IOException {
-        Iterator<File> iterator = filesOrDirs.iterator();
-        while (iterator.hasNext()) {
-            List<File> fileOrDirs = new ArrayList<File>(10);
-            pb.reset("checkout").command("checkout").preserveTime().noComment();
-            for (int i = 0; i < 10 && iterator.hasNext(); i++) {
-                final File fileOrDir = iterator.next();
-                pb.argument(fileOrDir.getPath());
-                fileOrDirs.add(fileOrDir);
-            }
-            ClearToolProcess p = pb.create();
-            p.waitFor();
-            for (File fileOrDir : fileOrDirs) {
-                if (fileOrDir.isFile()) {
-                    filesCheckedOut.add(fileOrDir);
-                } else {
-                    dirsCheckedOut.add(fileOrDir);
-                }
+    public void checkoutFile(File file) throws IOException {
+        checkoutFiles(Collections.singleton(file));
+    }
+
+    public void checkoutDirs(Collection<File> dirs) throws IOException {
+        for (File dir : dirs) {
+            if (! dirsCheckedOut.contains(dir)) {
+                pb.reset("checkoutDir").command("checkout").preserveTime().noComment()
+                        .argument(dir.getPath()).create().waitFor();
+                dirsCheckedOut.add(dir);   
             }
         }
     }
 
-    public void checkin(Collection<File> filesOrDirs) throws IOException {
-        Iterator<File> iterator = filesOrDirs.iterator();
-        while (iterator.hasNext()) {
-            List<File> fileOrDirs = new ArrayList<File>(10);
-            pb.reset("checkin").command("checkin").preserveTime().noComment();
-            for (int i = 0; i < 10 && iterator.hasNext(); i++) {
-                final File fileOrDir = iterator.next();
-                pb.argument(fileOrDir.getPath());
-                fileOrDirs.add(fileOrDir);
-            }
-            ClearToolProcess p = pb.create();
-            p.waitFor();
-            for (File fileOrDir : fileOrDirs) {
-                if (fileOrDir.isFile()) {
-                    filesCheckedOut.remove(fileOrDir);
-                } else {
-                    dirsCheckedOut.remove(fileOrDir);
-                }
+    public void checkoutFiles(Collection<File> files) throws IOException {
+        for (File file : files) {
+            if (! filesCheckedOut.contains(file)) {
+                pb.reset("checkoutFile").command("checkout").preserveTime().noComment()
+                        .argument(file.getPath()).create().waitFor();
+                filesCheckedOut.add(file);
             }
         }
     }
 
-    void checkinAll() throws IOException {
-        checkin(filesCheckedOut);
-        checkin(dirsCheckedOut);
+    public void checkinDirs(Collection<File> dirs) throws IOException {
+        for (File dir : dirs) {
+            if (dirsCheckedOut.contains(dir)) {
+                pb.reset("checkinDir").command("checkin").preserveTime().noComment()
+                        .argument(dir.getPath()).create().waitFor();
+                dirsCheckedOut.remove(dir);
+            }
+        }
     }
 
-    public void remove(Collection<File> filesOrDirs) throws IOException {
-        Iterator<File> iterator = filesOrDirs.iterator();
-        while (iterator.hasNext()) {
-            pb.reset("rmname").command("rmname").force().noComment();
-            for (int i = 0; i < 10 && iterator.hasNext(); i++) {
-                pb.argument(iterator.next().getPath());
+    public void checkinFiles(Collection<File> files) throws IOException {
+        for (File file : files) {
+            if (filesCheckedOut.contains(file)) {
+                pb.reset("checkinFile").command("checkin").preserveTime().noComment()
+                        .argument(file.getPath()).create().waitFor();
+                filesCheckedOut.remove(file);
             }
-            ClearToolProcess p = pb.create();
-            p.waitFor();
+        }
+    }
+
+    public void checkinAll() throws IOException {
+        checkinFiles(new TreeSet(filesCheckedOut));
+        checkinDirs(new TreeSet(dirsCheckedOut));
+    }
+
+    public void checkinDirs() throws IOException {
+        checkinDirs(new TreeSet(dirsCheckedOut));
+    }
+
+    public void checkinFiles() throws IOException {
+        checkinFiles(new TreeSet(filesCheckedOut));
+    }
+
+    public void removeFiles(Collection<File> files) throws IOException {
+        for (File file : files) {
+            pb.reset("rmnameFile").command("rmname").force().noComment().argument(file.getPath()).create().waitFor();
+        }
+    }
+
+    public void removeDirs(Collection<File> dirs) throws IOException {
+        for (File dir : dirs) {
+            pb.reset("rmnameDir").command("rmname").force().noComment().argument(dir.getPath()).create().waitFor();
         }
     }
 
     public void moveFile(File source, File target) throws IOException {
-        pb.reset("move").command("mv").noComment().argument(source.getPath()).argument(target.getPath()).create().waitFor();
+        pb.reset("moveFile").command("mv").noComment().argument(source.getPath()).argument(target.getPath()).create().waitFor();
     }
 
-    public void makeElements(Collection<File> dirs, Collection<File> files) throws IOException {
+    private void safeMakeElements(Collection<File> dirs, Collection<File> files) throws IOException {
         final TreeSet<File> dirsToCheckout = new TreeSet<File>();
         final TreeSet<File> filesToCheckout = new TreeSet<File>();
         final TreeSet<File> dirsToMake = new TreeSet<File>();
@@ -118,21 +124,12 @@ public class ClearToolCommander {
 
         outer:
         while (!dirsToCheckout.isEmpty() || !filesToCheckout.isEmpty() || !dirsToMake.isEmpty() || !filesToMake.isEmpty()) {
-            while (!dirsToCheckout.isEmpty()) {
-                final File dir = dirsToCheckout.pollFirst();
-                pb.reset("checkout").command("checkout").preserveTime().noComment().argument(dir.getPath()).create().waitFor();
-                dirsCheckedOut.add(dir);
-            }
-
-            while (!filesToCheckout.isEmpty()) {
-                final File file = filesToCheckout.pollFirst();
-                pb.reset("checkout").command("checkout").preserveTime().noComment().argument(file.getPath()).create().waitFor();
-                filesCheckedOut.add(file);
-            }
+            checkoutDirs(dirsToCheckout);
+            checkoutFiles(filesToCheckout);
 
             while (dirsToCheckout.isEmpty() && !dirsToMake.isEmpty()) {
                 final File dirToMake = dirsToMake.pollFirst();
-                pb.reset("mkdir").command("mkdir").noComment().argument(dirToMake.getPath()).create()
+                pb.reset("makeDir").command("mkdir").noComment().argument(dirToMake.getPath()).create()
                         .addOutWriter(new LineSplittingWriter() {
                     @Override
                     protected void processLine(String line) {
@@ -173,7 +170,7 @@ public class ClearToolCommander {
 
             while (dirsToMake.isEmpty() && dirsToCheckout.isEmpty() && !filesToMake.isEmpty()) {
                 final File fileToMake = filesToMake.pollFirst();
-                pb.reset("mkfile").command("mkelem").noComment().arguments("-eltype", "file").argument(fileToMake.getPath()).create()
+                pb.reset("makeFile").command("mkelem").noComment().arguments("-eltype", "file").argument(fileToMake.getPath()).create()
                         .addOutWriter(new LineSplittingWriter() {
                     @Override
                     protected void processLine(String line) {
@@ -224,9 +221,16 @@ public class ClearToolCommander {
     static final Pattern mkfileAlreadyExistPattern = Pattern.compile("cleartool: Error: Entry named \"(.*)\" already exists\\.");
     static final Pattern mkfileCheckoutPattern = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\".");
     static final Pattern mkfileNeedCheckoutPattern = Pattern.compile("cleartool: Error: Can\'t modify directory \"(.*)\" because it is not checked out\\.");
-
     static final Pattern mkdirParentDirectoryMissingPattern1 = Pattern.compile("cleartool: Error: Not a vob object: \"(.*)\"\\.");
     static final Pattern mkdirParentDirectoryMissingPattern2 = Pattern.compile("cleartool: Error: Unable to access \"(.*)\": No such file or directory\\.");
     static final Pattern mkdirCheckoutPattern = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\".");
     static final Pattern mkdirNeedCheckoutPattern = Pattern.compile("cleartool: Error: Can\'t modify directory \"(.*)\" because it is not checked out\\.");
+
+    public void makeDirs(List<File> dirsAdded) throws IOException {
+        safeMakeElements(dirsAdded, null);
+    }
+
+    public void makeFiles(List<File> filesAdded) throws IOException {
+        safeMakeElements(null, filesAdded);
+    }
 }
