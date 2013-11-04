@@ -28,6 +28,10 @@ public class MarkerFilter extends AbstractMatcherFilter<ILoggingEvent> {
         if (!isStarted()) {
             return FilterReply.NEUTRAL;
         }
+        
+        if (marker == null) {
+            return onMismatch;
+        }
 
         if (markerToMatch.contains(marker)) {
             return onMatch;

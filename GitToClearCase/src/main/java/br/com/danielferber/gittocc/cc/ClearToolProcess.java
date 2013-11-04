@@ -4,27 +4,28 @@
  */
 package br.com.danielferber.gittocc.cc;
 
-import br.com.danielferber.gittocc.git.GitProcess;
-import br.com.danielferber.gittocc.io.ProcessWrapper;
-import br.com.danielferber.gittocc.process.LineSplittingWriter;
+import br.com.danielferber.gittocc.io.LoggingProcessWrapper;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import java.io.IOException;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
+import java.io.File;
+import java.util.List;
 import org.slf4j.Logger;
-import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 /**
  *
  * @author X7WS
  */
-public class ClearToolProcess extends ProcessWrapper {
+public class ClearToolProcess extends LoggingProcessWrapper<ClearToolProcess> {
 
-    public ClearToolProcess(String name, String commandLine, Process process) {
-        super(name, commandLine, process);
-    }
+    final static Logger logger = LoggerFactory.getLogger(ClearToolProcess.class.getSimpleName());
 
-    @Override
-    public void waitFor() throws IOException {
-        super.waitFor();
+    public ClearToolProcess(String name, List<String> commandLine, File directory) {
+        super(name, commandLine, directory,
+                MeterFactory.getMeter(logger, name),
+                LoggerFactory.getLogger(logger, name),
+                MarkerFactory.getMarker("ct_out"),
+                MarkerFactory.getMarker("ct_err"),
+                MarkerFactory.getMarker("ct_cmd"));
     }
 }

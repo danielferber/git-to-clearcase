@@ -337,6 +337,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel11.setText("Exemplo:");
 
         ccActivityHeadlinePatternField.setText("[NTI272977] Teste 1.2.{sessionCounter} em {sessionDate} ({gitCommitTo})");
+        ccActivityHeadlinePatternField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ccActivityHeadlinePatternFieldActionPerformed(evt);
+            }
+        });
         ccActivityHeadlinePatternField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 ccActivityHeadlinePatternFieldKeyTyped(evt);
@@ -641,6 +646,10 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_gitFastForwardFieldStateChanged
 
+    private void ccActivityHeadlinePatternFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ccActivityHeadlinePatternFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ccActivityHeadlinePatternFieldActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ccActivityHeadlinePatternField;
     private javax.swing.JTextField ccActivityHeadlineSampleField;
@@ -914,6 +923,7 @@ public class MainFrame extends javax.swing.JFrame {
                             JOptionPane.showMessageDialog(MainFrame.this, mensagem, "Erro na sincronização", JOptionPane.ERROR_MESSAGE);
                         }
                     });
+                    e.printStackTrace();
                 } finally {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {

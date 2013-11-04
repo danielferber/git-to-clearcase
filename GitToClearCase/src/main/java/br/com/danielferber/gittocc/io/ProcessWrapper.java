@@ -4,48 +4,49 @@
  */
 package br.com.danielferber.gittocc.io;
 
-import br.com.danielferber.gittocc.process.ProcessOutputRepeater;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
  *
  * @author X7WS
  */
-public class ProcessWrapper {
+public class ProcessWrapper<ProcessType extends ProcessWrapper> {
 
     protected final String name;
-    protected final String commandLine;
-    protected final Process process;
-    protected final ProcessOutputRepeater outRepeater;
-    protected final ProcessOutputRepeater errRepeater;
-    
-    boolean started = false;
+    protected final File directory;
+    protected final List<String> commandLine;
+    protected final ProcessOutputRepeater outRepeater = new ProcessOutputRepeater();
+    protected final ProcessOutputRepeater errRepeater = new ProcessOutputRepeater();
+    protected final ProcessWaiter processWaiter = new ProcessWaiter();
 
-    public ProcessWrapper(String name, String commandLine, Process process) {
+    private Process process;
+
+    protected ProcessWrapper(String name, List<String> commandLine, File directory) {
         this.name = name;
-        this.commandLine = commandLine;
-        this.outRepeater = new ProcessOutputRepeater(process.getInputStream());
-        this.errRepeater = new ProcessOutputRepeater(process.getErrorStream());
-        this.process = process;
+        this.directory = directory;
+        this.commandLine = Collections.unmodifiableList(commandLine);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getCommandLine() {
-        return commandLine;
-    }
-    
-    public synchronized void start() {
-        if (!started) {
-            started = true;
-            this.outRepeater.start();
-            this.errRepeater.start();
+    public void start() throws IOException {
+        if (this.process != null) {
+            return;
         }
+        this.process = createProcess();
+        this.processWaiter.start(process);
+        this.outRepeater.start(process.getInputStream());
+        this.errRepeater.start(process.getErrorStream());
+    }
+
+    protected Process getProcess() {
+        return process;
     }
 
     public Scanner createOutScanner() throws IOException {
@@ -64,33 +65,31 @@ public class ProcessWrapper {
         return errRepeater.split();
     }
 
-    public ProcessWrapper addOutWriter(Writer w) {
+    public ProcessType addOutWriter(Writer w) {
         this.outRepeater.with(w);
-        return this;
+        return (ProcessType) this;
     }
 
-    public ProcessWrapper addErrWriter(Writer w) {
+    public ProcessType addErrWriter(Writer w) {
         this.errRepeater.with(w);
-        return this;
+        return (ProcessType) this;
+    }
+    
+    public int exitValue() {
+        return process.exitValue();
     }
 
     public void waitFor() throws IOException {
         start();
-        try {
-            outRepeater.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            errRepeater.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        
         try {
             process.waitFor();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
+    }
+
+    protected Process createProcess() throws IOException {
+        return new ProcessBuilder(commandLine).directory(directory).start();
     }
 }

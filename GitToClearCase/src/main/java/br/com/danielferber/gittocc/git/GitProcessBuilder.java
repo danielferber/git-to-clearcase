@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc.git;
 
-import br.com.danielferber.gittocc.io.LoggingProcessBuilder;
+import br.com.danielferber.gittocc.io.ProcessFactory;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
@@ -19,7 +19,7 @@ import org.slf4j.MarkerFactory;
  *
  * @author X7WS
  */
-public class GitProcessBuilder extends LoggingProcessBuilder<GitProcessBuilder, GitProcess> {
+public class GitProcessBuilder extends ProcessFactory<GitProcessBuilder, GitProcess> {
 
     String command;
     final List<String> parameters = new ArrayList<String>();
@@ -77,7 +77,7 @@ public class GitProcessBuilder extends LoggingProcessBuilder<GitProcessBuilder, 
     }
 
     @Override
-    protected List<String> composeCommandLine() {
+    protected List<String> buildCommandLine() {
         List<String> commandLine = new ArrayList<String>(options.size() + parameters.size() + arguments.size() + 2);
         commandLine.add(executableFile.getAbsolutePath());
         commandLine.addAll(options);
@@ -85,11 +85,6 @@ public class GitProcessBuilder extends LoggingProcessBuilder<GitProcessBuilder, 
         commandLine.addAll(parameters);
         commandLine.addAll(arguments);
         return commandLine;
-    }
-
-    @Override
-    protected GitProcess createProcessWrapper(String name, String commandLine, Process process) {
-        return new GitProcess(name, commandLine, process);
     }
 
     public GitProcessBuilder noPage() {
@@ -106,32 +101,9 @@ public class GitProcessBuilder extends LoggingProcessBuilder<GitProcessBuilder, 
         parameter("verbose");
         return this;
     }
-    final static Marker STDOUT_MARKER = MarkerFactory.getMarker("git_out");
-    final static Marker STDERR_MARKER = MarkerFactory.getMarker("git_err");
-    final static Marker COMMAND_MARKER = MarkerFactory.getMarker("git_cmd");
 
     @Override
-    protected Marker createCommandMarker() {
-        return COMMAND_MARKER;
-    }
-
-    @Override
-    protected Marker createStdErrMarker() {
-        return STDERR_MARKER;
-    }
-
-    @Override
-    protected Marker createStdOutMarker() {
-        return STDOUT_MARKER;
-    }
-
-    @Override
-    protected Meter createMeter() {
-        return MeterFactory.getMeter(GitProcess.class, name);
-    }
-
-    @Override
-    protected Logger createLogger() {
-        return LoggerFactory.getLogger(GitProcess.class, name);
+    protected GitProcess createProcessWrapper(String name, List<String> commandLine) {
+        return new GitProcess(name, commandLine, executionDirectory);
     }
 }

@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc.git;
 
-import br.com.danielferber.gittocc.process.LineSplittingWriter;
+import br.com.danielferber.gittocc.io.LineSplittingWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;

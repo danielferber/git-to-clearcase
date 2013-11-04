@@ -1,4 +1,4 @@
-package br.com.danielferber.gittocc.process;
+package br.com.danielferber.gittocc.io;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -14,20 +14,32 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 /**
- * Repeats the encoded text output stream of a Process to interested Readers and Writers.
+ * Repeats the encoded text output stream of a Process to interested Readers and
+ * Writers.
  *
  * @author Daniel Felix Ferber
  */
-public class ProcessOutputRepeater extends Thread {
+class ProcessOutputRepeater implements Runnable {
 
-    final Reader reader;
+    Reader reader;
+    Thread thread;
     final List<Writer> writers = new ArrayList<Writer>();
 
-    public ProcessOutputRepeater(InputStream is) {
-        super("ProcessOutputConsumer");
-        this.reader = new InputStreamReader(is);
+    public ProcessOutputRepeater() {
+        super();
     }
 
+    public void start(InputStream inputStream) {
+        reader = new InputStreamReader(inputStream);
+        thread = new Thread(this);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void waitFor() throws InterruptedException {
+        thread.join();
+    }
+    
     /**
      * Registers an interested Writer to receive the process output.
      *
@@ -72,4 +84,5 @@ public class ProcessOutputRepeater extends Thread {
             e.printStackTrace();
         }
     }
+
 }

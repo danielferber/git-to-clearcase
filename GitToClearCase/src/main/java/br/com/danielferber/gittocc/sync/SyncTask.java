@@ -9,6 +9,7 @@ import br.com.danielferber.gittocc.git.GitCommander;
 import br.com.danielferber.gittocc.git.GitTreeDiff;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
+import com.ibm.icu.text.MessageFormat;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -79,7 +80,7 @@ public class SyncTask implements Callable<Void> {
             String fromCommit = readCommitHash();
 
             GitTreeDiff diff = buildGitDiff(fromCommit);
-            
+
             if (diff.hasStuff()) {
                 applyDiff(diff);
             }
@@ -123,13 +124,47 @@ public class SyncTask implements Callable<Void> {
             GitTreeDiff diff = gitCommander.treeDif(fromCommit, gitCommit);
             m2.ok();
 
+            m.ok();
+
             return diff;
         } catch (Exception e) {
             if (m2 != null) {
                 m2.fail(e);
             }
+            m.fail(e);
             throw e;
         }
+    }
+
+    private static Collection<File> roots(List<File> files) {
+        TreeSet<File> roots = new TreeSet<File>();
+
+        for (File file : files) {
+            File parent = file.getParentFile();
+            if (parent == null) {
+                parent = new File(".");
+            }
+            if (!files.contains(parent)) {
+                roots.add(file);
+            }
+        }
+
+        return roots;
+    }
+
+    private static TreeSet<File> leafes(List<File> dirs, List<File> files) {
+        TreeSet<File> leafes = new TreeSet<File>();
+
+        for (File file : files) {
+            File parentDir = file.getParentFile();
+            if (parentDir == null) {
+                parentDir = new File(".");
+            }
+            if (!dirs.contains(parentDir)) {
+                leafes.add(file);
+            }
+        }
+        return leafes;
     }
 
     private static Collection<File> parentDirs(Collection<File> files) {
@@ -163,9 +198,10 @@ public class SyncTask implements Callable<Void> {
                 map.put("gitCommitFrom", diff.fromCommit);
                 map.put("sessionDate", new Date());
                 map.put("sessionCounter", sessionCounter);
+                String headlineStr = MessageFormat.format(headline, map);
 
-                m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", headline).start();
-                ctCommander.createActivity(headline);
+                m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", headlineStr).start();
+                ctCommander.createActivity(headlineStr);
                 m.ok();
             }
 
@@ -174,6 +210,12 @@ public class SyncTask implements Callable<Void> {
             m2.ok();
 
             if (!diff.dirsAdded.isEmpty()) {
+
+                m2 = m.sub("checkout.roots.dirsAdded").m("Checkout de raizes com diretórios novos.").start();
+                Collection<File> dirs = parentDirs(roots(diff.dirsAdded));
+                ctCommander.checkoutDirs(dirs);
+                m2.ok();
+
                 m2 = m.sub("make.dirsAdded").m("Criar novos diretórios.").start();
                 ctCommander.makeDirs(diff.dirsAdded);
                 m2.ok();
@@ -225,7 +267,7 @@ public class SyncTask implements Callable<Void> {
                     ctCommander.moveFile(source, target);
                 }
 
-                if (! diff.filesMovedModified.isEmpty()) {
+                if (!diff.filesMovedModified.isEmpty()) {
                     m2 = m.sub("checkout.filesMovedModified").m("Checkout de arquivos movidos e modificados.").start();
                     ctCommander.checkoutFiles(parentDirs(diff.filesMovedModified));
                     m2.ok();
@@ -238,7 +280,7 @@ public class SyncTask implements Callable<Void> {
 
             if (!diff.filesModified.isEmpty()) {
                 m2 = m.sub("checkout.filesModified").m("Checkout de arquivos modificados.").start();
-                ctCommander.checkoutFiles(parentDirs(diff.filesModified));
+                ctCommander.checkoutFiles(diff.filesModified);
                 m2.ok();
 
                 m2 = m.sub("write.filesModified").m("Modificar arquivos.").start();
@@ -246,17 +288,34 @@ public class SyncTask implements Callable<Void> {
                 m2.ok();
             }
 
-            if (!diff.filesDeleted.isEmpty()) {
-                m2 = m.sub("delete.files").m("Apagar arquivos.").start();
-                ctCommander.removeFiles(diff.filesDeleted);
-                m2.ok();
+            if (!diff.dirsDeleted.isEmpty()) {
+                final Collection<File> dirsToDelete = roots(diff.dirsDeleted);
+                
+                if (! dirsToDelete.isEmpty()) {
+                    m2 = m.sub("checkout.roots.dirsDeleted").m("Checkout de raizes de diretórios removidos.").start();
+                    ctCommander.checkoutDirs(parentDirs(dirsToDelete));
+                    m2.ok();
+
+                    m2 = m.sub("delete.dirs").m("Apagar diretórios.").start();
+                    ctCommander.removeDirs(dirsToDelete);
+                    m2.ok();
+                }
             }
 
-            if (!diff.dirsDeleted.isEmpty()) {
-                m2 = m.sub("delete.dirs").m("Apagar diretórios.").start();
-                ctCommander.removeFiles(diff.dirsDeleted);
-                m2.ok();
+            if (!diff.filesDeleted.isEmpty()) {
+                TreeSet<File> filesToDelete = leafes(diff.dirsDeleted, diff.filesDeleted);
+                
+                if (! filesToDelete.isEmpty()) {
+                    m2 = m.sub("delete.parent.filesDeleted").m("Checkout de diretórios com arquivos removidos.").start();
+                    ctCommander.checkoutDirs(parentDirs(filesToDelete));
+                    m2.ok();
+
+                    m2 = m.sub("delete.files").m("Apagar arquivos.").start();
+                    ctCommander.removeFiles(filesToDelete);
+                    m2.ok();
+                }
             }
+
 
             m2 = m.sub("write.commitFile").m("Atualizar arquivo de controle.").start();
             writeCommitHash(diff.toCommit);

@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc.cc;
 
-import br.com.danielferber.gittocc.process.LineSplittingWriter;
+import br.com.danielferber.gittocc.io.LineSplittingWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -43,19 +43,21 @@ public class ClearToolCommander {
 
     public void checkoutDirs(Collection<File> dirs) throws IOException {
         for (File dir : dirs) {
-            if (! dirsCheckedOut.contains(dir)) {
-                pb.reset("checkoutDir").command("checkout").preserveTime().noComment()
-                        .argument(dir.getPath()).create().waitFor();
-                dirsCheckedOut.add(dir);   
+            if (!dirsCheckedOut.contains(dir)) {
+                final ClearToolProcess p = pb.reset("checkoutDir").command("checkout").preserveTime().noComment()
+                        .argument(dir.getPath()).create();
+                p.waitFor();
+                dirsCheckedOut.add(dir);
             }
         }
     }
 
     public void checkoutFiles(Collection<File> files) throws IOException {
         for (File file : files) {
-            if (! filesCheckedOut.contains(file)) {
-                pb.reset("checkoutFile").command("checkout").preserveTime().noComment()
-                        .argument(file.getPath()).create().waitFor();
+            if (!filesCheckedOut.contains(file)) {
+                ClearToolProcess p = pb.reset("checkoutFile").command("checkout").preserveTime().noComment()
+                        .argument(file.getPath()).create();
+                p.waitFor();
                 filesCheckedOut.add(file);
             }
         }
@@ -125,7 +127,9 @@ public class ClearToolCommander {
         outer:
         while (!dirsToCheckout.isEmpty() || !filesToCheckout.isEmpty() || !dirsToMake.isEmpty() || !filesToMake.isEmpty()) {
             checkoutDirs(dirsToCheckout);
+            dirsToCheckout.clear();
             checkoutFiles(filesToCheckout);
+            filesToCheckout.clear();
 
             while (dirsToCheckout.isEmpty() && !dirsToMake.isEmpty()) {
                 final File dirToMake = dirsToMake.pollFirst();

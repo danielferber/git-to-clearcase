@@ -446,6 +446,7 @@
                     <Property name="text" type="java.lang.String" value="[NTI272977] Teste 1.2.{sessionCounter} em {sessionDate} ({gitCommitTo})"/>
                   </Properties>
                   <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ccActivityHeadlinePatternFieldActionPerformed"/>
                     <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="ccActivityHeadlinePatternFieldKeyTyped"/>
                   </Events>
                 </Component>
