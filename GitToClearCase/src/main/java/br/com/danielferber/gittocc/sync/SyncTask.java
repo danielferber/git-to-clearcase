@@ -202,7 +202,7 @@ public class SyncTask implements Callable<Void> {
 
                 m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", headlineStr).start();
                 ctCommander.createActivity(headlineStr);
-                m.ok();
+                m2.ok();
             }
 
             m2 = m.sub("checkout.commitFile").m("Bloquear arquivo de controle.").start();
@@ -321,13 +321,17 @@ public class SyncTask implements Callable<Void> {
             writeCommitHash(diff.toCommit);
             m2.ok();
 
-            m2 = m.sub("checkin.dirs").m("Checkin de diretórios.").start();
-            ctCommander.checkinDirs();
-            m2.ok();
+            if (ctCommander.requireCheckinDirs()) {
+                m2 = m.sub("checkin.dirs").m("Checkin de diretórios.").start();
+                ctCommander.checkinDirs();
+                m2.ok();
+            }
 
-            m2 = m.sub("checkin.files").m("Checkin de arquivos.").start();
-            ctCommander.checkinFiles();
-            m2.ok();
+            if (ctCommander.requireCheckinFiles()) {
+                m2 = m.sub("checkin.files").m("Checkin de arquivos.").start();
+                ctCommander.checkinFiles();
+                m2.ok();
+            }
 
         } catch (Exception e) {
             if (m2 != null) {

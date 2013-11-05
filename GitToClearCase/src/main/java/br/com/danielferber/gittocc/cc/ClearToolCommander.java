@@ -84,12 +84,20 @@ public class ClearToolCommander {
     }
 
     public void checkinAll() throws IOException {
-        checkinFiles(new TreeSet(filesCheckedOut));
-        checkinDirs(new TreeSet(dirsCheckedOut));
+        checkinFiles();
+        checkinDirs();
+    }
+
+    public boolean requireCheckinDirs() {
+        return !dirsCheckedOut.isEmpty();
     }
 
     public void checkinDirs() throws IOException {
         checkinDirs(new TreeSet(dirsCheckedOut));
+    }
+
+    public boolean requireCheckinFiles() {
+        return !filesCheckedOut.isEmpty();
     }
 
     public void checkinFiles() throws IOException {
