@@ -44,7 +44,7 @@ public class ClearToolCommander {
     public void checkoutDirs(Collection<File> dirs) throws IOException {
         for (File dir : dirs) {
             if (!dirsCheckedOut.contains(dir)) {
-                final ClearToolProcess p = pb.reset("checkoutDir").command("checkout").preserveTime().noComment()
+                final ClearToolProcess p = pb.reset("checkoutDir").command("checkout").preserveTime().noComment().noquery()
                         .argument(dir.getPath()).create();
                 p.waitFor();
                 dirsCheckedOut.add(dir);
@@ -55,7 +55,7 @@ public class ClearToolCommander {
     public void checkoutFiles(Collection<File> files) throws IOException {
         for (File file : files) {
             if (!filesCheckedOut.contains(file)) {
-                ClearToolProcess p = pb.reset("checkoutFile").command("checkout").preserveTime().noComment()
+                ClearToolProcess p = pb.reset("checkoutFile").command("checkout").preserveTime().noComment().noquery()
                         .argument(file.getPath()).create();
                 p.waitFor();
                 filesCheckedOut.add(file);
@@ -162,6 +162,11 @@ public class ClearToolCommander {
                             dirsToCheckout.add(dir);
                             dirsToMake.add(dirToMake);
                         }
+                        matcher = mkdirAlreadyExistPattern.matcher(line);
+                        if (matcher.find()) {
+                            /* Directory already exists. Instead of creating it, schedule it for checkout. */
+                            dirsToCheckout.add(dirToMake);
+                        }
                         matcher = mkdirParentDirectoryMissingPattern1.matcher(line);
                         if (matcher.find()) {
                             /* Parent directory does not exist, schedule it for creation. */
@@ -180,7 +185,7 @@ public class ClearToolCommander {
                 }).waitFor();
             }
 
-            while (dirsToMake.isEmpty() && dirsToCheckout.isEmpty() && !filesToMake.isEmpty()) {
+            while (dirsToMake.isEmpty() && dirsToCheckout.isEmpty() && filesToCheckout.isEmpty() && !filesToMake.isEmpty()) {
                 final File fileToMake = filesToMake.pollFirst();
                 pb.reset("makeFile").command("mkelem").noComment().arguments("-eltype", "file").argument(fileToMake.getPath()).create()
                         .addOutWriter(new LineSplittingWriter() {
@@ -206,8 +211,7 @@ public class ClearToolCommander {
                         matcher = mkfileAlreadyExistPattern.matcher(line);
                         if (matcher.find()) {
                             /* File already exists. Instead of creating it, schedule it for checkout. */
-                            File dir = new File(matcher.group(1));
-                            filesToCheckout.add(dir);
+                            filesToCheckout.add(fileToMake);
                         }
                         matcher = mkfileParentDirectoryMissingPattern1.matcher(line);
                         if (matcher.find()) {
@@ -237,6 +241,7 @@ public class ClearToolCommander {
     static final Pattern mkdirParentDirectoryMissingPattern2 = Pattern.compile("cleartool: Error: Unable to access \"(.*)\": No such file or directory\\.");
     static final Pattern mkdirCheckoutPattern = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\".");
     static final Pattern mkdirNeedCheckoutPattern = Pattern.compile("cleartool: Error: Can\'t modify directory \"(.*)\" because it is not checked out\\.");
+    static final Pattern mkdirAlreadyExistPattern = Pattern.compile("cleartool: Error: Entry named \"(.*)\" already exists\\.");
 
     public void makeDirs(List<File> dirsAdded) throws IOException {
         safeMakeElements(dirsAdded, null);

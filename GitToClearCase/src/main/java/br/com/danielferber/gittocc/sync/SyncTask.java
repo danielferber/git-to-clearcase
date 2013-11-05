@@ -35,18 +35,21 @@ public class SyncTask implements Callable<Void> {
     final ClearToolCommander ctCommander;
     final File vobDir;
     final File gitDir;
+    final File syncFromCommitFile;
+    final File syncCounterFile;
     boolean fetchFromRemote;
     boolean fastForward;
     boolean createActivity;
     String headline = null;
-    long sessionCounter;
-    File commitFile = new File("atualizacao-hash.txt");
+    long syncCounter;
 
-    public SyncTask(GitCommander gitCommander, ClearToolCommander ctCommander, File gitDir, File vobDir) {
+    public SyncTask(GitCommander gitCommander, ClearToolCommander ctCommander, File gitDir, File vobDir, File syncFromCommitFile, File syncCounterFile) {
         this.gitCommander = gitCommander;
         this.ctCommander = ctCommander;
         this.gitDir = gitDir;
         this.vobDir = vobDir;
+        this.syncCounterFile = syncCounterFile;
+        this.syncFromCommitFile = syncFromCommitFile;
     }
 
     public void setFetchFromRemote(boolean fetchFromRemote) {
@@ -61,23 +64,19 @@ public class SyncTask implements Callable<Void> {
         this.headline = headline;
     }
 
-    public void setCommitFile(File commitFile) {
-        this.commitFile = commitFile;
-    }
-
     public void setCreateActivity(boolean createActivity) {
         this.createActivity = createActivity;
     }
 
-    public void setSessionCounter(long sessionCounter) {
-        this.sessionCounter = sessionCounter;
+    public void setSyncCounter(long value) {
+        this.syncCounter = value;
     }
 
     public Void call() throws Exception {
 
         Meter m = MeterFactory.getMeter("SyncTask").m("Sincronizar do Git para o ClearCase.").start();
         try {
-            String fromCommit = readCommitHash();
+            String fromCommit = readSyncCommit();
 
             GitTreeDiff diff = buildGitDiff(fromCommit);
 
@@ -196,8 +195,8 @@ public class SyncTask implements Callable<Void> {
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("gitCommitTo", diff.toCommit);
                 map.put("gitCommitFrom", diff.fromCommit);
-                map.put("sessionDate", new Date());
-                map.put("sessionCounter", sessionCounter);
+                map.put("syncDate", new Date());
+                map.put("syncCount", syncCounter);
                 String headlineStr = MessageFormat.format(headline, map);
 
                 m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", headlineStr).start();
@@ -206,7 +205,8 @@ public class SyncTask implements Callable<Void> {
             }
 
             m2 = m.sub("checkout.commitFile").m("Bloquear arquivo de controle.").start();
-            ctCommander.checkoutFile(commitFile);
+            ctCommander.checkoutFile(syncFromCommitFile);
+            ctCommander.checkoutFile(syncCounterFile);
             m2.ok();
 
             if (!diff.dirsAdded.isEmpty()) {
@@ -290,8 +290,8 @@ public class SyncTask implements Callable<Void> {
 
             if (!diff.dirsDeleted.isEmpty()) {
                 final Collection<File> dirsToDelete = roots(diff.dirsDeleted);
-                
-                if (! dirsToDelete.isEmpty()) {
+
+                if (!dirsToDelete.isEmpty()) {
                     m2 = m.sub("checkout.roots.dirsDeleted").m("Checkout de raizes de diretórios removidos.").start();
                     ctCommander.checkoutDirs(parentDirs(dirsToDelete));
                     m2.ok();
@@ -304,8 +304,8 @@ public class SyncTask implements Callable<Void> {
 
             if (!diff.filesDeleted.isEmpty()) {
                 TreeSet<File> filesToDelete = leafes(diff.dirsDeleted, diff.filesDeleted);
-                
-                if (! filesToDelete.isEmpty()) {
+
+                if (!filesToDelete.isEmpty()) {
                     m2 = m.sub("delete.parent.filesDeleted").m("Checkout de diretórios com arquivos removidos.").start();
                     ctCommander.checkoutDirs(parentDirs(filesToDelete));
                     m2.ok();
@@ -318,7 +318,8 @@ public class SyncTask implements Callable<Void> {
 
 
             m2 = m.sub("write.commitFile").m("Atualizar arquivo de controle.").start();
-            writeCommitHash(diff.toCommit);
+            writeSyncCommit(diff.toCommit);
+            writeSyncCounter(syncCounter);
             m2.ok();
 
             if (ctCommander.requireCheckinDirs()) {
@@ -341,10 +342,10 @@ public class SyncTask implements Callable<Void> {
         }
     }
 
-    private String readCommitHash() throws FileNotFoundException {
+    private String readSyncCommit() throws FileNotFoundException {
         Scanner scanner = null;
         try {
-            scanner = new Scanner(this.commitFile);
+            scanner = new Scanner(this.syncFromCommitFile);
             return scanner.next();
         } finally {
             if (scanner != null) {
@@ -353,11 +354,23 @@ public class SyncTask implements Callable<Void> {
         }
     }
 
-    private void writeCommitHash(String commit) throws IOException {
+    private void writeSyncCommit(String commit) throws IOException {
         FileWriter writer = null;
         try {
-            writer = new FileWriter(this.commitFile);
+            writer = new FileWriter(this.syncFromCommitFile);
             writer.write(commit + "\n");
+        } finally {
+            if (writer != null) {
+                IOUtils.closeQuietly(writer);
+            }
+        }
+    }
+
+    private void writeSyncCounter(long value) throws IOException {
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(this.syncCounterFile);
+            writer.write(value + "\n");
         } finally {
             if (writer != null) {
                 IOUtils.closeQuietly(writer);

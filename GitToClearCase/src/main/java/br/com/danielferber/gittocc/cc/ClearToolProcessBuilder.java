@@ -73,6 +73,11 @@ public class ClearToolProcessBuilder extends ProcessFactory<ClearToolProcessBuil
         arguments.add("-force");
         return this;
     }
+    
+    public ClearToolProcessBuilder noquery() {
+        arguments.add("-nquery");
+        return this;
+    }
 
     @Override
     protected ClearToolProcess createProcessWrapper(String name, List<String> commandLine) {

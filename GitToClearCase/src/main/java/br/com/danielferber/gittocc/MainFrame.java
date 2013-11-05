@@ -53,7 +53,7 @@ public class MainFrame extends javax.swing.JFrame {
     final ExecutorService tarefaExecutor = Executors.newCachedThreadPool();
     final DefaultListModel logListModel = new DefaultListModel();
     boolean isConfigurationValid = false;
-    
+
     /**
      * Creates new form MainFrame
      */
@@ -115,6 +115,10 @@ public class MainFrame extends javax.swing.JFrame {
         gitFetchRemoteField = new javax.swing.JCheckBox();
         gitFastForwardField = new javax.swing.JCheckBox();
         gitFastForwardObsField = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        syncCounterField = new javax.swing.JSpinner();
+        syncCounterMessage = new javax.swing.JLabel();
         executionPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
@@ -137,6 +141,12 @@ public class MainFrame extends javax.swing.JFrame {
             }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
+            }
+        });
+
+        jTabbedPane6.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane6StateChanged(evt);
             }
         });
 
@@ -322,12 +332,12 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
 
         jTabbedPane6.addTab("Configurações", configurationPanel);
 
-        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Atividade ClearCase"));
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("ClearCase"));
 
         ccCreateActivityField.setSelected(true);
         ccCreateActivityField.setText("Criar nova atividade ClearCase");
@@ -350,7 +360,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jList2.setBackground(javax.swing.UIManager.getDefaults().getColor("Panel.background"));
         jList2.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "{gitCommitFrom}", "{gitCommitTo}", "{sessionDate}", "{sessionCounter}" };
+            String[] strings = { "{gitCommitFrom}", "{gitCommitTo}", "{syncDate}", "{syncCount}" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -445,6 +455,35 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Dados:"));
+
+        jLabel7.setText("Contador:");
+
+        syncCounterMessage.setText("(ok)");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(syncCounterField, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(syncCounterMessage)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(syncCounterField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(syncCounterMessage))
+                .addGap(0, 11, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout synchronizationPanelLayout = new javax.swing.GroupLayout(synchronizationPanel);
         synchronizationPanel.setLayout(synchronizationPanelLayout);
         synchronizationPanelLayout.setHorizontalGroup(
@@ -452,6 +491,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, synchronizationPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(synchronizationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(synchronizationPanelLayout.createSequentialGroup()
@@ -466,7 +506,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -494,7 +536,7 @@ public class MainFrame extends javax.swing.JFrame {
             executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(executionPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3))
         );
@@ -558,7 +600,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(sessionVersionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jbPrepararRelatorio))
                     .addComponent(jbEfetivarRelatorio))
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addContainerGap(71, Short.MAX_VALUE))
         );
 
         jTabbedPane6.addTab("Relatório", reportPanel);
@@ -650,6 +692,14 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_ccActivityHeadlinePatternFieldActionPerformed
 
+    private void jTabbedPane6StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane6StateChanged
+        if (jTabbedPane6.getSelectedComponent() == synchronizationPanel) {
+            loadCcSyncValues();
+//            loadGitSyncValues();
+            updateActivityHeadlineSample();
+        }
+    }//GEN-LAST:event_jTabbedPane6StateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField ccActivityHeadlinePatternField;
     private javax.swing.JTextField ccActivityHeadlineSampleField;
@@ -675,10 +725,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JList jList1;
     private javax.swing.JList jList2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
@@ -693,6 +745,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField relTituloHistorico;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JSpinner sessionVersionField;
+    private javax.swing.JSpinner syncCounterField;
+    private javax.swing.JLabel syncCounterMessage;
     private javax.swing.JPanel synchronizationPanel;
     // End of variables declaration//GEN-END:variables
 
@@ -722,7 +776,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             relArquivoHistoricoField.setText(p.getProperty("rel.relatorio.file", ""));
             fi.close();
-            sessionVersionField.setValue( getVersion() );
+            sessionVersionField.setValue(getVersion());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(MainFrame.this, e.getLocalizedMessage(), "Salvar propriedades", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -774,9 +828,9 @@ public class MainFrame extends javax.swing.JFrame {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("gitCommitFrom", "ABC123");
         map.put("gitCommitTo", "DEF456");
-        map.put("sessionDate", new Date());
-        map.put("sessionCounter", ((Number) sessionVersionField.getValue()).longValue());
-        map.put("releaseCounter", ((Number) sessionVersionField.getValue()).longValue());
+        map.put("syncDate", new Date());
+        final Number value = (Number) syncCounterField.getValue();
+        map.put("syncCount", (value).longValue());
         try {
             ccActivityHeadlineSampleField.setText(MessageFormat.format(ccActivityHeadlinePatternField.getText(), map));
         } catch (Exception e) {
@@ -886,12 +940,12 @@ public class MainFrame extends javax.swing.JFrame {
             ccDir = getCcDir();
             gitDir = getGitDir();
 
-            syncTask = new SyncTask(gitCommander, clearToolCommander, gitDir, ccDir);
+            syncTask = new SyncTask(gitCommander, clearToolCommander, gitDir, ccDir, getCcSyncFromCommitFile(), getCcSyncCounterFile());
             syncTask.setFastForward(gitFastForwardField.isSelected());
             syncTask.setFetchFromRemote(gitFetchRemoteField.isSelected());
             syncTask.setHeadline(ccActivityHeadlinePatternField.getText());
-            syncTask.setCommitFile(getCcCommitStampFile());
             syncTask.setCreateActivity(ccCreateActivityField.isSelected());
+            syncTask.setSyncCounter(((Number) syncCounterField.getValue()).longValue());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
             return;
@@ -928,6 +982,8 @@ public class MainFrame extends javax.swing.JFrame {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             jButton1.setEnabled(true);
+                            loadCcSyncValues();
+                            updateActivityHeadlineSample();
                         }
                     });
                     synchronized (MainFrame.this) {
@@ -948,7 +1004,7 @@ public class MainFrame extends javax.swing.JFrame {
             gitCommander = getGitCommander();
             arquivoHistorico = getArquivoHistorico();
             historicoCommit = getCommitHistorico();
-            atualizacaoCommit = getCommitOrigemAtualizacao();
+            atualizacaoCommit = getSyncFromCommit();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Parâmetros inválidos", JOptionPane.ERROR_MESSAGE);
             return;
@@ -981,7 +1037,7 @@ public class MainFrame extends javax.swing.JFrame {
                      */
                     Callable<String> previewBuilder = new HistoryPreviewBuilder(history, arquivoHistorico);
                     String htmlPreview = previewBuilder.call();
-                    
+
                     /* Passo 4: Atualizar a tela com o relatório a ser gerado
                      */
                     jePreview.setText(htmlPreview);
@@ -1030,7 +1086,7 @@ public class MainFrame extends javax.swing.JFrame {
             ccRelatorioReleaseStampFile = getCcRelatorioReleaseStampFile();
             arquivoHistoricoPath = getArquivoHistorico();
 
-            atualizacaoCommit = getCommitOrigemAtualizacao();
+            atualizacaoCommit = getSyncFromCommit();
             version = new Long(sessionVersionField.getValue().toString());
             releaseVersion = getReleaseVersion() + 1L;
         } catch (IOException e) {
@@ -1075,8 +1131,8 @@ public class MainFrame extends javax.swing.JFrame {
                     /* Passo 5: Notificar usuario sobre sucesso a operação
                      */
                     JOptionPane.showMessageDialog(
-                            MainFrame.this, success?"Operação executada com sucesso!":"Não foi possível atualizar arquivos de versão do Clear Case",
-                            "History Proccess", success?JOptionPane.INFORMATION_MESSAGE:JOptionPane.ERROR_MESSAGE);
+                            MainFrame.this, success ? "Operação executada com sucesso!" : "Não foi possível atualizar arquivos de versão do Clear Case",
+                            "History Proccess", success ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
                     jePreview.setText("");
                 } catch (final Exception e) {
                     SwingUtilities.invokeLater(new Runnable() {
@@ -1117,10 +1173,28 @@ public class MainFrame extends javax.swing.JFrame {
         return new Long(value);
     }
 
-    private String getCommitOrigemAtualizacao() throws IOException, FileNotFoundException {
-        File ccCommitStampFile = getCcCommitStampFile();
-        String previousCommit = new Scanner(ccCommitStampFile).next();
-        return previousCommit;
+    private String getSyncFromCommit() throws IOException, FileNotFoundException {
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(getCcSyncFromCommitFile());
+            return scanner.next();
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+    }
+
+    private long getSyncCounter() throws IOException, FileNotFoundException {
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(getCcSyncCounterFile());
+            return scanner.nextLong();
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
     }
 
     private String getCommitHistorico() throws IOException, FileNotFoundException {
@@ -1137,8 +1211,16 @@ public class MainFrame extends javax.swing.JFrame {
         return clearToolCommander;
     }
 
-    private File getCcCommitStampFile() throws IOException {
+    private File getCcSyncFromCommitFile() throws IOException {
         final File ccCommitStampFile = new File(getCcDir(), "atualizacao-hash.txt");
+        if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile()) {
+            throw new IOException("O caminho da marca de sincronização na view do Clearcase não existe ou não é um arquivo válido.");
+        }
+        return ccCommitStampFile;
+    }
+
+    private File getCcSyncCounterFile() throws IOException {
+        final File ccCommitStampFile = new File(getCcDir(), "atualizacao-contador.txt");
         if (!ccCommitStampFile.exists() || !ccCommitStampFile.isFile()) {
             throw new IOException("O caminho da marca de sincronização na view do Clearcase não existe ou não é um arquivo válido.");
         }
@@ -1227,6 +1309,16 @@ public class MainFrame extends javax.swing.JFrame {
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(MainFrame.this, "Erro ao recuperar valor da versão: " + e.getMessage(), "Version update", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadCcSyncValues() {
+        try {
+            syncCounterField.setValue(getSyncCounter()+1);
+            syncCounterMessage.setText("(ok)");
+        } catch (IOException e) {
+            syncCounterField.setValue(0);
+            syncCounterMessage.setText(e.getMessage());
         }
     }
 }
