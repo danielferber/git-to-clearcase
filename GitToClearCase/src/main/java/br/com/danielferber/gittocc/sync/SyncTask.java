@@ -230,7 +230,7 @@ public class SyncTask implements Callable<Void> {
                 ctCommander.makeFiles(diff.filesAdded);
                 m2.ok();
 
-                m2 = m.sub("write.filesAdded").m("Escrever arquivos novos.").start();
+                m2 = m.sub("write.filesAdded").m("Escrever arquivos novos.").interations(diff.filesAdded.size()).start();
                 copyFilesFromGit(diff.filesAdded);
                 m2.ok();
             }
@@ -244,9 +244,11 @@ public class SyncTask implements Callable<Void> {
                 ctCommander.makeFiles(diff.filesCopiedTo);
                 m2.ok();
 
-                m2 = m.sub("write.filesCopiedTo").m("Escrever arquivos copiados.").start();
-                copyFilesFromGit(diff.filesCopiedTo);
-                m2.ok();
+                if (! diff.filesCopiedTo.isEmpty()) {
+                    m2 = m.sub("write.filesCopiedTo").m("Escrever arquivos copiados.").interations(diff.filesCopiedTo.size()).start();
+                    copyFilesFromGit(diff.filesCopiedTo);
+                    m2.ok();
+                }
             }
 
             if (!diff.filesMovedFrom.isEmpty()) {
@@ -258,7 +260,7 @@ public class SyncTask implements Callable<Void> {
                 ctCommander.checkoutDirs(parentDirs(diff.filesMovedTo));
                 m2.ok();
 
-                m2 = m.sub("move.filesMoved").m("Mover arquivos.").start();
+                m2 = m.sub("move.filesMoved").m("Mover arquivos.").interations(diff.filesMovedTo.size()).start();
                 Iterator<File> sourceIterator = diff.filesMovedFrom.iterator();
                 Iterator<File> targetIterator = diff.filesMovedTo.iterator();
                 while (sourceIterator.hasNext()) {
@@ -269,10 +271,10 @@ public class SyncTask implements Callable<Void> {
 
                 if (!diff.filesMovedModified.isEmpty()) {
                     m2 = m.sub("checkout.filesMovedModified").m("Checkout de arquivos movidos e modificados.").start();
-                    ctCommander.checkoutFiles(parentDirs(diff.filesMovedModified));
+                    ctCommander.checkoutFiles(diff.filesMovedModified);
                     m2.ok();
 
-                    m2 = m.sub("write.filesMovedModified").m("Escrever arquivos movidos e modificados.").start();
+                    m2 = m.sub("write.filesMovedModified").m("Escrever arquivos movidos e modificados.").interations(diff.filesMovedModified.size()).start();
                     copyFilesFromGit(diff.filesMovedModified);
                     m2.ok();
                 }
