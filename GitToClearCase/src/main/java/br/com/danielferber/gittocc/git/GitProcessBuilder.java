@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc.git;
 
-import br.com.danielferber.gittocc.io.ProcessFactory;
+import br.com.danielferber.gittocc.io.CommandLineProcessBuilder;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
@@ -19,7 +19,7 @@ import org.slf4j.MarkerFactory;
  *
  * @author X7WS
  */
-public class GitProcessBuilder extends ProcessFactory<GitProcessBuilder, GitProcess> {
+public class GitProcessBuilder extends CommandLineProcessBuilder<GitProcessBuilder, GitProcess> {
 
     String command;
     final List<String> parameters = new ArrayList<String>();

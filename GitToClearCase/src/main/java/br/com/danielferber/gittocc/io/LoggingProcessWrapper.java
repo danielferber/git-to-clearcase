@@ -12,7 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-public class LoggingProcessWrapper<ProcessType extends LoggingProcessWrapper> extends ProcessWrapper<ProcessType> {
+public class LoggingProcessWrapper<ProcessType extends LoggingProcessWrapper> extends CommandLineProcess<ProcessType> {
 
     protected final Meter meter;
     protected final Logger logger;

@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc.cc;
 
-import br.com.danielferber.gittocc.io.ProcessFactory;
+import br.com.danielferber.gittocc.io.CommandLineProcessBuilder;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import org.slf4j.Logger;
  *
  * @author X7WS
  */
-public class ClearToolProcessBuilder extends ProcessFactory<ClearToolProcessBuilder, ClearToolProcess> {
+public class ClearToolProcessBuilder extends CommandLineProcessBuilder<ClearToolProcessBuilder, ClearToolProcess> {
 
     String command;
     final List<String> arguments = new ArrayList<String>();
