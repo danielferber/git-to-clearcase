@@ -34,7 +34,7 @@ public class CommandLineProcess<ProcessType extends CommandLineProcess> {
      */
     protected final File directory;
     /**
-     * Command line that started the wrapped process.
+     * Command line that starts the wrapped process.
      */
     protected final List<String> commandLine;
     /**
@@ -50,17 +50,31 @@ public class CommandLineProcess<ProcessType extends CommandLineProcess> {
      */
     protected final ProcessWaiter processWaiter = new ProcessWaiter();
     /**
-     * The wrapped process.
+     * The wrapped process created upon the object immutable state. If null, the
+     * process has not been created (actually, started) yet.
      */
     private Process process;
 
-    protected CommandLineProcess(String name, List<String> commandLine, File directory) {
+    /**
+     * Constructor that receives all mandatory data required to create the
+     * wrapped processs.
+     *
+     * @param name Pretty name for the process.
+     * @param commandLine Command line that starts the wrapped process.
+     * @param directory Working directory of the process.
+     */
+    protected CommandLineProcess(final String name, final List<String> commandLine, final File directory) {
         this.name = name;
         this.directory = directory;
         this.commandLine = Collections.unmodifiableList(commandLine);
     }
 
-    public void start() throws IOException {
+    /**
+     * Actually starts (creates) the underlying command line executable process.
+     *
+     * @throws IOException If the JVM fails to create the process.
+     */
+    public final void start() throws IOException {
         if (this.process != null) {
             return;
         }
@@ -70,50 +84,117 @@ public class CommandLineProcess<ProcessType extends CommandLineProcess> {
         this.errRepeater.start(process.getErrorStream());
     }
 
-    protected Process getProcess() {
+    /**
+     * The underlying wrapped process or null if the process has not been
+     * started/created yet.
+     *
+     * @return
+     */
+    protected final Process getProcess() {
         return process;
     }
 
-    public Scanner createOutScanner() throws IOException {
+    /**
+     * Creates a Scanner that parses the process stdout stream. An arbitrary
+     * number of Scanners may be created for this stream.
+     *
+     * @return a Scanner that parses the process stdout stream.
+     * @throws IOException If the stdout stream cannot be read.
+     */
+    public final Scanner createOutScanner() throws IOException {
         return new Scanner(outRepeater.split());
     }
 
-    public Scanner createErrScanner() throws IOException {
+    /**
+     * Creates a Scanner that parses the process stderr stream. An arbitrary
+     * number of Scanners may be created for this stream.
+     *
+     * @return a Scanner that parses the process stderr stream.
+     * @throws IOException If the stderr stream cannot be read.
+     */
+    public final Scanner createErrScanner() throws IOException {
         return new Scanner(errRepeater.split());
     }
 
-    public Reader createOutReader() throws IOException {
+    /**
+     * Creates a Reader for the process stdout stream. An arbitrary number of
+     * Readers may be created for this stream.
+     *
+     * @return a Reader for the process stdout stream.
+     * @throws IOException If the stdout stream cannot be read.
+     */
+    public final Reader createOutReader() throws IOException {
         return outRepeater.split();
     }
 
-    public Reader createErrReader() throws IOException {
+    /**
+     * Creates a Reader for the process stderr stream. An arbitrary number of
+     * Readers may be created for this stream.
+     *
+     * @return a Reader for the process stderr stream.
+     * @throws IOException If the stderr stream cannot be read.
+     */
+    public final Reader createErrReader() throws IOException {
         return errRepeater.split();
     }
 
-    public ProcessType addOutWriter(Writer w) {
+    /**
+     * Forwards the stdout stream to the given Writer. This stream may be
+     * forwarded to an arbitrary number of Writers.
+     *
+     * @param w the writer forwarded to
+     * @throws IOException If the stdout stream cannot be read.
+     */
+    public final ProcessType addOutWriter(final Writer w) {
         this.outRepeater.with(w);
         return (ProcessType) this;
     }
 
-    public ProcessType addErrWriter(Writer w) {
+    /**
+     * Forwards the stderr stream to the given Writer. This stream may be
+     * forwarded to an arbitrary number of Writers.
+     *
+     * @param w the writer forwarded to
+     * @throws IOException If the stderr stream cannot be read.
+     */
+    public final ProcessType addErrWriter(final Writer w) {
         this.errRepeater.with(w);
         return (ProcessType) this;
     }
 
-    public int exitValue() {
+    /**
+     * The process exit value, if finished.
+     *
+     * @return The process exit value, if finished.
+     */
+    protected final int exitValue() {
         return process.exitValue();
     }
 
-    public void waitFor() throws IOException {
+    /**
+     * Block until the command line executable finishes. Starts the command line
+     * executable if not already running
+     *
+     * @throws IOException If the JVM fails to create the process.
+     */
+    public final void waitFor() throws IOException {
         start();
 
         try {
             process.waitFor();
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            // ignore
         }
     }
 
+    /**
+     * Creates the underlying wrapped process. Override this method if a custom
+     * process creating strategy is required.
+     *
+     * @return The underlying wrapped process running the command line
+     * executable.
+     * @throws IOException If the JVM fails to create the process.
+     */
     protected Process createProcess() throws IOException {
         return new ProcessBuilder(commandLine).directory(directory).start();
     }

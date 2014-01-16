@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Repeats the encoded text output stream of a Process to interested Readers and
- * Writers.
+ * Waits until a process finishes execution, the run a list of listeners.
  *
  * @author Daniel Felix Ferber
  */
