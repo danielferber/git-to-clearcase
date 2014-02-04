@@ -3,10 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package br.com.danielferber.gittocc2.ui;
 
 import br.com.danielferber.gittocc2.git.config.GitConfig;
+import br.com.danielferber.gittocc2.git.config.GitConfigBean;
+import br.com.danielferber.gittocc2.git.config.GitConfigException;
+import br.com.danielferber.gittocc2.git.config.GitConfigPojo;
+import br.com.danielferber.gittocc2.git.config.GitConfigValidated;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -14,13 +23,61 @@ import br.com.danielferber.gittocc2.git.config.GitConfig;
  */
 public class GitConfigPanel extends javax.swing.JPanel {
 
-    GitConfig data;
-    
+    final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    final SwingWorker<Void, Void> validationWorker;
+
+    public GitConfigPanel() {
+        this(new GitConfigPojo());
+    }
+
     /**
      * Creates new form GitConfigPanel
      */
-    public GitConfigPanel() {
+    public GitConfigPanel(GitConfig gitConfig) {
+        this.bean = new GitConfigBean(gitConfig);
         initComponents();
+        validationWorker = createValidationWorker();
+        this.bean.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                System.out.print(evt);
+                executor.schedule(validationWorker, 2, TimeUnit.SECONDS);
+            }
+        });
+    }
+
+    private SwingWorker<Void, Void> createValidationWorker() {
+        return new SwingWorker<Void, Void>() {
+            GitConfigValidated gitConfigValidated = new GitConfigValidated(bean);
+            Exception gitExecException, repositoryDirException;
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                try {
+                    gitConfigValidated.getGitExec();
+                    gitExecException = null;
+                } catch (GitConfigException e) {
+                    gitExecException = e;
+                }
+                try {
+                    gitConfigValidated.getRepositoryDir();
+                    repositoryDirException = null;
+                } catch (GitConfigException e) {
+                    repositoryDirException = e;
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                if (gitExecException == null) {
+                    System.out.println(gitExecException);
+                }
+                if (repositoryDirException == null) {
+                    System.out.println(repositoryDirException);
+                }
+            }
+        };
     }
 
     /**
@@ -31,8 +88,10 @@ public class GitConfigPanel extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        jFileChooser1 = new javax.swing.JFileChooser();
+        bean = new br.com.danielferber.gittocc2.git.config.GitConfigBean();
+        fileConverter = new br.com.danielferber.gittocc2.ui.swing.FileConverter();
         jLabel1 = new javax.swing.JLabel();
         gitExecField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -40,11 +99,15 @@ public class GitConfigPanel extends javax.swing.JPanel {
 
         jLabel1.setText("Git Executable:");
 
-        gitExecField.setText("jTextField1");
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, bean, org.jdesktop.beansbinding.ELProperty.create("${gitExec}"), gitExecField, org.jdesktop.beansbinding.BeanProperty.create("text"), "gitExec");
+        binding.setConverter(fileConverter);
+        bindingGroup.addBinding(binding);
 
         jLabel2.setText("Repository:");
 
-        jTextField1.setText("jTextField1");
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, bean, org.jdesktop.beansbinding.ELProperty.create("${repositoryDir}"), jTextField1, org.jdesktop.beansbinding.BeanProperty.create("text"), "repositoryDir");
+        binding.setConverter(fileConverter);
+        bindingGroup.addBinding(binding);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -53,7 +116,7 @@ public class GitConfigPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(gitExecField, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE))
+                .addComponent(gitExecField, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -70,14 +133,19 @@ public class GitConfigPanel extends javax.swing.JPanel {
                     .addComponent(jLabel2)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
+
+        bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private br.com.danielferber.gittocc2.git.config.GitConfigBean bean;
+    private br.com.danielferber.gittocc2.ui.swing.FileConverter fileConverter;
     private javax.swing.JTextField gitExecField;
-    private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JTextField jTextField1;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
+
 }

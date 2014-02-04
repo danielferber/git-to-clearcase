@@ -1,4 +1,4 @@
-package br.com.danielferber.gittocc2.ui.validation;
+package br.com.danielferber.gittocc2.ui.swing;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -73,7 +73,9 @@ public class IconBorder extends AbstractBorder {
      */
     @Override
     public Insets getBorderInsets(Component c) {
-        return originalBorder.getBorderInsets(c);
+        final Insets i = originalBorder.getBorderInsets(c);
+        i.set(i.top, i.left, i.bottom, i.right+icon.getIconWidth());
+        return i;
     }
 
     /**
