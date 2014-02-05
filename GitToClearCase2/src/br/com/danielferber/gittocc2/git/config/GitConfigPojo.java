@@ -5,8 +5,6 @@
  */
 package br.com.danielferber.gittocc2.git.config;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.Serializable;
 
