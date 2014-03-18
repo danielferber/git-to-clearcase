@@ -23,7 +23,7 @@ public class EnvironmentConfigProperties implements EnvironmentConfig {
         this.setVobViewDir(other.getVobViewDir());
     }
 
-    public EnvironmentConfigProperties(EnvironmentConfig other) {
+    public EnvironmentConfigProperties(EnvironmentConfigSource other) {
         this(other, "");
     }
 
@@ -65,12 +65,12 @@ public class EnvironmentConfigProperties implements EnvironmentConfig {
 
     @Override
     public void setGitExec(File file) {
-        properties.setProperty(prefix + "git.exec", file == null ? null : file.getPath());
+        properties.setProperty(prefix + "git.exec", file == null ? "" : file.getPath());
     }
 
     @Override
     public void setRepositoryDir(File dir) {
-        properties.setProperty(prefix + "repository.dir", dir == null ? null : dir.getPath());
+        properties.setProperty(prefix + "repository.dir", dir == null ? "" : dir.getPath());
     }
 
     @Override
@@ -87,12 +87,18 @@ public class EnvironmentConfigProperties implements EnvironmentConfig {
 
     @Override
     public void setClearToolExec(File file) {
-        properties.setProperty(prefix + "cleartool.exec", file == null ? null : file.getPath());
+        properties.setProperty(prefix + "cleartool.exec", file == null ? "" : file.getPath());
     }
 
     @Override
     public void setVobViewDir(File dir) {
-        properties.setProperty(prefix + "vobview.dir", dir == null ? null : dir.getPath());
+        properties.setProperty(prefix + "vobview.dir", dir == null ? "" : dir.getPath());
     }
 
+    @Override
+    public String toString() {
+        return properties.toString();
+    }
+
+    
 }

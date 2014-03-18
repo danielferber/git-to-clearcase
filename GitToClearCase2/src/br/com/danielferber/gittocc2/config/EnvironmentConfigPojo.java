@@ -30,7 +30,7 @@ public class EnvironmentConfigPojo implements EnvironmentConfig, Serializable {
         this.vobViewDir = vobViewDir;
     }
 
-    public EnvironmentConfigPojo(EnvironmentConfig other) {
+    public EnvironmentConfigPojo(EnvironmentConfigSource other) {
         this.gitExec = other.getGitExec();
         this.repositoryDir = other.getRepositoryDir();
         this.clearToolExec = other.getClearToolExec();
