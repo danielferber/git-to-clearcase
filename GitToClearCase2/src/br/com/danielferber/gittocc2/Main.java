@@ -5,14 +5,13 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.EnvironmentConfig;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigPojo;
-import java.io.File;
-import java.io.IOException;
+import br.com.danielferber.gittocc2.config.EnvironmentConfigProperties;
+import br.com.danielferber.gittocc2.config.EnvironmentConfigSource;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import java.io.PrintStream;
+import java.util.Properties;
 import joptsimple.OptionException;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import org.slf4j.Logger;
 
 /**
  *
@@ -20,25 +19,29 @@ import joptsimple.OptionSpec;
  */
 public class Main {
 
-    public static void main(String[] argv) {
-        OptionParser parser = new OptionParser();
-        OptionSpec<File> gitExec = parser.accepts("g", "Git executable file.").withRequiredArg().required().ofType(File.class);
-        OptionSpec<File> repositoryDir = parser.accepts("r", "Git repository directory.").withRequiredArg().required().ofType(File.class);
-        OptionSpec<File> clearToolExec = parser.accepts("c", "CleartTool executable file.").withRequiredArg().required().ofType(File.class);
-        OptionSpec<File> vobViewDir = parser.accepts("v", "Snapshot vob view directory.").withRequiredArg().required().ofType(File.class);
+    private static final Logger logger = LoggerFactory.getLogger("GitToClearCase");
+    private static final Logger environmentConfigLogger = LoggerFactory.getLogger(logger, "environmentConfig");
 
-        EnvironmentConfig config;
-        try { 
-            OptionSet options = parser.parse(argv);
-            config = new EnvironmentConfigPojo(gitExec.value(options), repositoryDir.value(options), clearToolExec.value(options), vobViewDir.value(options));
-        } catch (OptionException e) {
+    public static void main(String[] argv) {
+        final EnvironmentConfigSource environmentConfig;
+
+        {
+            final CommandLineParser clp = new CommandLineParser();
             try {
-                parser.printHelpOn(System.out);
-            } catch (IOException ee) {
-                ee.printStackTrace();
+                environmentConfig = clp.commandLineToEnvironmentConfig(argv);
+            } catch (OptionException e) {
+                clp.printHelp();
+                return;
             }
-            return ;
         }
-        
+
+//        if (environmentConfigLogger.isInfoEnabled()) {
+//            EnvironmentConfigProperties c = new EnvironmentConfigProperties(environmentConfig);
+//            Properties properties = ().getProperties();
+//            PrintStream ps = LoggerFactory.getInfoPrintStream();
+//            ps.println("Environment Properties:");
+//            ps.println(environmentConfig.to)
+//        }
     }
+
 }

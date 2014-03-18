@@ -11,13 +11,13 @@ import java.io.File;
  *
  * @author Daniel
  */
-public interface EnvironmentConfig extends EnvironmentConfigSource {
+public interface EnvironmentConfigSource {
 
-    void setGitExec(File file);
+    File getGitExec();
 
-    void setRepositoryDir(File dir);
-    
-    void setClearToolExec(File file);
-    
-    void setVobViewDir(File dir);
+    File getRepositoryDir();
+
+    File getClearToolExec();
+
+    File getVobViewDir();
 }

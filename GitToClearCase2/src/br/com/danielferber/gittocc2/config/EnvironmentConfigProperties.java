@@ -6,6 +6,7 @@
 package br.com.danielferber.gittocc2.config;
 
 import java.io.File;
+import java.util.Map;
 import java.util.Properties;
 
 public class EnvironmentConfigProperties implements EnvironmentConfig {
@@ -13,9 +14,41 @@ public class EnvironmentConfigProperties implements EnvironmentConfig {
     private final Properties properties;
     private final String prefix;
 
-    public EnvironmentConfigProperties(Properties properties, String prefix) {
-        this.properties = properties;
+    public EnvironmentConfigProperties(EnvironmentConfigSource other, String prefix) {
+        this.properties = new Properties();
         this.prefix = prefix;
+        this.setGitExec(other.getGitExec());
+        this.setRepositoryDir(other.getRepositoryDir());
+        this.setClearToolExec(other.getClearToolExec());
+        this.setVobViewDir(other.getVobViewDir());
+    }
+
+    public EnvironmentConfigProperties(EnvironmentConfig other) {
+        this(other, "");
+    }
+
+    public EnvironmentConfigProperties(Properties properties, String prefix) {
+        this.properties = new Properties(properties);
+        this.prefix = prefix;
+    }
+
+    public EnvironmentConfigProperties(Properties properties) {
+        this(properties, "");
+    }
+    
+    public EnvironmentConfigProperties(Map<String, String> map, String prefix) {
+        this.properties = new Properties();
+        this.properties.putAll(map);
+        this.prefix = prefix;
+        
+    }
+
+    public EnvironmentConfigProperties(Map<String, String> map) {
+        this(map, "");
+    }
+
+    public Properties getProperties() {
+        return new Properties(properties);
     }
 
     @Override
