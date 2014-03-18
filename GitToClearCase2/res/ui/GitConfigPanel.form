@@ -2,7 +2,7 @@
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
-    <Component class="br.com.danielferber.gittocc2.git.config.GitConfigBean" name="bean">
+    <Component class="br.com.danielferber.gittocc2.config.EnvironmentConfigBean" name="bean">
     </Component>
     <Component class="br.com.danielferber.gittocc2.ui.swing.FileConverter" name="fileConverter">
     </Component>

@@ -4,26 +4,26 @@
  * and open the template in the editor.
  */
 
-package br.com.danielferber.gittocc2.git.config;
+package br.com.danielferber.gittocc2.config;
 
 /**
  *
  * @author Daniel
  */
-public class GitConfigException extends RuntimeException {
+public class EnvironmentConfigException extends RuntimeException {
 
-    public GitConfigException() {
+    public EnvironmentConfigException() {
     }
 
-    public GitConfigException(String message) {
+    public EnvironmentConfigException(String message) {
         super(message);
     }
 
-    public GitConfigException(String message, Throwable cause) {
+    public EnvironmentConfigException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public GitConfigException(Throwable cause) {
+    public EnvironmentConfigException(Throwable cause) {
         super(cause);
     }
 }

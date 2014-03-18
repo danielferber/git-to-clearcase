@@ -5,11 +5,11 @@
  */
 package br.com.danielferber.gittocc2.ui;
 
-import br.com.danielferber.gittocc2.git.config.GitConfig;
-import br.com.danielferber.gittocc2.git.config.GitConfigBean;
-import br.com.danielferber.gittocc2.git.config.GitConfigException;
-import br.com.danielferber.gittocc2.git.config.GitConfigPojo;
-import br.com.danielferber.gittocc2.git.config.GitConfigValidated;
+import br.com.danielferber.gittocc2.config.EnvironmentConfig;
+import br.com.danielferber.gittocc2.config.EnvironmentConfigBean;
+import br.com.danielferber.gittocc2.config.EnvironmentConfigException;
+import br.com.danielferber.gittocc2.config.EnvironmentConfigPojo;
+import br.com.danielferber.gittocc2.config.EnvironmentConfigValidated;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.concurrent.Executors;
@@ -27,14 +27,14 @@ public class GitConfigPanel extends javax.swing.JPanel {
     final SwingWorker<Void, Void> validationWorker;
 
     public GitConfigPanel() {
-        this(new GitConfigPojo());
+        this(new EnvironmentConfigPojo());
     }
 
     /**
-     * Creates new form GitConfigPanel
+     * Creates new form EnvironmentConfigPanel
      */
-    public GitConfigPanel(GitConfig gitConfig) {
-        this.bean = new GitConfigBean(gitConfig);
+    public GitConfigPanel(EnvironmentConfig gitConfig) {
+        this.bean = new EnvironmentConfigBean(gitConfig);
         initComponents();
         validationWorker = createValidationWorker();
         this.bean.addPropertyChangeListener(new PropertyChangeListener() {
@@ -48,7 +48,7 @@ public class GitConfigPanel extends javax.swing.JPanel {
 
     private SwingWorker<Void, Void> createValidationWorker() {
         return new SwingWorker<Void, Void>() {
-            GitConfigValidated gitConfigValidated = new GitConfigValidated(bean);
+            EnvironmentConfigValidated gitConfigValidated = new EnvironmentConfigValidated(bean);
             Exception gitExecException, repositoryDirException;
 
             @Override
@@ -56,13 +56,13 @@ public class GitConfigPanel extends javax.swing.JPanel {
                 try {
                     gitConfigValidated.getGitExec();
                     gitExecException = null;
-                } catch (GitConfigException e) {
+                } catch (EnvironmentConfigException e) {
                     gitExecException = e;
                 }
                 try {
                     gitConfigValidated.getRepositoryDir();
                     repositoryDirException = null;
-                } catch (GitConfigException e) {
+                } catch (EnvironmentConfigException e) {
                     repositoryDirException = e;
                 }
                 return null;
@@ -90,7 +90,7 @@ public class GitConfigPanel extends javax.swing.JPanel {
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        bean = new br.com.danielferber.gittocc2.git.config.GitConfigBean();
+        bean = new br.com.danielferber.gittocc2.config.EnvironmentConfigBean();
         fileConverter = new br.com.danielferber.gittocc2.ui.swing.FileConverter();
         jLabel1 = new javax.swing.JLabel();
         gitExecField = new javax.swing.JTextField();
@@ -139,7 +139,7 @@ public class GitConfigPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private br.com.danielferber.gittocc2.git.config.GitConfigBean bean;
+    private br.com.danielferber.gittocc2.config.EnvironmentConfigBean bean;
     private br.com.danielferber.gittocc2.ui.swing.FileConverter fileConverter;
     private javax.swing.JTextField gitExecField;
     private javax.swing.JLabel jLabel1;
