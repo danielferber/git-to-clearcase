@@ -5,11 +5,11 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.EnvironmentConfig;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigChain;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigPojo;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigProperties;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigSource;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfig;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigChain;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigPojo;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigProperties;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

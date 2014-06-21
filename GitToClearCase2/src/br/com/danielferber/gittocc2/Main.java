@@ -5,11 +5,11 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.EnvironmentConfig;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigException;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigPojo;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigSource;
-import br.com.danielferber.gittocc2.config.EnvironmentConfigValidated;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfig;
+import br.com.danielferber.gittocc2.config.ConfigException;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigPojo;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigSource;
+import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigValidated;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.PrintStream;
 import joptsimple.OptionException;
@@ -53,7 +53,7 @@ public class Main {
             validatedConfig.getRepositoryDir();
             validatedConfig.getClearToolExec();
             validatedConfig.getVobViewDir();
-        } catch (EnvironmentConfigException e) {
+        } catch (ConfigException e) {
             logger.error("Environmente configuration. "+e.getMessage());
         }
     }

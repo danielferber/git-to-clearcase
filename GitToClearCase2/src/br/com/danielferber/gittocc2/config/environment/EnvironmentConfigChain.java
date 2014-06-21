@@ -1,4 +1,4 @@
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.config.environment;
 
 import java.io.File;
 

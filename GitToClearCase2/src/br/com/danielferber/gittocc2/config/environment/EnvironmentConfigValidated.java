@@ -1,5 +1,6 @@
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.config.environment;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
 
 /**
@@ -18,16 +19,16 @@ public class EnvironmentConfigValidated implements EnvironmentConfigSource {
     public File getGitExec() {
         final File exec = wrapped.getGitExec();
         if (exec == null) {
-            throw new EnvironmentConfigException("Git executable: missing property.");
+            throw new ConfigException("Git executable: missing property.");
         }
         if (!exec.exists()) {
-            throw new EnvironmentConfigException("Git executable: does not exist.");
+            throw new ConfigException("Git executable: does not exist.");
         }
         if (!exec.isFile()) {
-            throw new EnvironmentConfigException("Git executable: not a file.");
+            throw new ConfigException("Git executable: not a file.");
         }
         if (!exec.canExecute()) {
-            throw new EnvironmentConfigException("Git executable: not executable.");
+            throw new ConfigException("Git executable: not executable.");
         }
         return wrapped.getGitExec();
     }
@@ -36,17 +37,17 @@ public class EnvironmentConfigValidated implements EnvironmentConfigSource {
     public File getRepositoryDir() {
         File dir = getRepositoryDir();
         if (dir == null) {
-            throw new EnvironmentConfigException("Repository directory: missing property.");
+            throw new ConfigException("Repository directory: missing property.");
         }
         if (!dir.exists()) {
-            throw new EnvironmentConfigException("Repository directory: does not exist.");
+            throw new ConfigException("Repository directory: does not exist.");
         }
         if (!dir.isDirectory()) {
-            throw new EnvironmentConfigException("Repository directory: not a directory.");
+            throw new ConfigException("Repository directory: not a directory.");
         }
         File repositoryMetadataDir = new File(dir, ".git");
         if (!repositoryMetadataDir.isDirectory() || !repositoryMetadataDir.isDirectory()) {
-            throw new EnvironmentConfigException("Repository directory: not like a git repository.");
+            throw new ConfigException("Repository directory: not like a git repository.");
         }
         return dir;
     }
@@ -55,16 +56,16 @@ public class EnvironmentConfigValidated implements EnvironmentConfigSource {
     public File getClearToolExec() {
         final File exec = wrapped.getClearToolExec();
         if (exec == null) {
-            throw new EnvironmentConfigException("Git executable: missing property.");
+            throw new ConfigException("Git executable: missing property.");
         }
         if (!exec.exists()) {
-            throw new EnvironmentConfigException("Git executable: does not exist.");
+            throw new ConfigException("Git executable: does not exist.");
         }
         if (!exec.isFile()) {
-            throw new EnvironmentConfigException("Git executable: not a file.");
+            throw new ConfigException("Git executable: not a file.");
         }
         if (!exec.canExecute()) {
-            throw new EnvironmentConfigException("Git executable: not executable.");
+            throw new ConfigException("Git executable: not executable.");
         }
         return wrapped.getGitExec();
     }
@@ -73,13 +74,13 @@ public class EnvironmentConfigValidated implements EnvironmentConfigSource {
     public File getVobViewDir() {
         File dir = getVobViewDir();
         if (dir == null) {
-            throw new EnvironmentConfigException("Vob view directory: missing property.");
+            throw new ConfigException("Vob view directory: missing property.");
         }
         if (!dir.exists()) {
-            throw new EnvironmentConfigException("Vob view directory: does not exist.");
+            throw new ConfigException("Vob view directory: does not exist.");
         }
         if (!dir.isDirectory()) {
-            throw new EnvironmentConfigException("Vob view directory: not a directory.");
+            throw new ConfigException("Vob view directory: not a directory.");
         }
         return dir;
     }
