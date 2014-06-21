@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.danielferber.gittocc2.config;
 
 import java.io.File;
@@ -48,13 +43,15 @@ public class EnvironmentConfigPojo implements EnvironmentConfig, Serializable {
     }
 
     @Override
-    public void setGitExec(File file) {
+    public EnvironmentConfig setGitExec(File file) {
         this.gitExec = file;
+        return this;
     }
 
     @Override
-    public void setRepositoryDir(File dir) {
+    public EnvironmentConfig setRepositoryDir(File dir) {
         this.repositoryDir = dir;
+        return this;
     }
 
     @Override
@@ -68,12 +65,14 @@ public class EnvironmentConfigPojo implements EnvironmentConfig, Serializable {
     }
 
     @Override
-    public void setClearToolExec(File file) {
+    public EnvironmentConfig setClearToolExec(File file) {
         this.clearToolExec = file;
+        return this;
     }
 
     @Override
-    public void setVobViewDir(File dir) {
+    public EnvironmentConfig setVobViewDir(File dir) {
         this.vobViewDir = dir;
+        return this;
     }
 }

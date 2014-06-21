@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.danielferber.gittocc2.config;
 
 import java.io.File;
@@ -11,12 +6,12 @@ import java.io.File;
  *
  * @author Daniel
  */
-public class EnvironmentConfigValidated implements EnvironmentConfig {
+public class EnvironmentConfigValidated implements EnvironmentConfigSource {
 
-    private final EnvironmentConfig wrapped;
+    private final EnvironmentConfigSource wrapped;
 
-    public EnvironmentConfigValidated(EnvironmentConfig wrappedGitConfig) {
-        this.wrapped = wrappedGitConfig;
+    public EnvironmentConfigValidated(EnvironmentConfigSource wrapped) {
+        this.wrapped = wrapped;
     }
 
     @Override
@@ -57,16 +52,6 @@ public class EnvironmentConfigValidated implements EnvironmentConfig {
     }
 
     @Override
-    public void setGitExec(File file) {
-        wrapped.setGitExec(file);
-    }
-
-    @Override
-    public void setRepositoryDir(File dir) {
-        wrapped.setGitExec(dir);
-    }
-
-    @Override
     public File getClearToolExec() {
         final File exec = wrapped.getClearToolExec();
         if (exec == null) {
@@ -97,15 +82,5 @@ public class EnvironmentConfigValidated implements EnvironmentConfig {
             throw new EnvironmentConfigException("Vob view directory: not a directory.");
         }
         return dir;
-    }
-
-    @Override
-    public void setClearToolExec(File file) {
-        wrapped.setClearToolExec(file);
-    }
-
-    @Override
-    public void setVobViewDir(File dir) {
-        wrapped.setVobViewDir(dir);
     }
 }

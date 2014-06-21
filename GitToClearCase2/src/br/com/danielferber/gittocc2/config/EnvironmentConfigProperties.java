@@ -64,13 +64,15 @@ public class EnvironmentConfigProperties implements EnvironmentConfig {
     }
 
     @Override
-    public void setGitExec(File file) {
+    public EnvironmentConfig setGitExec(File file) {
         properties.setProperty(prefix + "git.exec", file == null ? "" : file.getPath());
+        return this;
     }
 
     @Override
-    public void setRepositoryDir(File dir) {
+    public EnvironmentConfig setRepositoryDir(File dir) {
         properties.setProperty(prefix + "repository.dir", dir == null ? "" : dir.getPath());
+        return this;
     }
 
     @Override
@@ -86,13 +88,15 @@ public class EnvironmentConfigProperties implements EnvironmentConfig {
     }
 
     @Override
-    public void setClearToolExec(File file) {
+    public EnvironmentConfig setClearToolExec(File file) {
         properties.setProperty(prefix + "cleartool.exec", file == null ? "" : file.getPath());
+        return this;
     }
 
     @Override
-    public void setVobViewDir(File dir) {
+    public EnvironmentConfig setVobViewDir(File dir) {
         properties.setProperty(prefix + "vobview.dir", dir == null ? "" : dir.getPath());
+        return this;
     }
 
     @Override
