@@ -1,13 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.danielferber.gittocc2.config.sync;
 
 import br.com.danielferber.gittocc2.config.ConfigProperties;
 import java.util.Properties;
 
+/**
+ *
+ * @author Daniel Felix Ferber
+ */
 public class SyncConfigProperties implements SyncConfig {
 
     private final ConfigProperties properties;
@@ -39,37 +38,37 @@ public class SyncConfigProperties implements SyncConfig {
     }
 
     @Override
-    public SyncConfig setUpdateVobRoot(boolean value) {
+    public SyncConfig setUpdateVobRoot(Boolean value) {
         properties.setBoolean(prefix + "cc.updateVobRoot", value);
         return this;
     }
 
     @Override
-    public SyncConfig setFetchRemoteGitRepository(boolean value) {
+    public SyncConfig setFetchRemoteGitRepository(Boolean value) {
         properties.setBoolean(prefix + "git.fetchRemoteGitRepository", value);
         return this;
     }
 
     @Override
-    public SyncConfig setFastForwardLocalGitRepository(boolean value) {
+    public SyncConfig setFastForwardLocalGitRepository(Boolean value) {
         properties.setBoolean(prefix + "git.fastForwardLocalGitRepository", value);
         return this;
     }
 
     @Override
-    public SyncConfig setResetLocalGitRepository(boolean value) {
+    public SyncConfig setResetLocalGitRepository(Boolean value) {
         properties.setBoolean(prefix + "git.resetLocalGitRepository", value);
         return this;
     }
 
     @Override
-    public SyncConfig setCleanLocalGitRepository(boolean value) {
+    public SyncConfig setCleanLocalGitRepository(Boolean value) {
         properties.setBoolean(prefix + "git.cleanLocalGitRepository", value);
         return this;
     }
 
     @Override
-    public SyncConfig setCreateActivity(boolean value) {
+    public SyncConfig setCreateActivity(Boolean value) {
         properties.setBoolean(prefix + "git.createActivity", value);
         return this;
     }
@@ -81,32 +80,32 @@ public class SyncConfigProperties implements SyncConfig {
     }
 
     @Override
-    public boolean getUpdateVobRoot() {
+    public Boolean getUpdateVobRoot() {
         return properties.getBoolean(prefix + "cc.updateVobRoot");
     }
 
     @Override
-    public boolean getFetchRemoteGitRepository() {
+    public Boolean getFetchRemoteGitRepository() {
         return properties.getBoolean(prefix + "git.fetchRemoteGitRepository");
     }
 
     @Override
-    public boolean getFastForwardLocalGitRepository() {
+    public Boolean getFastForwardLocalGitRepository() {
         return properties.getBoolean(prefix + "git.fastForwardLocalGitRepository");
     }
 
     @Override
-    public boolean getResetLocalGitRepository() {
+    public Boolean getResetLocalGitRepository() {
         return properties.getBoolean(prefix + "git.resetLocalGitRepository");
     }
 
     @Override
-    public boolean getCleanLocalGitRepository() {
+    public Boolean getCleanLocalGitRepository() {
         return properties.getBoolean(prefix + "git.cleanLocalGitRepository");
     }
 
     @Override
-    public boolean getCreateActivity() {
+    public Boolean getCreateActivity() {
         return properties.getBoolean(prefix + "git.createActivity");
     }
 

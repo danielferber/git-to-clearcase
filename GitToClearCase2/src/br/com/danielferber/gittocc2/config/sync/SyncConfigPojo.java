@@ -1,47 +1,51 @@
 package br.com.danielferber.gittocc2.config.sync;
 
+/**
+ *
+ * @author Daniel Felix Ferber
+ */
 public class SyncConfigPojo implements SyncConfig {
 
-    private boolean updateVobRoot;
-    private boolean fetchRemoteGitRepository;
-    private boolean fastForwardLocalGitRepository;
-    private boolean resetLocationGitRepository;
-    private boolean cleanLocalGitRepository;
-    private boolean createActivity;
+    private Boolean updateVobRoot;
+    private Boolean fetchRemoteGitRepository;
+    private Boolean fastForwardLocalGitRepository;
+    private Boolean resetLocationGitRepository;
+    private Boolean cleanLocalGitRepository;
+    private Boolean createActivity;
     private String activityMessagePattern;
 
     @Override
-    public SyncConfig setUpdateVobRoot(boolean value) {
+    public SyncConfig setUpdateVobRoot(Boolean value) {
         this.updateVobRoot = value;
         return this;
     }
 
     @Override
-    public SyncConfig setFetchRemoteGitRepository(boolean value) {
+    public SyncConfig setFetchRemoteGitRepository(Boolean value) {
         this.fetchRemoteGitRepository = value;
         return this;
     }
 
     @Override
-    public SyncConfig setFastForwardLocalGitRepository(boolean value) {
+    public SyncConfig setFastForwardLocalGitRepository(Boolean value) {
         this.fastForwardLocalGitRepository = value;
         return this;
     }
 
     @Override
-    public SyncConfig setResetLocalGitRepository(boolean value) {
+    public SyncConfig setResetLocalGitRepository(Boolean value) {
         this.resetLocationGitRepository = value;
         return this;
     }
 
     @Override
-    public SyncConfig setCleanLocalGitRepository(boolean value) {
+    public SyncConfig setCleanLocalGitRepository(Boolean value) {
         this.cleanLocalGitRepository = value;
         return this;
     }
 
     @Override
-    public SyncConfig setCreateActivity(boolean value) {
+    public SyncConfig setCreateActivity(Boolean value) {
         this.createActivity = value;
         return this;
     }
@@ -53,32 +57,32 @@ public class SyncConfigPojo implements SyncConfig {
     }
 
     @Override
-    public boolean getUpdateVobRoot() {
+    public Boolean getUpdateVobRoot() {
         return this.updateVobRoot;
     }
 
     @Override
-    public boolean getFetchRemoteGitRepository() {
+    public Boolean getFetchRemoteGitRepository() {
         return this.fetchRemoteGitRepository;
     }
 
     @Override
-    public boolean getFastForwardLocalGitRepository() {
+    public Boolean getFastForwardLocalGitRepository() {
         return this.fastForwardLocalGitRepository;
     }
 
     @Override
-    public boolean getResetLocalGitRepository() {
+    public Boolean getResetLocalGitRepository() {
         return this.resetLocationGitRepository;
     }
 
     @Override
-    public boolean getCleanLocalGitRepository() {
+    public Boolean getCleanLocalGitRepository() {
         return this.cleanLocalGitRepository;
     }
 
     @Override
-    public boolean getCreateActivity() {
+    public Boolean getCreateActivity() {
         return this.createActivity;
     }
 
