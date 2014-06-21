@@ -5,7 +5,6 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfig;
 import br.com.danielferber.gittocc2.config.ConfigException;
 import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigPojo;
 import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigSource;
@@ -13,32 +12,36 @@ import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigValidate
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.PrintStream;
 import joptsimple.OptionException;
+import joptsimple.ValueConversionException;
 import org.slf4j.Logger;
 
 /**
  *
  * @author Daniel Felix Ferber
  */
-public class Main {
+public class Synchronizer {
 
     private static final Logger logger = LoggerFactory.getLogger("GitToClearCase");
-    private static final Logger environmentConfigLogger = LoggerFactory.getLogger(logger, "environmentConfig");
 
     public static void main(String[] argv) {
-        final EnvironmentConfig environmentConfig;
+        final EnvironmentConfigSource environmentConfig;
 
         {
             final CommandLineParser clp = new CommandLineParser();
             try {
                 environmentConfig = new EnvironmentConfigPojo(clp.commandLineToEnvironmentConfig(argv));
+            } catch (ValueConversionException e) {
+                logger.error("Incorrect command line arguments: {} ", e.getMessage());
+                return;
             } catch (OptionException e) {
+                logger.error("Incorrect command line arguments: {} ", e.getMessage());
                 clp.printHelp();
                 return;
             }
         }
 
-        if (environmentConfigLogger.isInfoEnabled()) {
-            try (PrintStream ps = LoggerFactory.getInfoPrintStream(environmentConfigLogger)) {
+        if (logger.isInfoEnabled()) {
+            try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
                 ps.println("Environment Properties:");
                 ps.println(" - git executable file: " + environmentConfig.getGitExec());
                 ps.println(" - git repository directory: " + environmentConfig.getRepositoryDir());
@@ -48,13 +51,13 @@ public class Main {
         }
 
         try {
-            EnvironmentConfig validatedConfig = new EnvironmentConfigValidated(environmentConfig);
+            EnvironmentConfigSource validatedConfig = new EnvironmentConfigValidated(environmentConfig);
             validatedConfig.getGitExec();
             validatedConfig.getRepositoryDir();
             validatedConfig.getClearToolExec();
             validatedConfig.getVobViewDir();
         } catch (ConfigException e) {
-            logger.error("Environmente configuration. "+e.getMessage());
+            logger.error("Incorrent environment configuration: {}", e.getMessage());
         }
     }
 

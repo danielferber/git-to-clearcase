@@ -29,10 +29,10 @@ public class CommandLineParser {
 
     private final OptionParser parser = new OptionParser();
     private final OptionSpec<File> propertyFileOpt = parser.accepts("p", "Properties file.").withRequiredArg().ofType(File.class);
-    private final OptionSpec<File> gitExecOpt = parser.accepts("g", "Git executable file.").withRequiredArg().ofType(File.class);
-    private final OptionSpec<File> repositoryDirOpt = parser.accepts("r", "Git repository directory.").withRequiredArg().ofType(File.class);
-    private final OptionSpec<File> clearToolExecOpt = parser.accepts("c", "CleartTool executable file.").withRequiredArg().ofType(File.class);
-    private final OptionSpec<File> vobViewDirOpt = parser.accepts("v", "Snapshot vob view directory.").withRequiredArg().ofType(File.class);
+    private final OptionSpec<File> gitExecOpt = parser.accepts("g", "Git executable file.").withRequiredArg().required().ofType(File.class);
+    private final OptionSpec<File> repositoryDirOpt = parser.accepts("r", "Git repository directory.").withRequiredArg().required().ofType(File.class);
+    private final OptionSpec<File> clearToolExecOpt = parser.accepts("c", "CleartTool executable file.").withRequiredArg().required().ofType(File.class);
+    private final OptionSpec<File> vobViewDirOpt = parser.accepts("v", "Snapshot vob view directory.").withRequiredArg().required().ofType(File.class);
 
     public EnvironmentConfigSource commandLineToEnvironmentConfig(String[] argv) {
 
