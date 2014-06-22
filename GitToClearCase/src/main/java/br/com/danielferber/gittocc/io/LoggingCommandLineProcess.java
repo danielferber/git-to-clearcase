@@ -12,7 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 
-public class LoggingProcessWrapper<ProcessType extends LoggingProcessWrapper> extends CommandLineProcess<ProcessType> {
+public class LoggingCommandLineProcess<ProcessType extends LoggingCommandLineProcess> extends CommandLineProcess<ProcessType> {
 
     protected final Meter meter;
     protected final Logger logger;
@@ -20,7 +20,7 @@ public class LoggingProcessWrapper<ProcessType extends LoggingProcessWrapper> ex
     protected final Marker stderrMarker;
     protected final Marker commandMarker;
 
-    public LoggingProcessWrapper(String name, List<String> commandLine, File directory, Meter meter, Logger logger, Marker stdoutMarker, Marker stderrMarker, Marker commandMarker) {
+    public LoggingCommandLineProcess(String name, List<String> commandLine, File directory, Meter meter, Logger logger, Marker stdoutMarker, Marker stderrMarker, Marker commandMarker) {
         super(name, commandLine, directory);
         this.meter = meter;
         this.logger = logger;

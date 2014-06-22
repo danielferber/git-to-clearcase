@@ -1,6 +1,7 @@
 package br.com.danielferber.gittocc2.config.sync;
 
 import br.com.danielferber.gittocc2.config.ConfigProperties;
+import java.io.File;
 import java.util.Properties;
 
 /**
@@ -22,6 +23,10 @@ public class SyncConfigProperties implements SyncConfig {
         this.setFetchRemoteGitRepository(other.getFetchRemoteGitRepository());
         this.setResetLocalGitRepository(other.getResetLocalGitRepository());
         this.setUpdateVobRoot(other.getUpdateVobRoot());
+        this.setCommitStampFile(other.getCommitStampFile());
+        this.setCounterStampFile(other.getCounterStampFile());
+        this.setOverriddenSyncCounter(other.getOverriddenSyncCounter());
+        this.setOverriddenSyncFromCommit(other.getOverriddenSyncFromCommit());
     }
 
     public SyncConfigProperties(SyncConfigSource other) {
@@ -80,6 +85,30 @@ public class SyncConfigProperties implements SyncConfig {
     }
 
     @Override
+    public SyncConfig setCommitStampFile(File file) {
+        properties.setFile(prefix + "cc.commitStampFile", file);
+        return this;
+    }
+
+    @Override
+    public SyncConfig setCounterStampFile(File file) {
+        properties.setFile(prefix + "cc.counterStampFile", file);
+        return this;
+    }
+
+    @Override
+    public SyncConfig setOverriddenSyncCounter(Long value) {
+        properties.setLong(prefix + "cc.overriddenSyncCounter", value);
+        return this;
+    }
+
+    @Override
+    public SyncConfig setOverriddenSyncFromCommit(String value) {
+        properties.setString(prefix + "cc.overriddenSyncFromCommit", value);
+        return this;
+    }
+
+    @Override
     public Boolean getUpdateVobRoot() {
         return properties.getBoolean(prefix + "cc.updateVobRoot");
     }
@@ -112,6 +141,26 @@ public class SyncConfigProperties implements SyncConfig {
     @Override
     public String getActivityMessagePattern() {
         return properties.getString(prefix + "cc.activityMessagePattern");
+    }
+
+    @Override
+    public File getCommitStampFile() {
+        return properties.getFile(prefix + "cc.commitStampFile");
+    }
+
+    @Override
+    public File getCounterStampFile() {
+        return properties.getFile(prefix + "cc.counterStampFile");
+    }
+
+    @Override
+    public Long getOverriddenSyncCounter() {
+        return properties.getLong(prefix + "cc.overriddenSyncCounter");
+    }
+
+    @Override
+    public String getOverriddenSyncFromCommit() {
+        return properties.getString(prefix + "cc.overriddenSyncFromCommit");
     }
 
     @Override

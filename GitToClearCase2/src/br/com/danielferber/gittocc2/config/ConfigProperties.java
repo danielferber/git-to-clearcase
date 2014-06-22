@@ -41,6 +41,15 @@ public class ConfigProperties extends Properties {
         this.setProperty(name, value == null ? "" : Boolean.toString(value));
     }
     
+    public Long getLong(String name) {
+        final String property = this.getProperty(name);
+        return property == null ? null : Long.valueOf(property);
+    }
+
+    public void setLong(String name, Long value) {
+        this.setProperty(name, value == null ? "" : Long.toString(value));
+    }
+    
     public String getString(String name) {
         return this.getProperty(name);
     }

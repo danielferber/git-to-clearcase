@@ -1,15 +1,17 @@
 package br.com.danielferber.gittocc2.config.sync;
 
+import java.io.File;
+
 /**
  *
  * @author Daniel Felix Ferber
  */
 public class SyncConfigChain implements SyncConfigSource {
 
-    private final SyncConfigChain wrapped1;
-    private final SyncConfigChain wrapped2;
+    private final SyncConfigSource wrapped1;
+    private final SyncConfigSource wrapped2;
 
-    public SyncConfigChain(SyncConfigChain wrapped1, SyncConfigChain wrapped2) {
+    public SyncConfigChain(SyncConfigSource wrapped1, SyncConfigSource wrapped2) {
         this.wrapped1 = wrapped1;
         this.wrapped2 = wrapped2;
     }
@@ -69,5 +71,39 @@ public class SyncConfigChain implements SyncConfigSource {
         }
         return wrapped1.getActivityMessagePattern();
     }
+
+    @Override
+    public File getCommitStampFile() {
+        if (wrapped2.getCommitStampFile() != null) {
+            return wrapped2.getCommitStampFile();
+        }
+        return wrapped1.getCommitStampFile();
+    }
+
+    @Override
+    public File getCounterStampFile() {
+        if (wrapped2.getCounterStampFile() != null) {
+            return wrapped2.getCounterStampFile();
+        }
+        return wrapped1.getCounterStampFile();
+    }
+
+    @Override
+    public Long getOverriddenSyncCounter() {
+        if (wrapped2.getOverriddenSyncCounter() != null) {
+            return wrapped2.getOverriddenSyncCounter();
+        }
+        return wrapped1.getOverriddenSyncCounter();
+    }
+
+    @Override
+    public String getOverriddenSyncFromCommit() {
+        if (wrapped2.getOverriddenSyncFromCommit() != null) {
+            return wrapped2.getOverriddenSyncFromCommit();
+        }
+        return wrapped1.getOverriddenSyncFromCommit();
+    }
+    
+    
 
 }

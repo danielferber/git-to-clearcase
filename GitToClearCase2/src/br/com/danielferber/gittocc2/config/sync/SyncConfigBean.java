@@ -2,6 +2,7 @@ package br.com.danielferber.gittocc2.config.sync;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 
 /**
  *
@@ -20,6 +21,10 @@ public class SyncConfigBean implements SyncConfig {
     public static final String FAST_FORWARD_LOCAL_GIT_REPOSITORY_PROPERTY = "git.fastForwardLocalGitRepository";
     public static final String FETCH_REMOTE_GIT_REPOSITORY_PROPERTY = "git.fetchRemoteGitRepository";
     public static final String UPDATE_VOB_ROOT_PROPERTY = "cc.updateVobRoot";
+    public static final String COMMIT_STAMP_FILE_PROPERTY = "cc.commitStampFile";
+    public static final String COUNTER_STAMP_FILE_PROPERTY = "cc.counterStampFile";
+    public static final String OVERRIDDEN_SYNC_COUNTER = "cc.overriddenSyncCounter";
+    public static final String OVERRIDDEN_SYNC_FROM_COMMIT = "cc.overridenSyncFromCommit";
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         this.pcs.addPropertyChangeListener(listener);
@@ -95,6 +100,38 @@ public class SyncConfigBean implements SyncConfig {
     }
 
     @Override
+    public SyncConfig setCommitStampFile(File file) {
+        final File oldValue = wrapped.getCommitStampFile();
+        wrapped.setCommitStampFile(file);
+        this.pcs.firePropertyChange(COMMIT_STAMP_FILE_PROPERTY, oldValue, file);
+        return this;
+    }
+
+    @Override
+    public SyncConfig setCounterStampFile(File file) {
+        final File oldValue = wrapped.getCounterStampFile();
+        wrapped.setCounterStampFile(file);
+        this.pcs.firePropertyChange(COUNTER_STAMP_FILE_PROPERTY, oldValue, file);
+        return this;
+    }
+
+    @Override
+    public SyncConfig setOverriddenSyncCounter(Long value) {
+        Long oldValue = wrapped.getOverriddenSyncCounter();
+        wrapped.setOverriddenSyncCounter(value);
+        this.pcs.firePropertyChange(OVERRIDDEN_SYNC_COUNTER, oldValue, value);
+        return this;
+    }
+
+    @Override
+    public SyncConfig setOverriddenSyncFromCommit(String value) {
+        String oldValue = wrapped.getOverriddenSyncFromCommit();
+        wrapped.setOverriddenSyncFromCommit(value);
+        this.pcs.firePropertyChange(OVERRIDDEN_SYNC_FROM_COMMIT, oldValue, value);
+        return this;
+    }
+
+    @Override
     public Boolean getUpdateVobRoot() {
         return wrapped.getUpdateVobRoot();
     }
@@ -129,4 +166,23 @@ public class SyncConfigBean implements SyncConfig {
         return wrapped.getActivityMessagePattern();
     }
 
+    @Override
+    public File getCommitStampFile() {
+        return wrapped.getCommitStampFile();
+    }
+
+    @Override
+    public File getCounterStampFile() {
+        return wrapped.getCounterStampFile();
+    }
+
+    @Override
+    public Long getOverriddenSyncCounter() {
+        return wrapped.getOverriddenSyncCounter();
+    }
+
+    @Override
+    public String getOverriddenSyncFromCommit() {
+        return wrapped.getOverriddenSyncFromCommit();
+    }
 }

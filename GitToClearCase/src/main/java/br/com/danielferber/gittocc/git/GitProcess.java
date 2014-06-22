@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc.git;
 
-import br.com.danielferber.gittocc.io.LoggingProcessWrapper;
+import br.com.danielferber.gittocc.io.LoggingCommandLineProcess;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
@@ -16,7 +16,7 @@ import org.slf4j.MarkerFactory;
  *
  * @author X7WS
  */
-public class GitProcess extends LoggingProcessWrapper<GitProcess> {
+public class GitProcess extends LoggingCommandLineProcess<GitProcess> {
 
     final static Logger logger = LoggerFactory.getLogger(GitProcess.class.getSimpleName());
 

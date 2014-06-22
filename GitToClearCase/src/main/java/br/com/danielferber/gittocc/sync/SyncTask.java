@@ -7,13 +7,11 @@ package br.com.danielferber.gittocc.sync;
 import br.com.danielferber.gittocc.cc.ClearToolCommander;
 import br.com.danielferber.gittocc.git.GitCommander;
 import br.com.danielferber.gittocc.git.GitTreeDiff;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
-import com.ibm.icu.text.MessageFormat;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,8 +20,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+
 
 /**
  *
@@ -197,6 +194,11 @@ public class SyncTask implements Callable<Void> {
                 map.put("gitCommitFrom", diff.fromCommit);
                 map.put("syncDate", new Date());
                 map.put("syncCount", syncCounter);
+                
+                String templateString = "The ${animal} jumped over the ${target}.";
+ StrSubstitutor sub = new StrSubstitutor(valuesMap);
+ String resolvedString = sub.replace(templateString);
+ 
                 String headlineStr = MessageFormat.format(headline, map);
 
                 m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", headlineStr).start();

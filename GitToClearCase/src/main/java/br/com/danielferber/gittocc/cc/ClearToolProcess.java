@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc.cc;
 
-import br.com.danielferber.gittocc.io.LoggingProcessWrapper;
+import br.com.danielferber.gittocc.io.LoggingCommandLineProcess;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
@@ -16,7 +16,7 @@ import org.slf4j.MarkerFactory;
  *
  * @author X7WS
  */
-public class ClearToolProcess extends LoggingProcessWrapper<ClearToolProcess> {
+public class ClearToolProcess extends LoggingCommandLineProcess<ClearToolProcess> {
 
     final static Logger logger = LoggerFactory.getLogger(ClearToolProcess.class.getSimpleName());
 

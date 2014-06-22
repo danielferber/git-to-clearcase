@@ -1,5 +1,7 @@
 package br.com.danielferber.gittocc2.config.sync;
 
+import java.io.File;
+
 /**
  *
  * @author Daniel Felix Ferber
@@ -46,4 +48,26 @@ public class SyncConfigValidated implements SyncConfigSource {
     public String getActivityMessagePattern() {
         return wrapped.getActivityMessagePattern();
     }
+
+    @Override
+    public File getCommitStampFile() {
+        return wrapped.getCommitStampFile();
+    }
+
+    @Override
+    public File getCounterStampFile() {
+        return wrapped.getCounterStampFile();
+    }
+
+    @Override
+    public Long getOverriddenSyncCounter() {
+        return wrapped.getOverriddenSyncCounter();
+    }
+
+    @Override
+    public String getOverriddenSyncFromCommit() {
+        return wrapped.getOverriddenSyncFromCommit();
+    }
+    
+    
 }
