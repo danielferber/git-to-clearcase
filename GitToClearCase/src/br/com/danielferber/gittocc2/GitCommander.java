@@ -4,13 +4,12 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigSource;
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ class GitCommander {
 
     final CommandLineProcessBuilder pb;
 
-    public GitCommander(EnvironmentConfigSource config) {
+    public GitCommander(GitConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getRepositoryDir(), config.getGitExec(), LoggerFactory.getLogger("git"));
     }
 

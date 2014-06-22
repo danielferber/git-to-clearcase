@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/apache-commons-lang/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/CopyLibs/org-netbeans-modules-java-j2seproject-copylibstask.jar"/>
+	<classpathentry kind="lib" path="lib/jansi/jansi-1.11.jar"/>
+	<classpathentry kind="lib" path="lib/jopt-simple/jopt-simple-4.6.jar"/>
+	<classpathentry kind="lib" path="lib/logback/logback-classic-1.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/logback/logback-core-1.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-toys/slf4j-toys-1.1.1-preview.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j/jcl-over-slf4j-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j/jul-to-slf4j-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j/log4j-over-slf4j-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j/slf4j-api-1.7.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

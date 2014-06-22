@@ -5,14 +5,14 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigChain;
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigPojo;
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigProperties;
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigSource;
-import br.com.danielferber.gittocc2.config.sync.SyncConfigChain;
-import br.com.danielferber.gittocc2.config.sync.SyncConfigPojo;
-import br.com.danielferber.gittocc2.config.sync.SyncConfigProperties;
-import br.com.danielferber.gittocc2.config.sync.SyncConfigSource;
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigChain;
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigProperties;
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.config.git.GitConfigChain;
+import br.com.danielferber.gittocc2.config.git.GitConfigPojo;
+import br.com.danielferber.gittocc2.config.git.GitConfigProperties;
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -66,20 +66,20 @@ class SynchronizerCommandLine {
         }
     }
 
-    EnvironmentConfigSource getEnvironmentConfig() {
-        final EnvironmentConfigPojo config = new EnvironmentConfigPojo(gitExecOpt.value(options), repositoryDirOpt.value(options), clearToolExecOpt.value(options), vobViewDirOpt.value(options));
+    ClearToolConfigSource getClearToolConfig() {
+        final ClearToolConfigPojo config = new ClearToolConfigPojo(clearToolExecOpt.value(options), vobViewDirOpt.value(options));
         if (properties == null) {
             return config;
         }
-        return new EnvironmentConfigChain(config, new EnvironmentConfigProperties(properties));
+        return new ClearToolConfigChain(config, new ClearToolConfigProperties(properties));
     }
 
-    SyncConfigSource getSyncConfig() {
-        final SyncConfigPojo config = new SyncConfigPojo();
+    GitConfigSource getGitConfig() {
+        final GitConfigPojo config = new GitConfigPojo(gitExecOpt.value(options), repositoryDirOpt.value(options));
         if (properties == null) {
             return config;
         }
-        return new SyncConfigChain(config, new SyncConfigProperties(properties));
+        return new GitConfigChain(config, new GitConfigProperties(properties));
     }
 
 }

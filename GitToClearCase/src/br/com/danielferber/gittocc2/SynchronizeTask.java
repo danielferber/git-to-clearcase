@@ -5,8 +5,8 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigSource;
-import br.com.danielferber.gittocc2.config.sync.SyncConfigSource;
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
@@ -33,15 +33,15 @@ import org.apache.commons.lang3.text.StrSubstitutor;
  */
 class SynchronizeTask implements Callable<Void> {
 
-    private final SyncConfigSource syncConfig;
-    private final EnvironmentConfigSource environmentConfig;
+    private final GitConfigSource syncConfig;
+    private final ClearToolConfigSource environmentConfig;
     private final GitCommander gitCommander;
     private final ClearToolCommander ctCommander;
     private final File commitStampFile;
     private final File counterStampFile;
     private final Meter globalMeter;
 
-    SynchronizeTask(EnvironmentConfigSource environmentConfig, SyncConfigSource syncConfig) {
+    SynchronizeTask(ClearToolConfigSource environmentConfig, GitConfigSource syncConfig) {
         this.gitCommander = new GitCommander(environmentConfig);
         this.ctCommander = new ClearToolCommander(environmentConfig);
         this.environmentConfig = environmentConfig;
@@ -57,12 +57,6 @@ class SynchronizeTask implements Callable<Void> {
         Meter m2;
         try {
             /* ClearCase Tasks */
-            if (syncConfig.getUpdateVobRoot()) {
-                updateFullVob();
-            } else {
-                updateCommitStampFile();
-                updateCounterStampFile();
-            }
 
             /* Git Tasks */
             if (syncConfig.getResetLocalGitRepository()) {

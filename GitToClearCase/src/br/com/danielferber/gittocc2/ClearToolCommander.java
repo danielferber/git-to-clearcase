@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.environment.EnvironmentConfigSource;
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
@@ -28,7 +28,7 @@ class ClearToolCommander {
     final Set<File> filesCheckedOut = new TreeSet<File>();
     final Set<File> dirsCheckedOut = new TreeSet<File>();
 
-    public ClearToolCommander(EnvironmentConfigSource config) {
+    public ClearToolCommander(ClearToolConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getVobViewDir(), config.getClearToolExec(), LoggerFactory.getLogger("ct"));
     }
 
