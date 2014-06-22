@@ -71,6 +71,14 @@ public class CommandLineProcessBuilder {
         return (CommandLineProcessBuilder) this;
     }
 
+    public File getExecutableFile() {
+        return executableFile;
+    }
+
+    public File getExecutionDirectory() {
+        return executionDirectory;
+    }
+    
     public final CommandLineProcess create() {
         return new CommandLineProcess(this.name, buildCommandLine(), this.executionDirectory, this.logger);
     }

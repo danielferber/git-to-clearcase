@@ -128,6 +128,6 @@ class GitCommander {
         p.start();
         p.waitFor();
 
-        return new GitTreeDiff(fromCommit, toCommit, dirsAdded, dirsDeleted, filesAdded, filesDeleted, filesModified, filesMovedFrom, filesMovedTo, filesMovedModified, filesCopiedFrom, filesCopiedTo, filesCopiedModified);
+        return new GitTreeDiff(pb.getExecutionDirectory(),fromCommit, toCommit, dirsAdded, dirsDeleted, filesAdded, filesDeleted, filesModified, filesMovedFrom, filesMovedTo, filesMovedModified, filesCopiedFrom, filesCopiedTo, filesCopiedModified);
     }
 }

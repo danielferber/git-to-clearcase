@@ -27,8 +27,11 @@ class GitTreeDiff {
     public final List<File> filesCopiedFrom;//
     public final List<File> filesCopiedTo;//
     public final List<File> filesCopiedModified;//
+    
+    public final File repositoryDir;
 
-    public GitTreeDiff(String fromCommit, String toCommit, List<File> dirsAdded, List<File> dirsDeleted, List<File> filesAdded, List<File> filesDeleted, List<File> filesModified, List<File> filesMovedFrom, List<File> filesMovedTo, List<File> filesMovedModified, List<File> filesCopiedFrom, List<File> filesCopiedTo, List<File> filesCopiedModified) {
+    public GitTreeDiff(File repositoryDir, String fromCommit, String toCommit, List<File> dirsAdded, List<File> dirsDeleted, List<File> filesAdded, List<File> filesDeleted, List<File> filesModified, List<File> filesMovedFrom, List<File> filesMovedTo, List<File> filesMovedModified, List<File> filesCopiedFrom, List<File> filesCopiedTo, List<File> filesCopiedModified) {
+        this.repositoryDir = repositoryDir;
         this.fromCommit = fromCommit;
         this.toCommit = toCommit;
         this.dirsAdded = Collections.unmodifiableList(dirsAdded);
@@ -44,7 +47,10 @@ class GitTreeDiff {
         this.filesCopiedModified = Collections.unmodifiableList(filesCopiedModified);
     }
 
-    public boolean hasStuff() {
+    public File getRepositoryDir() {
+        return repositoryDir;
+    }
+      public boolean hasStuff() {
         return !(dirsAdded.isEmpty()
                 && dirsDeleted.isEmpty()
                 && filesAdded.isEmpty()
