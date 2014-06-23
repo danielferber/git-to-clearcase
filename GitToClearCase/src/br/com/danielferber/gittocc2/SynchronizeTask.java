@@ -27,12 +27,14 @@ class SynchronizeTask implements Callable<Void> {
     private final File commitStampFile;
     private final File counterStampFile;
     private final Meter globalMeter;
+    private final boolean compareOnly;
 
-    SynchronizeTask(ClearToolConfigSource cleartoolConfig, GitConfigSource gitConfig) {
+    SynchronizeTask(ClearToolConfigSource cleartoolConfig, GitConfigSource gitConfig, boolean compareOnly) {
         this.gitCommander = new GitCommander(gitConfig);
         this.ctCommander = new ClearToolCommander(cleartoolConfig);
         this.cleartoolConfig = cleartoolConfig;
         this.gitConfig = gitConfig;
+        this.compareOnly = compareOnly;
         this.commitStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCommitStampFile().getPath());
         this.counterStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCounterStampFile().getPath());
         this.globalMeter = MeterFactory.getMeter("SyncTask").m("Sincronizar from Git to ClearCase.");
@@ -65,8 +67,12 @@ class SynchronizeTask implements Callable<Void> {
             String syncToCommit = readCurrentCommit();
 
             /* TreeDiff Task */
-//            TreeDiff diff = (new GitTreeDiffTask(gitCommander, syncFromCommit, syncToCommit, globalMeter)).call();
-            TreeDiff diff = (new CompareTreeDiffTask(gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), globalMeter)).call();
+            final TreeDiff diff;
+            if (compareOnly) {
+                diff = (new CompareTreeDiffTask(gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), globalMeter)).call();
+            } else {
+                diff = (new GitTreeDiffTask(gitCommander, syncFromCommit, syncToCommit, globalMeter)).call();
+            }
 
             if (!diff.hasStuff()) {
                 return null;

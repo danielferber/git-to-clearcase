@@ -30,10 +30,12 @@ public class Synchronizer {
     public static void main(String[] argv) {
         final ClearToolConfigSource nonValidatedClearToolConfig;
         final GitConfigSource nonValidateGitConfig;
+        final boolean compareOnly;
         try {
             final SynchronizerCommandLine cl = new SynchronizerCommandLine(argv);
             nonValidatedClearToolConfig = cl.getClearToolConfig();
             nonValidateGitConfig = cl.getGitConfig();
+            compareOnly = cl.isCompareOnly();
         } catch (ValueConversionException e) {
             logger.error("Incorrect command line arguments: {} ", e.getMessage());
             return;
@@ -49,12 +51,25 @@ public class Synchronizer {
         
         if (logger.isInfoEnabled()) {
             try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
+                ps.println("Infer changes from: " + (compareOnly ? "file by file comparison" : "GIT history"));
+                
                 ps.println("ClearTools properties:");
-                ps.println(" - cleartool executable file: " + nonValidatedClearToolConfig.getClearToolExec());
-                ps.println(" - snapshot vob view directory: " + nonValidatedClearToolConfig.getVobViewDir());
-                ps.println(" - ClearCase activity message pattern: " + nonValidatedClearToolConfig.getActivityMessagePattern());
-                ps.println(" - create ClearCase activity: " + nonValidatedClearToolConfig.getCreateActivity());
-                ps.println(" - update ClearCase vob: " + nonValidatedClearToolConfig.getUpdateVobRoot());
+                ps.println(" - Executable file: " + nonValidatedClearToolConfig.getClearToolExec());
+                ps.println(" - VOB view directory: " + nonValidatedClearToolConfig.getVobViewDir());
+                ps.println(" - Create activity: " + nonValidatedClearToolConfig.getCreateActivity());
+                if (nonValidatedClearToolConfig.getCreateActivity() != null && nonValidatedClearToolConfig.getCreateActivity()) {
+                    ps.println("   Activity message pattern: " + nonValidatedClearToolConfig.getActivityMessagePattern());
+                }
+                ps.println(" - Update ClearCase VOB directory: " + nonValidatedClearToolConfig.getUpdateVobRoot());
+                ps.println(" - Commit stamp file: " + nonValidatedClearToolConfig.getCommitStampFile());
+                ps.println(" - Counter stamp file: " + nonValidatedClearToolConfig.getCounterStampFile());
+                if (nonValidatedClearToolConfig.getOverriddenSyncFromCommit() != null) {
+                    ps.println(" - Overridden sync commit: " + nonValidatedClearToolConfig.getOverriddenSyncFromCommit());
+                }
+                if (nonValidatedClearToolConfig.getOverriddenSyncCounter()!= null) {
+                    ps.println(" - Overridden sync counter: " + nonValidatedClearToolConfig.getOverriddenSyncCounter());
+                }
+                
                 ps.println("Git properties:");
                 ps.println(" - git executable file: " + nonValidateGitConfig.getGitExec());
                 ps.println(" - git repository directory: " + nonValidateGitConfig.getRepositoryDir());
@@ -76,7 +91,7 @@ public class Synchronizer {
             return;
         }
 
-        SynchronizeTask task = new SynchronizeTask(cleartoolConfig, gitConfig);
+        SynchronizeTask task = new SynchronizeTask(cleartoolConfig, gitConfig, compareOnly);
         try {
             task.call();
         } catch (Exception ex) {
