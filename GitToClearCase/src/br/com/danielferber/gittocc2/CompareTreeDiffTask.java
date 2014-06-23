@@ -13,6 +13,7 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -34,10 +35,12 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
     private final File gitRootDir;
     private final File clearCaseRootDir;
     private final Meter globalMeter;
+    private final File compareRoot;
 
-    CompareTreeDiffTask(File gitRootDir, File clearCaseRootDir, Meter outerMeter) {
+    CompareTreeDiffTask(File gitRootDir, File clearCaseRootDir, File compareRoot, Meter outerMeter) {
         this.gitRootDir = gitRootDir;
         this.clearCaseRootDir = clearCaseRootDir;
+        this.compareRoot = compareRoot;
         this.globalMeter = outerMeter.sub("CompareDiff").m("Compare GIT repository with ClearCase vob directory.");
     }
 
@@ -90,11 +93,13 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
             };
 
             m2 = globalMeter.sub("vobScan").m("Execute ClearCase VOB scan.").start();
-            Files.walkFileTree(clearCaseRootDir.toPath(), vobVisitor);
+            File clearCaseCompareDir = new File(clearCaseRootDir, compareRoot.getPath());
+            Files.walkFileTree(clearCaseCompareDir.toPath(), vobVisitor);
             m2.ok();
 
             m2 = globalMeter.sub("gitScan").m("Execute GIT repository scan.").start();
-            Files.walkFileTree(gitRootDir.toPath(), repositoryVisitor);
+            File gitCompareDir = new File(gitRootDir, compareRoot.getPath());
+            Files.walkFileTree(gitCompareDir.toPath(), repositoryVisitor);
             m2.ok();
 
         } catch (Exception e) {
@@ -112,7 +117,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
         filesDeleted.removeAll(repositoryFiles);
 
         Set<File> filesToCompare = new TreeSet<File>(vobFiles);
-        vobFiles.retainAll(repositoryFiles);
+        filesToCompare.retainAll(repositoryFiles);
         Set<File> filesModified = new TreeSet<File>();
         for (File file : filesToCompare) {
             File gitSourceFile = new File(gitRootDir, file.getPath());
@@ -156,7 +161,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
 
     public static void main(String[] argv) {
         try {
-            new CompareTreeDiffTask(new File("/home/daniel/Git"), new File("/home/daniel/Vob"), MeterFactory.getMeter("teste")).call();
+            new CompareTreeDiffTask(new File("/home/daniel/Git"), new File("/home/daniel/Vob"), new File("a"), MeterFactory.getMeter("teste")).call();
         } catch (Exception ex) {
             Logger.getLogger(CompareTreeDiffTask.class.getName()).log(Level.SEVERE, null, ex);
         }

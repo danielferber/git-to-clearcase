@@ -28,13 +28,15 @@ class SynchronizeTask implements Callable<Void> {
     private final File counterStampFile;
     private final Meter globalMeter;
     private final boolean compareOnly;
+    private final File compareRoot;
 
-    SynchronizeTask(ClearToolConfigSource cleartoolConfig, GitConfigSource gitConfig, boolean compareOnly) {
+    SynchronizeTask(ClearToolConfigSource cleartoolConfig, GitConfigSource gitConfig, boolean compareOnly, File compareRoot) {
         this.gitCommander = new GitCommander(gitConfig);
         this.ctCommander = new ClearToolCommander(cleartoolConfig);
         this.cleartoolConfig = cleartoolConfig;
         this.gitConfig = gitConfig;
         this.compareOnly = compareOnly;
+        this.compareRoot = compareRoot;
         this.commitStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCommitStampFile().getPath());
         this.counterStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCounterStampFile().getPath());
         this.globalMeter = MeterFactory.getMeter("SyncTask").m("Sincronizar from Git to ClearCase.");
@@ -69,7 +71,7 @@ class SynchronizeTask implements Callable<Void> {
             /* TreeDiff Task */
             final TreeDiff diff;
             if (compareOnly) {
-                diff = (new CompareTreeDiffTask(gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), globalMeter)).call();
+                diff = (new CompareTreeDiffTask(gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), compareRoot, globalMeter)).call();
             } else {
                 diff = (new GitTreeDiffTask(gitCommander, syncFromCommit, syncToCommit, globalMeter)).call();
             }
@@ -120,5 +122,4 @@ class SynchronizeTask implements Callable<Void> {
         m.ctx("commit", gitCommit).ok();
         return gitCommit;
     }
-
 }

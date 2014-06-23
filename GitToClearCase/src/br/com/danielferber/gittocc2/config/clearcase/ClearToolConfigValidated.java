@@ -24,16 +24,16 @@ public class ClearToolConfigValidated implements ClearToolConfigSource {
     public File getClearToolExec() {
         final File exec = wrapped.getClearToolExec();
         if (exec == null) {
-            throw new ConfigException("Git executable: missing property.");
+            throw new ConfigException("ClearTool executable: missing property.");
         }
         if (!exec.exists()) {
-            throw new ConfigException("Git executable: does not exist.");
+            throw new ConfigException("ClearTool executable: does not exist.");
         }
         if (!exec.isFile()) {
-            throw new ConfigException("Git executable: not a file.");
+            throw new ConfigException("ClearTool executable: not a file.");
         }
         if (!exec.canExecute()) {
-            throw new ConfigException("Git executable: not executable.");
+            throw new ConfigException("ClearTool executable: not executable.");
         }
         return exec;
     }
@@ -71,7 +71,7 @@ public class ClearToolConfigValidated implements ClearToolConfigSource {
 
     @Override
     public File getVobViewDir() {
-        File dir = getVobViewDir();
+        File dir = wrapped.getVobViewDir();
         if (dir == null) {
             throw new ConfigException("Vob view directory: missing property.");
         }

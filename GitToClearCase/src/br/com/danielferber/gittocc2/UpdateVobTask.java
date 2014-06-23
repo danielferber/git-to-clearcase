@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
@@ -11,24 +6,26 @@ import java.io.File;
 import java.util.concurrent.Callable;
 
 /**
+ * Updates the ClearCase VOB view directory. The ClearTool configuration require
+ * a full recursive update. Otherwise, only control stamp files are updated.
  *
- * @author daniel
+ * @author Daniel Felix Ferber
  */
 public class UpdateVobTask implements Callable<Void> {
 
     private final ClearToolConfigSource cleartoolConfig;
     private final ClearToolCommander ctCommander;
-    private final Meter globalMeter;
+    private final Meter meter;
 
     public UpdateVobTask(ClearToolConfigSource environmentConfig, ClearToolCommander ctCommander, Meter outerMeter) {
         this.cleartoolConfig = environmentConfig;
         this.ctCommander = ctCommander;
-        this.globalMeter = outerMeter.sub("UpdateVob");
+        this.meter = outerMeter.sub("UpdateVob");
     }
 
     @Override
     public Void call() throws Exception {
-        globalMeter.start();
+        meter.start();
         try {
             if (cleartoolConfig.getUpdateVobRoot()) {
                 updateFullVob();
@@ -36,9 +33,9 @@ public class UpdateVobTask implements Callable<Void> {
                 updateCommitStampFile();
                 updateCounterStampFile();
             }
-            globalMeter.ok();
+            meter.ok();
         } catch (Exception e) {
-            globalMeter.fail(e);
+            meter.fail(e);
             throw e;
         }
         return null;
@@ -46,22 +43,21 @@ public class UpdateVobTask implements Callable<Void> {
 
     private void updateCommitStampFile() throws SyncTaskException {
         File commitStampFile = cleartoolConfig.getCommitStampFile();
-        Meter m = globalMeter.sub("commitFile").m("Update sync commit control file.").ctx("file", commitStampFile).start();
-        ctCommander.updateFile(commitStampFile);
+        Meter m = meter.sub("commitFile").m("Update sync commit control file.").ctx("file", commitStampFile).start();
+        ctCommander.updateFiles(commitStampFile);
         m.ok();
     }
 
     private void updateCounterStampFile() throws SyncTaskException {
         File counterStampFile = cleartoolConfig.getCounterStampFile();
-        Meter m = globalMeter.sub("counterFile").m("Update sync counter control file.").ctx("file", counterStampFile).start();
-        ctCommander.updateFile(counterStampFile);
+        Meter m = meter.sub("counterFile").m("Update sync counter control file.").ctx("file", counterStampFile).start();
+        ctCommander.updateFiles(counterStampFile);
         m.ok();
     }
 
     private void updateFullVob() {
-        Meter m = globalMeter.sub("vobDir").m("Update entire VOB directory.").ctx("dir", cleartoolConfig.getVobViewDir()).start();
+        Meter m = meter.sub("vobDir").m("Update entire VOB directory.").ctx("dir", cleartoolConfig.getVobViewDir()).start();
         ctCommander.updateVobViewDir();
         m.ok();
     }
-
 }

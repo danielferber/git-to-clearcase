@@ -29,15 +29,13 @@ class SynchronizerCommandLine {
 
     final static OptionParser parser = new OptionParser();
     final static OptionSpec<File> propertyFileOpt = parser.accepts("properties", "Properties file.").withRequiredArg().ofType(File.class);
-    final static OptionSpec<Void> compareOpt = parser.accepts("compare", "Compare file by file and ignore git history (slower but safer).");
-
+    final static OptionSpec<File> compareOpt = parser.accepts("compare", "Compare file by file and ignore git history (slower but safer).").withRequiredArg().ofType(File.class);
     final static OptionSpec<File> gitExecOpt = parser.accepts("git", "Git executable file.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<File> gitRepositoryDirOpt = parser.accepts("repo", "Git repository directory.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<Void> gitFastForwardLocalGitRepositoryOpt = parser.accepts("forward", "Before synchronizing, fast forward logal git repository.");
     final static OptionSpec<Void> gitFetchRemoteGitRepositoryOpt = parser.accepts("fetch", "Before synchronizing, fetch remote commits from default remote git repository.");
     final static OptionSpec<Void> gitResetLocalGitRepositoryOpt = parser.accepts("reset", "Before synchronizing, reset (hard) local git repository.");
     final static OptionSpec<Void> gitCleanLocalGitRepositoryOpt = parser.accepts("clean", "Before synchronizing, clean completely local git repository.");
-
     final static OptionSpec<File> ccClearToolExecOpt = parser.accepts("ct", "CleartTool executable file.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<File> ccCommitStampFileOpt = parser.accepts("commitstamp", "ClearCase sync stamp file relative to vob root directory.").withRequiredArg().ofType(File.class);
@@ -51,7 +49,6 @@ class SynchronizerCommandLine {
     static void printHelp(PrintStream ps) throws IOException {
         parser.printHelpOn(ps);
     }
-
     final OptionSet options;
     final Properties properties;
 
@@ -73,9 +70,13 @@ class SynchronizerCommandLine {
             properties = null;
         }
     }
-    
+
     boolean isCompareOnly() {
         return options.has(compareOpt);
+    }
+
+    File getCompareRoot() {
+        return options.valueOf(compareOpt);
     }
 
     ClearToolConfigSource getClearToolConfig() {
@@ -121,5 +122,4 @@ class SynchronizerCommandLine {
         }
         return new GitConfigChain(config, new GitConfigProperties(properties));
     }
-
 }

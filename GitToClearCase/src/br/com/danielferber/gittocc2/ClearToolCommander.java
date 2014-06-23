@@ -10,6 +10,7 @@ import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -154,92 +155,92 @@ class ClearToolCommander {
                 final File dirToMake = dirsToMake.pollFirst();
                 pb.reset("makeDir").command("mkdir").argument("-nc").argument(dirToMake.getPath()).create()
                         .addOutWriter(new LineSplittingWriter() {
-                            @Override
-                            protected void processLine(String line) {
-                                Matcher checkoutMatcher = mkdirCheckoutPattern.matcher(line);
-                                if (checkoutMatcher.find()) {
-                                    File dir = new File(checkoutMatcher.group(1));
-                                    dirsCheckedOut.add(dir);
-                                }
-                            }
-                        })
+                    @Override
+                    protected void processLine(String line) {
+                        Matcher checkoutMatcher = mkdirCheckoutPattern.matcher(line);
+                        if (checkoutMatcher.find()) {
+                            File dir = new File(checkoutMatcher.group(1));
+                            dirsCheckedOut.add(dir);
+                        }
+                    }
+                })
                         .addErrWriter(new LineSplittingWriter() {
-                            @Override
-                            protected void processLine(String line) {
-                                Matcher matcher = mkdirNeedCheckoutPattern.matcher(line);
-                                if (matcher.find()) {
-                                    /* Parent directory should have been checked out first. */
-                                    File dir = new File(matcher.group(1));
-                                    dirsToCheckout.add(dir);
-                                    dirsToMake.add(dirToMake);
-                                }
-                                matcher = mkdirAlreadyExistPattern.matcher(line);
-                                if (matcher.find()) {
-                                    /* Directory already exists. Instead of creating it, schedule it for checkout. */
-                                    dirsToCheckout.add(dirToMake);
-                                }
-                                matcher = mkdirParentDirectoryMissingPattern1.matcher(line);
-                                if (matcher.find()) {
-                                    /* Parent directory does not exist, schedule it for creation. */
-                                    File dir = new File(matcher.group(1));
-                                    dirsToMake.add(dir);
-                                    dirsToMake.add(dirToMake);
-                                }
-                                matcher = mkdirParentDirectoryMissingPattern2.matcher(line);
-                                if (matcher.find()) {
-                                    /* Parent directory does not exist, schedule it for creation. */
-                                    File dir = new File(matcher.group(1));
-                                    dirsToMake.add(dir);
-                                    dirsToMake.add(dirToMake);
-                                }
-                            }
-                        }).waitFor();
+                    @Override
+                    protected void processLine(String line) {
+                        Matcher matcher = mkdirNeedCheckoutPattern.matcher(line);
+                        if (matcher.find()) {
+                            /* Parent directory should have been checked out first. */
+                            File dir = new File(matcher.group(1));
+                            dirsToCheckout.add(dir);
+                            dirsToMake.add(dirToMake);
+                        }
+                        matcher = mkdirAlreadyExistPattern.matcher(line);
+                        if (matcher.find()) {
+                            /* Directory already exists. Instead of creating it, schedule it for checkout. */
+                            dirsToCheckout.add(dirToMake);
+                        }
+                        matcher = mkdirParentDirectoryMissingPattern1.matcher(line);
+                        if (matcher.find()) {
+                            /* Parent directory does not exist, schedule it for creation. */
+                            File dir = new File(matcher.group(1));
+                            dirsToMake.add(dir);
+                            dirsToMake.add(dirToMake);
+                        }
+                        matcher = mkdirParentDirectoryMissingPattern2.matcher(line);
+                        if (matcher.find()) {
+                            /* Parent directory does not exist, schedule it for creation. */
+                            File dir = new File(matcher.group(1));
+                            dirsToMake.add(dir);
+                            dirsToMake.add(dirToMake);
+                        }
+                    }
+                }).waitFor();
             }
 
             while (dirsToMake.isEmpty() && dirsToCheckout.isEmpty() && filesToCheckout.isEmpty() && !filesToMake.isEmpty()) {
                 final File fileToMake = filesToMake.pollFirst();
                 pb.reset("makeFile").command("mkelem").argument("-nc").arguments("-eltype", "file").argument(fileToMake.getPath()).create()
                         .addOutWriter(new LineSplittingWriter() {
-                            @Override
-                            protected void processLine(String line) {
-                                Matcher matcher = mkfileCheckoutPattern.matcher(line);
-                                if (matcher.find()) {
-                                    File dir = new File(matcher.group(1));
-                                    filesCheckedOut.add(dir);
-                                }
-                            }
-                        })
+                    @Override
+                    protected void processLine(String line) {
+                        Matcher matcher = mkfileCheckoutPattern.matcher(line);
+                        if (matcher.find()) {
+                            File dir = new File(matcher.group(1));
+                            filesCheckedOut.add(dir);
+                        }
+                    }
+                })
                         .addErrWriter(new LineSplittingWriter() {
-                            @Override
-                            protected void processLine(String line) {
-                                Matcher matcher = mkfileNeedCheckoutPattern.matcher(line);
-                                if (matcher.find()) {
-                                    /* Parent directory should have been checked out first. */
-                                    File dir = new File(matcher.group(1));
-                                    dirsToCheckout.add(dir);
-                                    filesToMake.add(fileToMake);
-                                }
-                                matcher = mkfileAlreadyExistPattern.matcher(line);
-                                if (matcher.find()) {
-                                    /* File already exists. Instead of creating it, schedule it for checkout. */
-                                    filesToCheckout.add(fileToMake);
-                                }
-                                matcher = mkfileParentDirectoryMissingPattern1.matcher(line);
-                                if (matcher.find()) {
-                                    /* Parent directory does not exist, schedule it for creation. */
-                                    File dir = new File(matcher.group(1));
-                                    dirsToMake.add(dir);
-                                    filesToMake.add(fileToMake);
-                                }
-                                matcher = mkfileParentDirectoryMissingPattern2.matcher(line);
-                                if (matcher.find()) {
-                                    /* Parent directory does not exist, schedule it for creation. */
-                                    File dir = new File(matcher.group(1));
-                                    dirsToMake.add(dir);
-                                    filesToMake.add(fileToMake);
-                                }
-                            }
-                        }).waitFor();
+                    @Override
+                    protected void processLine(String line) {
+                        Matcher matcher = mkfileNeedCheckoutPattern.matcher(line);
+                        if (matcher.find()) {
+                            /* Parent directory should have been checked out first. */
+                            File dir = new File(matcher.group(1));
+                            dirsToCheckout.add(dir);
+                            filesToMake.add(fileToMake);
+                        }
+                        matcher = mkfileAlreadyExistPattern.matcher(line);
+                        if (matcher.find()) {
+                            /* File already exists. Instead of creating it, schedule it for checkout. */
+                            filesToCheckout.add(fileToMake);
+                        }
+                        matcher = mkfileParentDirectoryMissingPattern1.matcher(line);
+                        if (matcher.find()) {
+                            /* Parent directory does not exist, schedule it for creation. */
+                            File dir = new File(matcher.group(1));
+                            dirsToMake.add(dir);
+                            filesToMake.add(fileToMake);
+                        }
+                        matcher = mkfileParentDirectoryMissingPattern2.matcher(line);
+                        if (matcher.find()) {
+                            /* Parent directory does not exist, schedule it for creation. */
+                            File dir = new File(matcher.group(1));
+                            dirsToMake.add(dir);
+                            filesToMake.add(fileToMake);
+                        }
+                    }
+                }).waitFor();
             }
         }
     }
@@ -262,11 +263,19 @@ class ClearToolCommander {
         safeMakeElements(null, filesAdded);
     }
 
-    void updateFile(File file) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void updateFiles(File ...files) {
+        updateFiles(Arrays.asList(files));
+    }
+    
+    public void updateFiles(Collection<File> files) {
+        for (File file : files) {
+            CommandLineProcess p = pb.reset("updateFile").command("update").argument("-force").argument(file.getPath()).create();
+            p.waitFor();
+        }
     }
 
     void updateVobViewDir() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CommandLineProcess p = pb.reset("updateVob").command("update").argument("-force").create();
+        p.waitFor();
     }
 }

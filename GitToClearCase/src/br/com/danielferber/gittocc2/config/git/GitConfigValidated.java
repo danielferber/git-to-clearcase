@@ -15,10 +15,10 @@ public class GitConfigValidated implements GitConfigSource {
         this.wrapped = wrapped;
     }
 
-        @Override
-		public Boolean getCleanLocalGitRepository() {
-		    return wrapped.getCleanLocalGitRepository();
-		}
+    @Override
+    public Boolean getCleanLocalGitRepository() {
+        return wrapped.getCleanLocalGitRepository();
+    }
 
     @Override
     public Boolean getFastForwardLocalGitRepository() {
@@ -31,26 +31,26 @@ public class GitConfigValidated implements GitConfigSource {
     }
 
     @Override
-   public File getGitExec() {
-	final File exec = wrapped.getGitExec();
-	if (exec == null) {
-	    throw new ConfigException("Git executable: missing property.");
-	}
-	if (!exec.exists()) {
-	    throw new ConfigException("Git executable: does not exist.");
-	}
-	if (!exec.isFile()) {
-	    throw new ConfigException("Git executable: not a file.");
-	}
-	if (!exec.canExecute()) {
-	    throw new ConfigException("Git executable: not executable.");
-	}
-	return exec;
-   }
+    public File getGitExec() {
+        final File exec = wrapped.getGitExec();
+        if (exec == null) {
+            throw new ConfigException("Git executable: missing property.");
+        }
+        if (!exec.exists()) {
+            throw new ConfigException("Git executable: does not exist.");
+        }
+        if (!exec.isFile()) {
+            throw new ConfigException("Git executable: not a file.");
+        }
+        if (!exec.canExecute()) {
+            throw new ConfigException("Git executable: not executable.");
+        }
+        return exec;
+    }
 
     @Override
     public File getRepositoryDir() {
-        File dir = getRepositoryDir();
+        File dir = wrapped.getRepositoryDir();
         if (dir == null) {
             throw new ConfigException("Repository directory: missing property.");
         }
@@ -70,6 +70,5 @@ public class GitConfigValidated implements GitConfigSource {
     @Override
     public Boolean getResetLocalGitRepository() {
         return wrapped.getResetLocalGitRepository();
-    }    
-    
+    }
 }
