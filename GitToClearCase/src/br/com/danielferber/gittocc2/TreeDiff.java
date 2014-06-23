@@ -12,10 +12,8 @@ import java.util.List;
  *
  * @author X7WS
  */
-class GitTreeDiff {
+class TreeDiff {
 
-    public final String fromCommit;
-    public final String toCommit;
     public final List<File> dirsAdded;//
     public final List<File> dirsDeleted;//
     public final List<File> filesAdded;//
@@ -27,13 +25,8 @@ class GitTreeDiff {
     public final List<File> filesCopiedFrom;//
     public final List<File> filesCopiedTo;//
     public final List<File> filesCopiedModified;//
-    
-    public final File repositoryDir;
 
-    public GitTreeDiff(File repositoryDir, String fromCommit, String toCommit, List<File> dirsAdded, List<File> dirsDeleted, List<File> filesAdded, List<File> filesDeleted, List<File> filesModified, List<File> filesMovedFrom, List<File> filesMovedTo, List<File> filesMovedModified, List<File> filesCopiedFrom, List<File> filesCopiedTo, List<File> filesCopiedModified) {
-        this.repositoryDir = repositoryDir;
-        this.fromCommit = fromCommit;
-        this.toCommit = toCommit;
+    public TreeDiff(List<File> dirsAdded, List<File> dirsDeleted, List<File> filesAdded, List<File> filesDeleted, List<File> filesModified, List<File> filesMovedFrom, List<File> filesMovedTo, List<File> filesMovedModified, List<File> filesCopiedFrom, List<File> filesCopiedTo, List<File> filesCopiedModified) {
         this.dirsAdded = Collections.unmodifiableList(dirsAdded);
         this.dirsDeleted = Collections.unmodifiableList(dirsDeleted);
         this.filesAdded = Collections.unmodifiableList(filesAdded);
@@ -47,10 +40,7 @@ class GitTreeDiff {
         this.filesCopiedModified = Collections.unmodifiableList(filesCopiedModified);
     }
 
-    public File getRepositoryDir() {
-        return repositoryDir;
-    }
-      public boolean hasStuff() {
+    public boolean hasStuff() {
         return !(dirsAdded.isEmpty()
                 && dirsDeleted.isEmpty()
                 && filesAdded.isEmpty()

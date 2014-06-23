@@ -11,21 +11,8 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Scanner;
-import java.util.TreeSet;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
@@ -75,15 +62,17 @@ class SynchronizeTask implements Callable<Void> {
             } else {
                 syncFromCommit = cleartoolConfig.getOverriddenSyncFromCommit();
             }
+            String syncToCommit = readCurrentCommit();
 
             /* TreeDiff Task */
-            GitTreeDiff diff = (new GitTreeDiffTask(gitConfig, gitCommander, syncFromCommit, globalMeter)).call();
+//            TreeDiff diff = (new GitTreeDiffTask(gitCommander, syncFromCommit, syncToCommit, globalMeter)).call();
+            TreeDiff diff = (new CompareTreeDiffTask(gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), globalMeter)).call();
 
-            if (! diff.hasStuff()) {
+            if (!diff.hasStuff()) {
                 return null;
             }
 
-            new ClearCaseChangeTask(cleartoolConfig, ctCommander, diff, syncCounter, globalMeter).call();
+            new ClearCaseChangeTask(cleartoolConfig, gitConfig, ctCommander, diff, syncToCommit, syncCounter, globalMeter).call();
 
             globalMeter.ok();
 
@@ -117,6 +106,13 @@ class SynchronizeTask implements Callable<Void> {
             m.fail(ex);
             throw new SyncTaskException("Counter stamp file not readable.", ex);
         }
+    }
+
+    private String readCurrentCommit() {
+        Meter m = globalMeter.sub("currentCommit").m("Read current commit hash.").start();
+        String gitCommit = gitCommander.currentCommit();
+        m.ctx("commit", gitCommit).ok();
+        return gitCommit;
     }
 
 }

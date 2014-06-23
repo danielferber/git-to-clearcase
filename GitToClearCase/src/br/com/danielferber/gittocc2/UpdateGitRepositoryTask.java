@@ -13,13 +13,13 @@ import java.util.concurrent.Callable;
  *
  * @author daniel
  */
-public class UpdateGitRepositoryTask implements Callable<Void> {
+class UpdateGitRepositoryTask implements Callable<Void> {
 
     private final GitConfigSource gitConfig;
     private final GitCommander gitCommander;
     private final Meter globalMeter;
 
-    public UpdateGitRepositoryTask(GitConfigSource environmentConfig, GitCommander ctCommander, Meter outerMeter) {
+    UpdateGitRepositoryTask(GitConfigSource environmentConfig, GitCommander ctCommander, Meter outerMeter) {
         this.gitConfig = environmentConfig;
         this.gitCommander = ctCommander;
         this.globalMeter = outerMeter.sub("UpdateGitRepository");
@@ -29,16 +29,16 @@ public class UpdateGitRepositoryTask implements Callable<Void> {
     public Void call() throws Exception {
         globalMeter.start();
         try {
-            if (gitConfig.getResetLocalGitRepository()) {
+            if (gitConfig.getResetLocalGitRepository() != null && gitConfig.getResetLocalGitRepository()) {
                 resetLocalGitRepository();
             }
-            if (gitConfig.getCleanLocalGitRepository()) {
+            if (gitConfig.getCleanLocalGitRepository() != null && gitConfig.getCleanLocalGitRepository()) {
                 cleanLocalGitRepository();
             }
-            if (gitConfig.getFetchRemoteGitRepository()) {
+            if (gitConfig.getFetchRemoteGitRepository() != null && gitConfig.getFetchRemoteGitRepository()) {
                 fetchRemoteGitRepository();
             }
-            if (gitConfig.getFastForwardLocalGitRepository()) {
+            if (gitConfig.getFastForwardLocalGitRepository() != null && gitConfig.getFastForwardLocalGitRepository()) {
                 fastForwardLocalGitRepository();
             }
             globalMeter.ok();

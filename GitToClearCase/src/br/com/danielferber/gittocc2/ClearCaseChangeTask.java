@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
@@ -29,17 +25,22 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 public class ClearCaseChangeTask implements Callable<Void> {
 
     private final ClearToolConfigSource cleartoolConfig;
+    private final GitConfigSource gitConfig;
     private final ClearToolCommander ctCommander;
-    private final GitTreeDiff gitTreeDiff;
+    private final TreeDiff gitTreeDiff;
     private final long syncCounter;
+    private final String syncToCommit;
     private final Meter globalMeter;
 
-    public ClearCaseChangeTask(ClearToolConfigSource environmentConfig, ClearToolCommander ctCommander, GitTreeDiff gitTreeDiff, long syncCounter, Meter outerMeter) {
+    public ClearCaseChangeTask(ClearToolConfigSource environmentConfig, GitConfigSource gitConfig, ClearToolCommander ctCommander,
+            TreeDiff gitTreeDiff, String syncToCommit, long syncCounter, Meter outerMeter) {
         this.cleartoolConfig = environmentConfig;
+        this.gitConfig = gitConfig;
         this.ctCommander = ctCommander;
         this.gitTreeDiff = gitTreeDiff;
         this.syncCounter = syncCounter;
         this.globalMeter = outerMeter.sub("UpdateVob");
+        this.syncToCommit = syncToCommit;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
 
             applyDiff(gitTreeDiff, syncCounter);
 
-            writeCommitStampFile(gitTreeDiff.toCommit);
+            writeCommitStampFile(syncToCommit);
             writeSyncCounter(syncCounter);
 
             chkeckinAllChanges();
@@ -116,17 +117,16 @@ public class ClearCaseChangeTask implements Callable<Void> {
         m.ok();
     }
 
-    private void applyDiff(GitTreeDiff diff, long syncCounter) throws Exception {
+    private void applyDiff(TreeDiff diff, long syncCounter) throws Exception {
         Meter m = MeterFactory.getMeter("VobUpdate").m("Atualizar VOB.").start();
         Meter m2 = null;
 
         try {
             if (cleartoolConfig.getCreateActivity()) {
                 HashMap<String, Object> map = new HashMap<String, Object>();
-                map.put("gitCommitTo", diff.toCommit);
-                map.put("gitCommitFrom", diff.fromCommit);
-                map.put("syncDate", new Date());
-                map.put("syncCount", syncCounter);
+                map.put("commit", syncToCommit);
+                map.put("date", new Date());
+                map.put("count", syncCounter);
                 StrSubstitutor sub = new StrSubstitutor(map);
                 String resolvedString = sub.replace(cleartoolConfig.getActivityMessagePattern());
                 m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", resolvedString).start();
@@ -294,11 +294,15 @@ public class ClearCaseChangeTask implements Callable<Void> {
         return dirs;
     }
 
-    private void copyFilesFromGit(final List<File> files) throws IOException {
+    private void copyFilesFromGit(final List<File> files) {
         for (File file : files) {
-            File gitSourceFile = new File(gitTreeDiff.getRepositoryDir(), file.getPath());
+            File gitSourceFile = new File(gitConfig.getRepositoryDir(), file.getPath());
             File ccTargetFile = new File(cleartoolConfig.getVobViewDir(), file.getPath());
-            Files.copy(gitSourceFile.toPath(), ccTargetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            try {
+                Files.copy(gitSourceFile.toPath(), ccTargetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                globalMeter.getLogger().error("Failed to copy file.", e);
+            }
         }
     }
 

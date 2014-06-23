@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -35,11 +33,34 @@ class SynchronizerCommandLine {
 
     final static OptionParser parser = new OptionParser();
     final static OptionSpec<File> propertyFileOpt = parser.accepts("p", "Properties file.").withRequiredArg().ofType(File.class);
+
     final static OptionSpec<File> gitExecOpt = parser.accepts("g", "Git executable file.").withRequiredArg().required().ofType(File.class);
-    final static OptionSpec<File> repositoryDirOpt = parser.accepts("r", "Git repository directory.").withRequiredArg().required().ofType(File.class);
+    final static OptionSpec<File> gitRepositoryDirOpt = parser.accepts("r", "Git repository directory.").withRequiredArg().required().ofType(File.class);
+    final static OptionSpec<Void> gitFastForwardLocalGitRepository = parser.accepts("forward", "Before synchronizing, fast forward logal git repository.");
+    final static OptionSpec<Void> gitFetchRemoteGitRepository = parser.accepts("fetch", "Before synchronizing, fetch remote commits from default remote git repository.");
+    final static OptionSpec<Void> gitResetLocalGitRepository = parser.accepts("reset", "Before synchronizing, reset (hard) local git repository.");
+    final static OptionSpec<Void> gitCleanLocalGitRepository = parser.accepts("clean", "Before synchronizing, clean completely local git repository.");
+
     final static OptionSpec<File> clearToolExecOpt = parser.accepts("c", "CleartTool executable file.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<File> vobViewDirOpt = parser.accepts("v", "Snapshot vob view directory.").withRequiredArg().required().ofType(File.class);
 
+//    String getActivityMessagePattern();
+//    
+//    File getClearToolExec();
+//
+//    File getCommitStampFile();
+//
+//    File getCounterStampFile();
+//
+//    Boolean getCreateActivity();
+//
+//    Long getOverriddenSyncCounter();
+//
+//    String getOverriddenSyncFromCommit();
+//
+//    Boolean getUpdateVobRoot();
+//
+//    File getVobViewDir();
     static void printHelp(PrintStream ps) throws IOException {
         parser.printHelpOn(ps);
     }
@@ -75,7 +96,12 @@ class SynchronizerCommandLine {
     }
 
     GitConfigSource getGitConfig() {
-        final GitConfigPojo config = new GitConfigPojo(gitExecOpt.value(options), repositoryDirOpt.value(options));
+        final GitConfigPojo config = new GitConfigPojo(gitExecOpt.value(options), gitRepositoryDirOpt.value(options));
+        config.setFastForwardLocalGitRepository(options.has(gitFastForwardLocalGitRepository));
+        config.setCleanLocalGitRepository(options.has(gitCleanLocalGitRepository));
+        config.setResetLocalGitRepository(options.has(gitResetLocalGitRepository));
+        config.setFastForwardLocalGitRepository(options.has(gitFastForwardLocalGitRepository));
+
         if (properties == null) {
             return config;
         }

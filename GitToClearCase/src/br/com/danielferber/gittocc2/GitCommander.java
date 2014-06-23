@@ -61,7 +61,7 @@ class GitCommander {
         return sb.toString();
     }
 
-    public GitTreeDiff treeDif(String fromCommit, String toCommit) {
+    public TreeDiff treeDif(String fromCommit, String toCommit) {
         CommandLineProcess p = pb.reset("treeDiff").command("diff-tree")
                 .parameter("find-copies", "30%").parameter("find-copies-harder")
                 .parameter("find-renames", "30%").shortParameter("r")
@@ -128,6 +128,6 @@ class GitCommander {
         p.start();
         p.waitFor();
 
-        return new GitTreeDiff(pb.getExecutionDirectory(),fromCommit, toCommit, dirsAdded, dirsDeleted, filesAdded, filesDeleted, filesModified, filesMovedFrom, filesMovedTo, filesMovedModified, filesCopiedFrom, filesCopiedTo, filesCopiedModified);
+        return new TreeDiff(dirsAdded, dirsDeleted, filesAdded, filesDeleted, filesModified, filesMovedFrom, filesMovedTo, filesMovedModified, filesCopiedFrom, filesCopiedTo, filesCopiedModified);
     }
 }
