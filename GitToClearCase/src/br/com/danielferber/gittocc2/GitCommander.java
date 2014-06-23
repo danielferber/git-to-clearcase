@@ -32,7 +32,7 @@ class GitCommander {
     }
 
     public void cleanLocal() {
-        pb.reset("cleanLocal").command("clean").parameter("d").parameter("x").parameter("force").create().waitFor();
+        pb.reset("cleanLocal").command("clean").shortParameter("d").shortParameter("x").parameter("force").create().waitFor();
     }
 
     public void fetchRemote() {

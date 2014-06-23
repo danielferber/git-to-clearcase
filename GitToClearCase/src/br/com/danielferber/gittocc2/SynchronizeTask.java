@@ -37,8 +37,8 @@ class SynchronizeTask implements Callable<Void> {
         this.gitConfig = gitConfig;
         this.compareOnly = compareOnly;
         this.compareRoot = compareRoot;
-        this.commitStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCommitStampFile().getPath());
-        this.counterStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCounterStampFile().getPath());
+        this.commitStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCommitStampFileName().getPath());
+        this.counterStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCounterStampFileName().getPath());
         this.globalMeter = MeterFactory.getMeter("SyncTask").m("Sincronizar from Git to ClearCase.");
     }
 
@@ -48,7 +48,7 @@ class SynchronizeTask implements Callable<Void> {
         Meter m2;
         try {
             /* ClearCase Tasks */
-            new UpdateVobTask(cleartoolConfig, ctCommander, globalMeter).call();
+            new UpdateVobDirectoryTask(cleartoolConfig, ctCommander, globalMeter).call();
 
             /* Git Tasks */
             new UpdateGitRepositoryTask(gitConfig, gitCommander, globalMeter).call();

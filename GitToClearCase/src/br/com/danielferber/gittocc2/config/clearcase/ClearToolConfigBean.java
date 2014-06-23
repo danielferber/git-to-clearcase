@@ -4,7 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 
-public class ClearToolConfigBean implements ClearToolConfig {
+public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements ClearToolConfig {
 
     private final ClearToolConfig wrapped;
 
@@ -15,8 +15,8 @@ public class ClearToolConfigBean implements ClearToolConfig {
     public static final String VOB_VIEW_DIR_PROPERTY = "cc.view.dir";
     public static final String ACTIVITY_MESSAGE_PATTERN_PROPERTY = "cc.activityMessagePattern";
     public static final String UPDATE_VOB_ROOT_PROPERTY = "cc.updateVobRoot";
-    public static final String COMMIT_STAMP_FILE_PROPERTY = "cc.commitStampFile";
-    public static final String COUNTER_STAMP_FILE_PROPERTY = "cc.counterStampFile";
+    public static final String COMMIT_STAMP_FILE_NAME_PROPERTY = "cc.commitStampFileName";
+    public static final String COUNTER_STAMP_FILE_NAME_PROPERTY = "cc.counterStampFileName";
     public static final String OVERRIDDEN_SYNC_COUNTER = "cc.overriddenSyncCounter";
     public static final String OVERRIDDEN_SYNC_FROM_COMMIT = "cc.overridenSyncFromCommit";
 
@@ -44,13 +44,13 @@ public class ClearToolConfigBean implements ClearToolConfig {
     }
 
     @Override
-    public File getCommitStampFile() {
-        return wrapped.getCommitStampFile();
+    public File getCommitStampFileName() {
+        return wrapped.getCommitStampFileName();
     }
 
     @Override
-    public File getCounterStampFile() {
-        return wrapped.getCounterStampFile();
+    public File getCounterStampFileName() {
+        return wrapped.getCounterStampFileName();
     }
 
     @Override
@@ -99,18 +99,18 @@ public class ClearToolConfigBean implements ClearToolConfig {
     }
 
     @Override
-    public ClearToolConfig setCommitStampFile(File file) {
-        final File oldValue = wrapped.getCommitStampFile();
-        wrapped.setCommitStampFile(file);
-        this.pcs.firePropertyChange(COMMIT_STAMP_FILE_PROPERTY, oldValue, file);
+    public ClearToolConfig setCommitStampFileName(File file) {
+        final File oldValue = wrapped.getCommitStampFileName();
+        wrapped.setCommitStampFileName(file);
+        this.pcs.firePropertyChange(COMMIT_STAMP_FILE_NAME_PROPERTY, oldValue, file);
         return this;
     }
     
         @Override
-		public ClearToolConfig setCounterStampFile(File file) {
-		    final File oldValue = wrapped.getCounterStampFile();
-		    wrapped.setCounterStampFile(file);
-		    this.pcs.firePropertyChange(COUNTER_STAMP_FILE_PROPERTY, oldValue, file);
+		public ClearToolConfig setCounterStampFileName(File file) {
+		    final File oldValue = wrapped.getCounterStampFileName();
+		    wrapped.setCounterStampFileName(file);
+		    this.pcs.firePropertyChange(COUNTER_STAMP_FILE_NAME_PROPERTY, oldValue, file);
 		    return this;
 		}
 

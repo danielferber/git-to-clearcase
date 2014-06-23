@@ -67,8 +67,8 @@ public class Synchronizer {
                     ps.println("   Activity message pattern: " + nonValidatedClearToolConfig.getActivityMessagePattern());
                 }
                 ps.println(" - Update ClearCase VOB directory: " + nonValidatedClearToolConfig.getUpdateVobRoot());
-                ps.println(" - Commit stamp file: " + nonValidatedClearToolConfig.getCommitStampFile());
-                ps.println(" - Counter stamp file: " + nonValidatedClearToolConfig.getCounterStampFile());
+                ps.println(" - Commit stamp file: " + nonValidatedClearToolConfig.getCommitStampFileName());
+                ps.println(" - Counter stamp file: " + nonValidatedClearToolConfig.getCounterStampFileName());
                 if (nonValidatedClearToolConfig.getOverriddenSyncFromCommit() != null) {
                     ps.println(" - Overridden sync commit: " + nonValidatedClearToolConfig.getOverriddenSyncFromCommit());
                 }

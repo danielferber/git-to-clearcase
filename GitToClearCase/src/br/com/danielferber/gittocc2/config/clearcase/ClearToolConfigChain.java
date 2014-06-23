@@ -6,7 +6,7 @@ import java.io.File;
  *
  * @author Daniel
  */
-public class ClearToolConfigChain implements ClearToolConfigSource {
+public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements ClearToolConfigSource {
     final ClearToolConfigSource wrapped1;
     final ClearToolConfigSource wrapped2;
 
@@ -32,19 +32,19 @@ public class ClearToolConfigChain implements ClearToolConfigSource {
     }
     
         @Override
-		public File getCommitStampFile() {
-		    if (wrapped2.getCommitStampFile() != null) {
-		        return wrapped2.getCommitStampFile();
+		public File getCommitStampFileName() {
+		    if (wrapped2.getCommitStampFileName() != null) {
+		        return wrapped2.getCommitStampFileName();
 		    }
-		    return wrapped1.getCommitStampFile();
+		    return wrapped1.getCommitStampFileName();
 		}
 
     @Override
-    public File getCounterStampFile() {
-        if (wrapped2.getCounterStampFile() != null) {
-            return wrapped2.getCounterStampFile();
+    public File getCounterStampFileName() {
+        if (wrapped2.getCounterStampFileName() != null) {
+            return wrapped2.getCounterStampFileName();
         }
-        return wrapped1.getCounterStampFile();
+        return wrapped1.getCounterStampFileName();
     }
 
     @Override

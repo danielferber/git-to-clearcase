@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
-public class ClearToolConfigProperties implements ClearToolConfig {
+public class ClearToolConfigProperties extends ClearToolConfigSourceImpl implements ClearToolConfig {
 
     private final ConfigProperties properties;
     private final String prefix;
@@ -27,8 +27,8 @@ public class ClearToolConfigProperties implements ClearToolConfig {
         this.setActivityMessagePattern(other.getActivityMessagePattern());
         this.setCreateActivity(other.getCreateActivity());
         this.setUpdateVobRoot(other.getUpdateVobRoot());
-        this.setCommitStampFile(other.getCommitStampFile());
-        this.setCounterStampFile(other.getCounterStampFile());
+        this.setCommitStampFileName(other.getCommitStampFileName());
+        this.setCounterStampFileName(other.getCounterStampFileName());
         this.setOverriddenSyncCounter(other.getOverriddenSyncCounter());
         this.setOverriddenSyncFromCommit(other.getOverriddenSyncFromCommit());
     }
@@ -63,14 +63,14 @@ public class ClearToolConfigProperties implements ClearToolConfig {
         return properties.getFile(prefix + "cleartool.exec");
     }
 
-        @Override
-		public File getCommitStampFile() {
-		    return properties.getFile(prefix + "cc.commitStampFile");
-		}
+    @Override
+    public File getCommitStampFileName() {
+        return properties.getFile(prefix + "cc.commitStampFileName");
+    }
 
     @Override
-    public File getCounterStampFile() {
-        return properties.getFile(prefix + "cc.counterStampFile");
+    public File getCounterStampFileName() {
+        return properties.getFile(prefix + "cc.counterStampFileName");
     }
 
     @Override
@@ -115,22 +115,22 @@ public class ClearToolConfigProperties implements ClearToolConfig {
     }
 
     @Override
-    public ClearToolConfig setCommitStampFile(File file) {
-        properties.setFile(prefix + "cc.commitStampFile", file);
+    public ClearToolConfig setCommitStampFileName(File file) {
+        properties.setFile(prefix + "cc.commitStampFileName", file);
         return this;
     }
 
     @Override
-    public ClearToolConfig setCounterStampFile(File file) {
-        properties.setFile(prefix + "cc.counterStampFile", file);
+    public ClearToolConfig setCounterStampFileName(File file) {
+        properties.setFile(prefix + "cc.counterStampFileName", file);
         return this;
     }
 
     @Override
-   public ClearToolConfig setCreateActivity(Boolean value) {
-	properties.setBoolean(prefix + "git.createActivity", value);
-	return this;
-   }
+    public ClearToolConfig setCreateActivity(Boolean value) {
+        properties.setBoolean(prefix + "git.createActivity", value);
+        return this;
+    }
 
     @Override
     public ClearToolConfig setOverriddenSyncCounter(Long value) {

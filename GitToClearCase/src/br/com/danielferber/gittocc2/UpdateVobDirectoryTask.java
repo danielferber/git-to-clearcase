@@ -11,13 +11,13 @@ import java.util.concurrent.Callable;
  *
  * @author Daniel Felix Ferber
  */
-public class UpdateVobTask implements Callable<Void> {
+public class UpdateVobDirectoryTask implements Callable<Void> {
 
     private final ClearToolConfigSource cleartoolConfig;
     private final ClearToolCommander ctCommander;
     private final Meter meter;
 
-    public UpdateVobTask(ClearToolConfigSource environmentConfig, ClearToolCommander ctCommander, Meter outerMeter) {
+    public UpdateVobDirectoryTask(ClearToolConfigSource environmentConfig, ClearToolCommander ctCommander, Meter outerMeter) {
         this.cleartoolConfig = environmentConfig;
         this.ctCommander = ctCommander;
         this.meter = outerMeter.sub("UpdateVob");
@@ -42,14 +42,14 @@ public class UpdateVobTask implements Callable<Void> {
     }
 
     private void updateCommitStampFile() throws SyncTaskException {
-        File commitStampFile = cleartoolConfig.getCommitStampFile();
+        File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
         Meter m = meter.sub("commitFile").m("Update sync commit control file.").ctx("file", commitStampFile).start();
         ctCommander.updateFiles(commitStampFile);
         m.ok();
     }
 
     private void updateCounterStampFile() throws SyncTaskException {
-        File counterStampFile = cleartoolConfig.getCounterStampFile();
+        File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
         Meter m = meter.sub("counterFile").m("Update sync counter control file.").ctx("file", counterStampFile).start();
         ctCommander.updateFiles(counterStampFile);
         m.ok();

@@ -12,9 +12,9 @@ public interface ClearToolConfigSource {
     
     File getClearToolExec();
 
-    File getCommitStampFile();
+    File getCommitStampFileName();
 
-    File getCounterStampFile();
+    File getCounterStampFileName();
 
     Boolean getCreateActivity();
 
@@ -25,5 +25,8 @@ public interface ClearToolConfigSource {
     Boolean getUpdateVobRoot();
 
     File getVobViewDir();
+    
+    File getCommitStampAbsoluteFile();
 
+    File getCounterStampAbsoluteFile();
 }

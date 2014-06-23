@@ -7,7 +7,7 @@ import java.io.File;
  *
  * @author Daniel
  */
-public class ClearToolConfigValidated implements ClearToolConfigSource {
+public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implements ClearToolConfigSource {
 
     private final ClearToolConfigSource wrapped;
 
@@ -40,13 +40,13 @@ public class ClearToolConfigValidated implements ClearToolConfigSource {
 
 
     @Override
-    public File getCommitStampFile() {
-        return wrapped.getCommitStampFile();
+    public File getCommitStampFileName() {
+        return wrapped.getCommitStampFileName();
     }
 
     @Override
-    public File getCounterStampFile() {
-        return wrapped.getCounterStampFile();
+    public File getCounterStampFileName() {
+        return wrapped.getCounterStampFileName();
     }
 
     @Override

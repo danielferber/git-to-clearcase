@@ -85,14 +85,14 @@ class SynchronizerCommandLine {
             config.setActivityMessagePattern(options.valueOf(ccActivityMessagePatternOpt));
         }
         if (options.has(ccCommitStampFileOpt)) {
-            config.setCommitStampFile(options.valueOf(ccCommitStampFileOpt));
+            config.setCommitStampFileName(options.valueOf(ccCommitStampFileOpt));
         } else {
-            config.setCommitStampFile(new File("sync-commit-stamp.txt"));
+            config.setCommitStampFileName(new File("sync-commit-stamp.txt"));
         }
         if (options.has(ccCounterStampFileOpt)) {
-            config.setCounterStampFile(options.valueOf(ccCounterStampFileOpt));
+            config.setCounterStampFileName(options.valueOf(ccCounterStampFileOpt));
         } else {
-            config.setCounterStampFile(new File("sync-counter-stamp.txt"));
+            config.setCounterStampFileName(new File("sync-counter-stamp.txt"));
         }
         config.setCreateActivity(options.has(ccCreateActivityOpt));
         if (options.has(ccOverriddenSyncCounterOpt)) {

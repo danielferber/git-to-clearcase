@@ -80,7 +80,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private void writeCommitStampFile(String commit) throws SyncTaskException {
-        File commitStampFile = cleartoolConfig.getCommitStampFile();
+        File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
         Meter m = globalMeter.sub("write.commitFile").m("Write sync commit control file.").ctx("file", commitStampFile).start();
         try (FileWriter writer = new FileWriter(commitStampFile)) {
             writer.write(commit + "\n");
@@ -92,14 +92,14 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private void checkoutCommitStampFile() throws SyncTaskException {
-        File commitStampFile = cleartoolConfig.getCommitStampFile();
+        File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
         Meter m = globalMeter.sub("checkout.commitFile").m("Checkout  sync commit control file.").ctx("file", commitStampFile).start();
         ctCommander.checkoutFile(commitStampFile);
         m.ok();
     }
 
     private void writeSyncCounter(long counter) throws SyncTaskException {
-        File counterStampFile = cleartoolConfig.getCounterStampFile();
+        File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
         Meter m = globalMeter.sub("write.commitFile").m("Write sync counter control file.").ctx("file", counterStampFile).start();
         try (FileWriter writer = new FileWriter(counterStampFile)) {
             writer.write(Long.toString(counter) + "\n");
@@ -111,7 +111,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private void checkoutCounterStampFile() throws SyncTaskException {
-        File counterStampFile = cleartoolConfig.getCounterStampFile();
+        File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
         Meter m = globalMeter.sub("checkout.counterFile").m("Checkout sync counter control file.").ctx("file", counterStampFile).start();
         ctCommander.checkoutFile(counterStampFile);
         m.ok();

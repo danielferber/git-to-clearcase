@@ -7,15 +7,15 @@ import java.io.Serializable;
  *
  * @author Daniel
  */
-public class ClearToolConfigPojo implements ClearToolConfig, Serializable {
+public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements ClearToolConfig, Serializable {
 
     private File clearToolExec;
     private File vobViewDir;
     private Boolean updateVobRoot;
     private Boolean createActivity;
     private String activityMessagePattern;
-    private File commitStampFile;
-    private File counterStampFile;
+    private File commitStampFileName;
+    private File counterStampFileName;
     private Long overriddenSyncCounter;
     private String overriddenSyncFromCommit;
 
@@ -29,8 +29,8 @@ public class ClearToolConfigPojo implements ClearToolConfig, Serializable {
         this.updateVobRoot = other.getUpdateVobRoot();
         this.createActivity = other.getCreateActivity();
         this.activityMessagePattern = other.getActivityMessagePattern();
-        this.commitStampFile = other.getCommitStampFile();
-        this.counterStampFile = other.getCounterStampFile();
+        this.commitStampFileName = other.getCommitStampFileName();
+        this.counterStampFileName = other.getCounterStampFileName();
         this.overriddenSyncCounter = other.getOverriddenSyncCounter();
         this.overriddenSyncFromCommit = other.getOverriddenSyncFromCommit();
     }
@@ -51,13 +51,13 @@ public class ClearToolConfigPojo implements ClearToolConfig, Serializable {
     }
 
     @Override
-    public File getCommitStampFile() {
-        return commitStampFile;
+    public File getCommitStampFileName() {
+        return commitStampFileName;
     }
 
     @Override
-    public File getCounterStampFile() {
-        return counterStampFile;
+    public File getCounterStampFileName() {
+        return counterStampFileName;
     }
 
     @Override
@@ -98,14 +98,14 @@ public class ClearToolConfigPojo implements ClearToolConfig, Serializable {
     }
 
     @Override
-    public ClearToolConfig setCommitStampFile(File file) {
-        this.commitStampFile = file;
+    public ClearToolConfig setCommitStampFileName(File file) {
+        this.commitStampFileName = file;
         return this;
     }
 
     @Override
-    public ClearToolConfig setCounterStampFile(File file) {
-        this.counterStampFile = file;
+    public ClearToolConfig setCounterStampFileName(File file) {
+        this.counterStampFileName = file;
         return this;
     }
 

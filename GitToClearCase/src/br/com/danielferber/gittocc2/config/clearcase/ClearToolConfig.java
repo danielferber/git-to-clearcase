@@ -12,9 +12,9 @@ public interface ClearToolConfig extends ClearToolConfigSource {
 
     ClearToolConfig setClearToolExec(File file);
 
-    ClearToolConfig setCommitStampFile(File file);
+    ClearToolConfig setCommitStampFileName(File file);
 
-    ClearToolConfig setCounterStampFile(File file);
+    ClearToolConfig setCounterStampFileName(File file);
 
     ClearToolConfig setCreateActivity(Boolean value);
 
