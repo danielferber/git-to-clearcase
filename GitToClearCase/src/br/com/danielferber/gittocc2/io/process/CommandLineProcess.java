@@ -14,18 +14,20 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 /**
- * A processes running a command line executable. 
- * <br> The process is not started until {@link #start()} is called. Meanwhile, the
- * process name, command line and working directory are kept as attributes.
- * <br> Process stdout and stderr may be read by {@link #createErrReader()} and {@link #createOutReader()}.
- * <br> Process stdout and stderr may be parsed by {@link #createErrScanner() } and {@link #createOutScanner() }.
- * <br> Process stdout and stderr may be redirected by {@link #addErrWriter(java.io.Writer)  } and {@link #addOutWriter(java.io.Writer) }.
+ * A processes running a command line executable.
+ * <br> The process is not started until {@link #start()} is called. Meanwhile,
+ * the process name, command line and working directory are kept as attributes.
+ * <br> Process stdout and stderr may be read by {@link #createErrReader()} and
+ * {@link #createOutReader()}.
+ * <br> Process stdout and stderr may be parsed by {@link #createErrScanner() }
+ * and {@link #createOutScanner() }.
+ * <br> Process stdout and stderr may be redirected by {@link #addErrWriter(java.io.Writer)
+ * } and {@link #addOutWriter(java.io.Writer) }.
  *
  * @author Daniel Felix Ferber
  */
@@ -60,12 +62,10 @@ public class CommandLineProcess {
      * process has not been created (actually, started) yet.
      */
     protected Process process;
-
     protected final Meter meter;
     protected static final Marker stdoutMarker = MarkerFactory.getMarker("stdout");
     protected static final Marker stderrMarker = MarkerFactory.getMarker("stderr");
 
-    
     public static class CommandLineProcessException extends RuntimeException {
 
         public CommandLineProcessException(String message) {
@@ -80,7 +80,7 @@ public class CommandLineProcess {
             super(cause);
         }
     }
-    
+
     /**
      * Constructor that receives all mandatory data required to create the
      * wrapped processs.

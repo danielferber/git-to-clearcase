@@ -15,6 +15,7 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 /**
+ * Syncronizes the Git repository to the ClearCase VOB view directory.
  *
  * @author Daniel Felix Ferber
  */
@@ -39,27 +40,30 @@ class SynchronizeTask implements Callable<Void> {
         this.compareRoot = compareRoot;
         this.commitStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCommitStampFileName().getPath());
         this.counterStampFile = new File(cleartoolConfig.getVobViewDir(), cleartoolConfig.getCounterStampFileName().getPath());
-        this.globalMeter = MeterFactory.getMeter("SyncTask").m("Sincronizar from Git to ClearCase.");
+        this.globalMeter = MeterFactory.getMeter("SyncTask").m("Synchronize Git to ClearCase.");
     }
 
     @Override
     public Void call() throws Exception {
+        if (compareOnly) {
+            globalMeter.ctx("stategy", "DeepFileCompare").ctx("roots", compareRoot);
+        } else {
+            globalMeter.ctx("stategy", "GitCommitHistory");
+        }
         globalMeter.start();
-        Meter m2;
+
         try {
-            /* ClearCase Tasks */
             new UpdateVobDirectoryTask(cleartoolConfig, ctCommander, globalMeter).call();
 
-            /* Git Tasks */
             new UpdateGitRepositoryTask(gitConfig, gitCommander, globalMeter).call();
 
-            /* Collect task data */
             long syncCounter;
             if (cleartoolConfig.getOverriddenSyncCounter() == null) {
-                syncCounter = readSyncCounter() + 1;
+                syncCounter = readSyncCounterFile() + 1;
             } else {
                 syncCounter = cleartoolConfig.getOverriddenSyncCounter();
             }
+
             String syncFromCommit;
             if (cleartoolConfig.getOverriddenSyncCounter() == null) {
                 syncFromCommit = readCommitStampFile();
@@ -68,7 +72,6 @@ class SynchronizeTask implements Callable<Void> {
             }
             String syncToCommit = readCurrentCommit();
 
-            /* TreeDiff Task */
             final TreeDiff diff;
             if (compareOnly) {
                 diff = (new CompareTreeDiffTask(gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), compareRoot, globalMeter)).call();
@@ -89,11 +92,10 @@ class SynchronizeTask implements Callable<Void> {
             globalMeter.fail(e);
             throw e;
         }
-
     }
 
     private String readCommitStampFile() throws SyncTaskException {
-        Meter m = globalMeter.sub("read.commitFile").m("Read sync commit control file.").ctx("file", this.commitStampFile).start();
+        Meter m = globalMeter.sub("commitStamp.read").m("Read sync commit control file.").ctx("file", this.commitStampFile).start();
         try (Scanner scanner = new Scanner(this.commitStampFile)) {
             final String result = scanner.next();
             m.ctx("fromCommit", result).ok();
@@ -104,8 +106,8 @@ class SynchronizeTask implements Callable<Void> {
         }
     }
 
-    private long readSyncCounter() throws SyncTaskException {
-        Meter m = globalMeter.sub("read.counterFile").m("Read sync counter control file.").ctx("file", this.commitStampFile).start();
+    private long readSyncCounterFile() throws SyncTaskException {
+        Meter m = globalMeter.sub("syncCounter.read").m("Read sync counter control file.").ctx("file", this.commitStampFile).start();
         try (Scanner scanner = new Scanner(this.counterStampFile)) {
             final long result = scanner.nextLong();
             m.ctx("counter", result).ok();
@@ -117,7 +119,7 @@ class SynchronizeTask implements Callable<Void> {
     }
 
     private String readCurrentCommit() {
-        Meter m = globalMeter.sub("currentCommit").m("Read current commit hash.").start();
+        Meter m = globalMeter.sub("currentCommit.read").m("Read current commit hash.").start();
         String gitCommit = gitCommander.currentCommit();
         m.ctx("commit", gitCommit).ok();
         return gitCommit;

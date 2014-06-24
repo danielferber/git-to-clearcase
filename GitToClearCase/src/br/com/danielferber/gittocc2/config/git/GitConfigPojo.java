@@ -15,6 +15,7 @@ public class GitConfigPojo implements GitConfig {
     private Boolean fastForwardLocalGitRepository;
     private Boolean resetLocationGitRepository;
     private Boolean cleanLocalGitRepository;
+    private Boolean applyDefaultGitConfig;
 
     public GitConfigPojo() {
         super();
@@ -32,6 +33,7 @@ public class GitConfigPojo implements GitConfig {
         fastForwardLocalGitRepository = other.getFastForwardLocalGitRepository();
         resetLocationGitRepository = other.getResetLocalGitRepository();
         cleanLocalGitRepository = other.getCleanLocalGitRepository();
+        applyDefaultGitConfig = other.getApplyDefaultGitConfig();
     }
 
     @Override
@@ -62,6 +64,11 @@ public class GitConfigPojo implements GitConfig {
     @Override
     public Boolean getResetLocalGitRepository() {
         return this.resetLocationGitRepository;
+    }
+
+    @Override
+    public Boolean getApplyDefaultGitConfig() {
+        return applyDefaultGitConfig;
     }
 
     @Override
@@ -100,4 +107,9 @@ public class GitConfigPojo implements GitConfig {
         return this;
     }
 
+    @Override
+    public GitConfig setApplyDefaultGitConfig(Boolean value) {
+        this.applyDefaultGitConfig = value;
+        return this;
+    }
 }

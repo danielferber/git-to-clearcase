@@ -26,6 +26,8 @@ public class GitConfigProperties implements GitConfig {
         this.setFastForwardLocalGitRepository(other.getFastForwardLocalGitRepository());
         this.setFetchRemoteGitRepository(other.getFetchRemoteGitRepository());
         this.setResetLocalGitRepository(other.getResetLocalGitRepository());
+        this.setApplyDefaultGitConfig(other.getApplyDefaultGitConfig());
+
     }
 
     public GitConfigProperties(Properties properties) {
@@ -68,6 +70,11 @@ public class GitConfigProperties implements GitConfig {
     }
 
     @Override
+    public Boolean getApplyDefaultGitConfig() {
+        return properties.getBoolean(prefix + "git.applyDefaultGitConfig");
+    }
+
+    @Override
     public GitConfig setCleanLocalGitRepository(Boolean value) {
         properties.setBoolean(prefix + "git.cleanLocalGitRepository", value);
         return this;
@@ -78,7 +85,6 @@ public class GitConfigProperties implements GitConfig {
         properties.setBoolean(prefix + "git.fastForwardLocalGitRepository", value);
         return this;
     }
-
 
     @Override
     public GitConfig setFetchRemoteGitRepository(Boolean value) {
@@ -104,6 +110,11 @@ public class GitConfigProperties implements GitConfig {
         return this;
     }
 
+    @Override
+    public GitConfig setApplyDefaultGitConfig(Boolean value) {
+        properties.setBoolean(prefix + "git.applyDefaultGitConfig", value);
+        return this;
+    }
 
     @Override
     public String toString() {

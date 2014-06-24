@@ -36,6 +36,7 @@ class SynchronizerCommandLine {
     final static OptionSpec<Void> gitFetchRemoteGitRepositoryOpt = parser.accepts("fetch", "Before synchronizing, fetch remote commits from default remote git repository.");
     final static OptionSpec<Void> gitResetLocalGitRepositoryOpt = parser.accepts("reset", "Before synchronizing, reset (hard) local git repository.");
     final static OptionSpec<Void> gitCleanLocalGitRepositoryOpt = parser.accepts("clean", "Before synchronizing, clean completely local git repository.");
+    final static OptionSpec<Void> gitApplyDefaultGitConfigOpt = parser.accepts("configure", "Before synchronizing, apply default git configuration to repository.");
     final static OptionSpec<File> ccClearToolExecOpt = parser.accepts("ct", "CleartTool executable file.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<File> ccCommitStampFileOpt = parser.accepts("commitstamp", "ClearCase sync stamp file relative to vob root directory.").withRequiredArg().ofType(File.class);
@@ -116,6 +117,7 @@ class SynchronizerCommandLine {
         config.setResetLocalGitRepository(options.has(gitResetLocalGitRepositoryOpt));
         config.setFastForwardLocalGitRepository(options.has(gitFastForwardLocalGitRepositoryOpt));
         config.setFetchRemoteGitRepository(options.has(gitFetchRemoteGitRepositoryOpt));
+        config.setApplyDefaultGitConfig(options.has(gitApplyDefaultGitConfigOpt));
 
         if (properties == null) {
             return config;

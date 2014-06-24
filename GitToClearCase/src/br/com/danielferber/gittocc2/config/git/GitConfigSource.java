@@ -19,4 +19,6 @@ public interface GitConfigSource {
     File getRepositoryDir();
 
     Boolean getResetLocalGitRepository();
+    
+    Boolean getApplyDefaultGitConfig();
 }

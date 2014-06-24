@@ -71,4 +71,9 @@ public class GitConfigValidated implements GitConfigSource {
     public Boolean getResetLocalGitRepository() {
         return wrapped.getResetLocalGitRepository();
     }
+
+    @Override
+    public Boolean getApplyDefaultGitConfig() {
+        return wrapped.getApplyDefaultGitConfig();
+    }
 }

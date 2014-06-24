@@ -9,6 +9,8 @@ import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,13 +30,16 @@ class ClearToolCommander {
     final CommandLineProcessBuilder pb;
     final Set<File> filesCheckedOut = new TreeSet<File>();
     final Set<File> dirsCheckedOut = new TreeSet<File>();
+    final Meter meter = MeterFactory.getMeter("ClearToolCommander");
 
     public ClearToolCommander(ClearToolConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getVobViewDir(), config.getClearToolExec(), LoggerFactory.getLogger("ct"));
     }
 
     public void createActivity(String headline) {
+        Meter m = meter.sub("createActivity").start();
         pb.reset("mkactivity").command("mkactivity").arguments("-headline", headline, "-force").create().waitFor();
+        m.ok();
     }
 
     public void checkoutDir(File dir) {
@@ -46,45 +51,52 @@ class ClearToolCommander {
     }
 
     public void checkoutDirs(Collection<File> dirs) {
+        Meter m = meter.sub("checkoutDirs").iterations(dirs.size()).start();
         for (File dir : dirs) {
             if (!dirsCheckedOut.contains(dir)) {
-                final CommandLineProcess p = pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery")
-                        .argument(dir.getPath()).create();
-                p.waitFor();
+                pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create().waitFor();
                 dirsCheckedOut.add(dir);
+                m.inc().progress();
             }
         }
+        m.ok();
     }
 
     public void checkoutFiles(Collection<File> files) {
+        Meter m = meter.sub("checkoutFiles").iterations(files.size()).start();
         for (File file : files) {
             if (!filesCheckedOut.contains(file)) {
-                CommandLineProcess p = pb.reset("checkoutFile").command("checkout").argument("-ptime").argument("-nc").argument("-nquery")
-                        .argument(file.getPath()).create();
-                p.waitFor();
+                pb.reset("checkoutFile").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(file.getPath()).create().waitFor();
                 filesCheckedOut.add(file);
+                m.inc().progress();
             }
         }
+        m.ok();
     }
 
     public void checkinDirs(Collection<File> dirs) {
+        Meter m = meter.sub("checkinDirs").iterations(dirs.size()).start();
         for (File dir : dirs) {
             if (dirsCheckedOut.contains(dir)) {
-                pb.reset("checkinDir").command("checkin").argument("-ptime").argument("-nc")
-                        .argument(dir.getPath()).create().waitFor();
+                pb.reset("checkinDir").command("checkin").argument("-ptime").argument("-nc").argument(dir.getPath()).create().waitFor();
                 dirsCheckedOut.remove(dir);
+                m.inc().progress();
             }
         }
+        m.ok();
     }
 
     public void checkinFiles(Collection<File> files) {
+        Meter m = meter.sub("checkinFiles").iterations(files.size()).start();
         for (File file : files) {
             if (filesCheckedOut.contains(file)) {
                 pb.reset("checkinFile").command("checkin").argument("-ptime").argument("-nc")
                         .argument(file.getPath()).create().waitFor();
                 filesCheckedOut.remove(file);
+                m.inc().progress();
             }
         }
+        m.ok();
     }
 
     public void checkinAll() {
@@ -129,10 +141,13 @@ class ClearToolCommander {
     }
 
     public void moveFile(File source, File target) {
+        Meter m = meter.sub("moveFile").start();
         pb.reset("moveFile").command("mv").argument("-nc").argument(source.getPath()).argument(target.getPath()).create().waitFor();
+        m.ok();
     }
 
-    private void safeMakeElements(Collection<File> dirs, Collection<File> files) {
+    private void makeElements(Collection<File> dirs, Collection<File> files) {
+        Meter m = meter.sub("makeElements").start();
         final TreeSet<File> dirsToCheckout = new TreeSet<File>();
         final TreeSet<File> filesToCheckout = new TreeSet<File>();
         final TreeSet<File> dirsToMake = new TreeSet<File>();
@@ -143,6 +158,7 @@ class ClearToolCommander {
         if (dirs != null) {
             dirsToMake.addAll(dirs);
         }
+        m.iterations(filesToMake.size() + dirsToMake.size());
 
         outer:
         while (!dirsToCheckout.isEmpty() || !filesToCheckout.isEmpty() || !dirsToMake.isEmpty() || !filesToMake.isEmpty()) {
@@ -241,8 +257,11 @@ class ClearToolCommander {
                         }
                     }
                 }).waitFor();
+                m.inc().progress();
             }
         }
+        
+        m.ok();
     }
     static final Pattern mkfileParentDirectoryMissingPattern1 = Pattern.compile("cleartool: Error: Not a vob object: \"(.*)\"\\.");
     static final Pattern mkfileParentDirectoryMissingPattern2 = Pattern.compile("cleartool: Error: Unable to access \"(.*)\": No such file or directory\\.");
@@ -256,26 +275,29 @@ class ClearToolCommander {
     static final Pattern mkdirAlreadyExistPattern = Pattern.compile("cleartool: Error: Entry named \"(.*)\" already exists\\.");
 
     public void makeDirs(List<File> dirsAdded) {
-        safeMakeElements(dirsAdded, null);
+        makeElements(dirsAdded, null);
     }
 
     public void makeFiles(List<File> filesAdded) {
-        safeMakeElements(null, filesAdded);
+        makeElements(null, filesAdded);
     }
 
-    public void updateFiles(File ...files) {
+    public void updateFiles(File... files) {
         updateFiles(Arrays.asList(files));
     }
-    
+
     public void updateFiles(Collection<File> files) {
+        Meter m = meter.sub("updateFiles").iterations(files.size()).start();
         for (File file : files) {
-            CommandLineProcess p = pb.reset("updateFile").command("update").argument("-force").argument(file.getPath()).create();
-            p.waitFor();
+            pb.reset("updateFile").command("update").argument("-force").argument(file.getPath()).create().waitFor();
+            m.inc().progress();
         }
+        m.ok();
     }
 
     void updateVobViewDir() {
-        CommandLineProcess p = pb.reset("updateVob").command("update").argument("-force").create();
-        p.waitFor();
+        Meter m = meter.sub("updateVobViewDir");
+        pb.reset("updateVob").command("update").argument("-force").create().waitFor();
+        m.ok();
     }
 }

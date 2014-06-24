@@ -19,4 +19,6 @@ public interface GitConfig extends GitConfigSource {
     GitConfig setRepositoryDir(File dir);
 
     GitConfig setResetLocalGitRepository(Boolean value);
+    
+    GitConfig setApplyDefaultGitConfig(Boolean value);
 }

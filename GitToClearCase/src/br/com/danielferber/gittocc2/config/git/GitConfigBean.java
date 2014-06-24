@@ -11,15 +11,14 @@ import java.io.File;
 public class GitConfigBean implements GitConfig {
 
     private final GitConfig wrapped;
-
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-
     public static final String GIT_EXEC_PROPERTY = "git.exec";
     public static final String REPOSITORY_DIR_PROPERTY = "repository.dir";
     public static final String CLEAN_LOCAL_GIT_REPOSITORY_PROPERTY = "git.cleanLocalGitRepository";
     public static final String RESET_LOCAL_GIT_REPOSITORY_PROPERTY = "git.resetLocalGitRepository";
     public static final String FAST_FORWARD_LOCAL_GIT_REPOSITORY_PROPERTY = "git.fastForwardLocalGitRepository";
     public static final String FETCH_REMOTE_GIT_REPOSITORY_PROPERTY = "git.fetchRemoteGitRepository";
+    public static final String APPLY_DEFAULT_GIT_CONFIG_PROPERTY = "git.applyDefaultGitconfig";
 
     public GitConfigBean() {
         super();
@@ -50,9 +49,9 @@ public class GitConfigBean implements GitConfig {
     }
 
     @Override
-   public File getGitExec() {
-	return wrapped.getGitExec();
-   }
+    public File getGitExec() {
+        return wrapped.getGitExec();
+    }
 
     @Override
     public File getRepositoryDir() {
@@ -64,18 +63,22 @@ public class GitConfigBean implements GitConfig {
         return wrapped.getResetLocalGitRepository();
     }
 
+    @Override
+    public Boolean getApplyDefaultGitConfig() {
+        return wrapped.getApplyDefaultGitConfig();
+    }
+
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.pcs.removePropertyChangeListener(listener);
     }
 
-
-        @Override
-		public GitConfig setCleanLocalGitRepository(Boolean value) {
-		    final Boolean oldValue = wrapped.getCleanLocalGitRepository();
-		    wrapped.setCleanLocalGitRepository(value);
-		    this.pcs.firePropertyChange(CLEAN_LOCAL_GIT_REPOSITORY_PROPERTY, oldValue, value);
-		    return this;
-		}
+    @Override
+    public GitConfig setCleanLocalGitRepository(Boolean value) {
+        final Boolean oldValue = wrapped.getCleanLocalGitRepository();
+        wrapped.setCleanLocalGitRepository(value);
+        this.pcs.firePropertyChange(CLEAN_LOCAL_GIT_REPOSITORY_PROPERTY, oldValue, value);
+        return this;
+    }
 
     @Override
     public GitConfig setFastForwardLocalGitRepository(Boolean value) {
@@ -84,7 +87,6 @@ public class GitConfigBean implements GitConfig {
         this.pcs.firePropertyChange(FAST_FORWARD_LOCAL_GIT_REPOSITORY_PROPERTY, oldValue, value);
         return this;
     }
-
 
     @Override
     public GitConfig setFetchRemoteGitRepository(Boolean value) {
@@ -118,4 +120,11 @@ public class GitConfigBean implements GitConfig {
         return this;
     }
 
+    @Override
+    public GitConfig setApplyDefaultGitConfig(Boolean value) {
+        final Boolean oldValue = wrapped.getApplyDefaultGitConfig();
+        wrapped.setApplyDefaultGitConfig(value);
+        this.pcs.firePropertyChange(APPLY_DEFAULT_GIT_CONFIG_PROPERTY, oldValue, value);
+        return this;
+    }
 }

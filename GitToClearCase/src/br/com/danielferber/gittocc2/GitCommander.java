@@ -9,7 +9,11 @@ import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,32 +26,66 @@ import java.util.Scanner;
 class GitCommander {
 
     final CommandLineProcessBuilder pb;
+    final Meter meter = MeterFactory.getMeter("GitCommander");
 
     public GitCommander(GitConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getRepositoryDir(), config.getGitExec(), LoggerFactory.getLogger("git"));
     }
 
+    public String getConfig(String key) {
+        Meter m = meter.sub("getConfig").ctx("key", key).start();
+        final CommandLineProcess p = pb.reset("config").command("config").argument(key).create();
+        BufferedReader reader = new BufferedReader(p.createOutReader());
+        p.waitFor();
+        String value = null;
+        try {
+            value = reader.readLine();
+            m.ctx("value", value).ok();
+        } catch (IOException ex) {
+            m.fail(ex);
+        }
+        return value;
+    }
+
+    public void setConfig(String key, String value) {
+        Meter m = meter.sub("setConfig").ctx("key", key).ctx("value", value).start();
+        pb.reset("config").command("config").argument(key).argument(value).create().waitFor();
+        m.ok();
+    }
+
     public void resetLocal() {
-        pb.reset("resetLocal").command("reset").parameter("hard").create().waitFor();
+        Meter m = meter.sub("resetLocal").start();
+        pb.reset("reset").command("reset").parameter("hard").create().waitFor();
+        m.ok();
     }
 
     public void cleanLocal() {
-        pb.reset("cleanLocal").command("clean").shortParameter("d").shortParameter("x").parameter("force").create().waitFor();
+        Meter m = meter.sub("cleanLocal").start();
+        pb.reset("clean").command("clean").shortParameter("d").shortParameter("x").parameter("force").create().waitFor();
+        m.ok();
     }
 
     public void fetchRemote() {
-        pb.reset("fetchRemote").command("fetch").parameter("progress").parameter("verbose").create().waitFor();
+        Meter m = meter.sub("fetchRemote").start();
+        pb.reset("fetch").command("fetch").parameter("progress").parameter("verbose").create().waitFor();
+        m.ok();
     }
 
     public void fastForward() {
-        pb.reset("fastForward").command("merge").parameter("ff-only").parameter("progress").parameter("verbose").create().waitFor();
+        Meter m = meter.sub("fastForward").start();
+        final CommandLineProcess p = pb.reset("fastForward").command("merge").parameter("ff-only").parameter("progress").parameter("verbose").create();
+        p.waitFor();
+        int exitValue = p.exitValue();
+        m.ok();
     }
 
     public String currentCommit() {
-        final CommandLineProcess p = pb.reset("currentCommit").command("rev-parse").argument("HEAD").create();
+        Meter m = meter.sub("currentCommit").start();
+        final CommandLineProcess p = pb.reset("rev-parse").command("rev-parse").argument("HEAD").create();
         Scanner scanner = p.createOutScanner();
         p.start();
         final String commit = scanner.next();
+        m.ctx("commit", commit).ok();
         return commit;
     }
 

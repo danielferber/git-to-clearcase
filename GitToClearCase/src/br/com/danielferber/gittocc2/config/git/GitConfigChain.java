@@ -64,7 +64,11 @@ public class GitConfigChain implements GitConfigSource {
         return wrapped1.getResetLocalGitRepository();
     }
 
-    
-    
-
+    @Override
+    public Boolean getApplyDefaultGitConfig() {
+        if (wrapped2.getApplyDefaultGitConfig() != null) {
+            return wrapped2.getApplyDefaultGitConfig();
+        }
+        return wrapped1.getApplyDefaultGitConfig();
+    }
 }
