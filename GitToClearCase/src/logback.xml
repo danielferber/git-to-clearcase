@@ -58,14 +58,14 @@
             <loggerName>git</loggerName>
             <onMatch>DENY</onMatch>
         </filter>
-         <filter class="br.com.danielferber.gittocc2.logback.LoggerNameFilter">
+        <filter class="br.com.danielferber.gittocc2.logback.LoggerNameFilter">
             <loggerName>ct</loggerName>
             <onMatch>DENY</onMatch>
         </filter>
 
         <encoder>
-            <!-- Mostra apenas a mensagem. Informações detalhadas estão no log. -->
-            <pattern>%msg%n</pattern>-->        
+            <!-- Mostra apenas a mensagem colorida. Informações detalhadas estão no log. -->
+            <pattern> %highlight(%msg) %n</pattern>-->        
         </encoder>
     </appender>
 
