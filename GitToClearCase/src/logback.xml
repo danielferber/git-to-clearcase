@@ -2,6 +2,10 @@
 <configuration>
     <timestamp key="monthId" datePattern="yyyy-MM"/>
     
+    <conversionRule conversionWord="highlight" 
+                    converterClass="br.com.danielferber.gittocc2.logback.HighlightingCompositeConverter" />
+
+    
     <appender name="FILE-METER" class="ch.qos.logback.core.FileAppender">
         <!-- Arquivo com os tempos de execução de cada operação. -->
         
