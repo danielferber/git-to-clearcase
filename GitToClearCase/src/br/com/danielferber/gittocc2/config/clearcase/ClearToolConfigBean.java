@@ -69,8 +69,8 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getUpdateVobRoot() {
-        return wrapped.getUpdateVobRoot();
+    public Boolean getupdateVobViewDir() {
+        return wrapped.getupdateVobViewDir();
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
 
     @Override
     public ClearToolConfig setUpdateVobRoot(final Boolean value) {
-        final Boolean oldValue = wrapped.getUpdateVobRoot();
+        final Boolean oldValue = wrapped.getupdateVobViewDir();
         wrapped.setUpdateVobRoot(value);
         this.pcs.firePropertyChange(UPDATE_VOB_ROOT_PROPERTY, oldValue, value);
         return this;

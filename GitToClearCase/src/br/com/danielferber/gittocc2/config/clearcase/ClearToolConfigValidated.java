@@ -66,8 +66,8 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public Boolean getUpdateVobRoot() {
-        return wrapped.getUpdateVobRoot();
+    public Boolean getupdateVobViewDir() {
+        return wrapped.getupdateVobViewDir();
     }
 
     @Override

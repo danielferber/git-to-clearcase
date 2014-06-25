@@ -72,11 +72,11 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     }
 
     @Override
-   public Boolean getUpdateVobRoot() {
-	if (wrapped2.getUpdateVobRoot() != null) {
-	    return wrapped2.getUpdateVobRoot();
+   public Boolean getupdateVobViewDir() {
+	if (wrapped2.getupdateVobViewDir() != null) {
+	    return wrapped2.getupdateVobViewDir();
 	}
-	return wrapped1.getUpdateVobRoot();
+	return wrapped1.getupdateVobViewDir();
    }
 
     @Override

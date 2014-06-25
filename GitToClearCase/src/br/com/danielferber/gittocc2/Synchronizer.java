@@ -62,30 +62,8 @@ public class Synchronizer {
                     ps.println(" - Compare root: " + compareRoot);
                 }
 
-                ps.println("ClearTools properties:");
-                ps.println(" - Executable file: " + nonValidatedClearToolConfig.getClearToolExec());
-                ps.println(" - VOB view directory: " + nonValidatedClearToolConfig.getVobViewDir());
-                ps.println(" - Create activity: " + nonValidatedClearToolConfig.getCreateActivity());
-                if (nonValidatedClearToolConfig.getCreateActivity() != null && nonValidatedClearToolConfig.getCreateActivity()) {
-                    ps.println("   Activity message pattern: " + nonValidatedClearToolConfig.getActivityMessagePattern());
-                }
-                ps.println(" - Update ClearCase VOB directory: " + nonValidatedClearToolConfig.getUpdateVobRoot());
-                ps.println(" - Commit stamp file: " + nonValidatedClearToolConfig.getCommitStampFileName());
-                ps.println(" - Counter stamp file: " + nonValidatedClearToolConfig.getCounterStampFileName());
-                if (nonValidatedClearToolConfig.getOverriddenSyncFromCommit() != null) {
-                    ps.println(" - Overridden sync commit: " + nonValidatedClearToolConfig.getOverriddenSyncFromCommit());
-                }
-                if (nonValidatedClearToolConfig.getOverriddenSyncCounter()!= null) {
-                    ps.println(" - Overridden sync counter: " + nonValidatedClearToolConfig.getOverriddenSyncCounter());
-                }
-
-                ps.println("Git properties:");
-                ps.println(" - git executable file: " + nonValidateGitConfig.getGitExec());
-                ps.println(" - git repository directory: " + nonValidateGitConfig.getRepositoryDir());
-                ps.println(" - clean git repository: " + nonValidateGitConfig.getCleanLocalGitRepository());
-                ps.println(" - fast forward git repository: " + nonValidateGitConfig.getFastForwardLocalGitRepository());
-                ps.println(" - fetch from remote repository: " + nonValidateGitConfig.getFetchRemoteGitRepository());
-                ps.println(" - reset git repository: " + nonValidateGitConfig.getResetLocalGitRepository());
+                ClearToolConfigSource.Utils.printConfig(ps, nonValidatedClearToolConfig);
+                GitConfigSource.Utils.printConfig(ps, nonValidateGitConfig);
             }
         }
 

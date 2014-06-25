@@ -27,7 +27,7 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
         this.setVobViewDir(other.getVobViewDir());
         this.setActivityMessagePattern(other.getActivityMessagePattern());
         this.setCreateActivity(other.getCreateActivity());
-        this.setUpdateVobRoot(other.getUpdateVobRoot());
+        this.setUpdateVobRoot(other.getupdateVobViewDir());
         this.setCommitStampFileName(other.getCommitStampFileName());
         this.setCounterStampFileName(other.getCounterStampFileName());
         this.setOverriddenSyncCounter(other.getOverriddenSyncCounter());
@@ -94,7 +94,7 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public Boolean getUpdateVobRoot() {
+    public Boolean getupdateVobViewDir() {
         return properties.getBoolean(prefix + "cc.updateVobRoot");
     }
 

@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  *
@@ -27,19 +28,19 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
 
     private final File gitRootDir;
     private final File clearCaseRootDir;
-    private final Meter globalMeter;
+    private final Meter meter;
     private final File compareRoot;
 
-    CompareTreeDiffTask(final File gitRootDir, final File clearCaseRootDir, final File compareRoot, final Meter outerMeter) {
+    CompareTreeDiffTask(final File gitRootDir, final File clearCaseRootDir, final File compareRoot) {
         this.gitRootDir = gitRootDir;
         this.clearCaseRootDir = clearCaseRootDir;
         this.compareRoot = compareRoot;
-        this.globalMeter = outerMeter.sub("CompareDiff").m("Compare GIT repository with ClearCase vob directory.");
+        this.meter = MeterFactory.getMeter("GitTreeDiffTask").m("Calculate differences from file by file comparison.");
     }
 
     @Override
     public TreeDiff call() throws Exception {
-        globalMeter.start();
+        meter.start();
 
         Meter m2 = null;
         final Set<File> vobDirs = new TreeSet<>();
@@ -47,6 +48,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
         final Set<File> repositoryDirs = new TreeSet<>();
         final Set<File> repositoryFiles = new TreeSet<>();
 
+         final TreeDiff treeDiff;
         try {
 
             final FileVisitor<Path> vobVisitor = new SimpleFileVisitor<Path>() {
@@ -85,70 +87,74 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
                 }
             };
 
-            m2 = globalMeter.sub("vobScan").m("Execute ClearCase VOB scan.").start();
+            m2 = meter.sub("vobScan").m("Execute ClearCase VOB scan.").start();
             final File clearCaseCompareDir = new File(clearCaseRootDir, compareRoot.getPath());
             Files.walkFileTree(clearCaseCompareDir.toPath(), vobVisitor);
             m2.ok();
 
-            m2 = globalMeter.sub("gitScan").m("Execute GIT repository scan.").start();
+            m2 = meter.sub("gitScan").m("Execute GIT repository scan.").start();
             final File gitCompareDir = new File(gitRootDir, compareRoot.getPath());
             Files.walkFileTree(gitCompareDir.toPath(), repositoryVisitor);
             m2.ok();
 
+            final Set<File> dirsAdded = new TreeSet<>(repositoryDirs);
+            dirsAdded.removeAll(vobDirs);
+            final Set<File> dirsDeleted = new TreeSet<>(vobDirs);
+            dirsDeleted.removeAll(repositoryDirs);
+            final Set<File> filesAdded = new TreeSet<>(repositoryFiles);
+            filesAdded.removeAll(vobFiles);
+            final Set<File> filesDeleted = new TreeSet<>(vobFiles);
+            filesDeleted.removeAll(repositoryFiles);
+
+            final Set<File> filesToCompare = new TreeSet<>(vobFiles);
+            filesToCompare.retainAll(repositoryFiles);
+            m2 = meter.sub("fileCompare").m("Compare file by file.").iterations(filesToCompare.size()).start();
+            final Set<File> filesModified = new TreeSet<>();
+            for (final File file : filesToCompare) {
+                final File gitSourceFile = new File(gitRootDir, file.getPath());
+                final File ccTargetFile = new File(clearCaseRootDir, file.getPath());
+                if (gitSourceFile.length() != ccTargetFile.length()) {
+                    filesModified.add(file);
+                    continue;
+                }
+                try (
+                        InputStream i1 = new FileInputStream(gitSourceFile);
+                        InputStream i2 = new FileInputStream(ccTargetFile)) {
+                    if (!compare(i1, i2)) {
+                        filesModified.add(file);
+                    }
+                } catch (final IOException e) {
+                    m2.getLogger().error("Failed to compare file.", e);
+                }
+                m2.inc().progress();
+            }
+            m2.ok();
+            final Set<File> filesMovedFrom = Collections.emptySet();
+            final Set<File> filesMovedTo = Collections.emptySet();
+            final Set<File> filesMovedModified = Collections.emptySet();
+            final Set<File> filesCopiedFrom = Collections.emptySet();
+            final Set<File> filesCopiedTo = Collections.emptySet();
+            final Set<File> filesCopiedModified = Collections.emptySet();
+            treeDiff = new TreeDiff(
+                    new ArrayList<>(dirsAdded),
+                    new ArrayList<>(dirsDeleted),
+                    new ArrayList<>(filesAdded),
+                    new ArrayList<>(filesDeleted),
+                    new ArrayList<>(filesModified),
+                    new ArrayList<>(filesMovedFrom),
+                    new ArrayList<>(filesMovedTo),
+                    new ArrayList<>(filesMovedModified),
+                    new ArrayList<>(filesCopiedFrom),
+                    new ArrayList<>(filesCopiedTo),
+                    new ArrayList<>(filesCopiedModified));
+
         } catch (final Exception e) {
-            globalMeter.fail(e);
+            meter.fail(e);
             throw e;
         }
 
-        final Set<File> dirsAdded = new TreeSet<>(repositoryDirs);
-        dirsAdded.removeAll(vobDirs);
-        final Set<File> dirsDeleted = new TreeSet<>(vobDirs);
-        dirsDeleted.removeAll(repositoryDirs);
-        final Set<File> filesAdded = new TreeSet<>(repositoryFiles);
-        filesAdded.removeAll(vobFiles);
-        final Set<File> filesDeleted = new TreeSet<>(vobFiles);
-        filesDeleted.removeAll(repositoryFiles);
 
-        final Set<File> filesToCompare = new TreeSet<>(vobFiles);
-        filesToCompare.retainAll(repositoryFiles);
-        final Set<File> filesModified = new TreeSet<>();
-        for (final File file : filesToCompare) {
-            final File gitSourceFile = new File(gitRootDir, file.getPath());
-            final File ccTargetFile = new File(clearCaseRootDir, file.getPath());
-            if (gitSourceFile.length() != ccTargetFile.length()) {
-                filesModified.add(file);
-                continue;
-            }
-            try (
-                InputStream i1 = new FileInputStream(gitSourceFile) ;
-                InputStream i2 = new FileInputStream(ccTargetFile) ) {
-                if (!compare(i1, i2)) {
-                    filesModified.add(file);
-                }
-            } catch (final IOException e) {
-                globalMeter.getLogger().error("Failed to copy file.", e);
-            }
-
-        }
-        final Set<File> filesMovedFrom = Collections.emptySet();
-        final Set<File> filesMovedTo = Collections.emptySet();
-        final Set<File> filesMovedModified = Collections.emptySet();
-        final Set<File> filesCopiedFrom = Collections.emptySet();
-        final Set<File> filesCopiedTo = Collections.emptySet();
-        final Set<File> filesCopiedModified = Collections.emptySet();
-
-        return new TreeDiff(
-                new ArrayList<>(dirsAdded),
-                new ArrayList<>(dirsDeleted),
-                new ArrayList<>(filesAdded),
-                new ArrayList<>(filesDeleted),
-                new ArrayList<>(filesModified),
-                new ArrayList<>(filesMovedFrom),
-                new ArrayList<>(filesMovedTo),
-                new ArrayList<>(filesMovedModified),
-                new ArrayList<>(filesCopiedFrom),
-                new ArrayList<>(filesCopiedTo),
-                new ArrayList<>(filesCopiedModified));
+        return treeDiff;
     }
 
     private static boolean compare(final InputStream input1, final InputStream input2) throws IOException {
