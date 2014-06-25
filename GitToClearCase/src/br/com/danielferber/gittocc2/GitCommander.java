@@ -4,13 +4,6 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
-import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
-import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
-import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +11,14 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
+import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
+import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  *
@@ -28,69 +29,69 @@ class GitCommander {
     final CommandLineProcessBuilder pb;
     final Meter meter = MeterFactory.getMeter("GitCommander");
 
-    public GitCommander(GitConfigSource config) {
+    public GitCommander(final GitConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getRepositoryDir(), config.getGitExec(), LoggerFactory.getLogger("git"));
     }
 
-    public String getConfig(String key) {
-        Meter m = meter.sub("getConfig").ctx("key", key).start();
+    public String getConfig(final String key) {
+        final Meter m = meter.sub("getConfig").ctx("key", key).start();
         final CommandLineProcess p = pb.reset("config").command("config").argument(key).create();
-        BufferedReader reader = new BufferedReader(p.createOutReader());
+        final BufferedReader reader = new BufferedReader(p.createOutReader());
         p.waitFor();
         String value = null;
         try {
             value = reader.readLine();
             m.ctx("value", value).ok();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             m.fail(ex);
         }
         return value;
     }
 
-    public void setConfig(String key, String value) {
-        Meter m = meter.sub("setConfig").ctx("key", key).ctx("value", value).start();
+    public void setConfig(final String key, final String value) {
+        final Meter m = meter.sub("setConfig").ctx("key", key).ctx("value", value).start();
         pb.reset("config").command("config").argument(key).argument(value).create().waitFor();
         m.ok();
     }
 
     public void resetLocal() {
-        Meter m = meter.sub("resetLocal").start();
+        final Meter m = meter.sub("resetLocal").start();
         pb.reset("reset").command("reset").parameter("hard").create().waitFor();
         m.ok();
     }
 
     public void cleanLocal() {
-        Meter m = meter.sub("cleanLocal").start();
+        final Meter m = meter.sub("cleanLocal").start();
         pb.reset("clean").command("clean").shortParameter("d").shortParameter("x").parameter("force").create().waitFor();
         m.ok();
     }
 
     public void fetchRemote() {
-        Meter m = meter.sub("fetchRemote").start();
+        final Meter m = meter.sub("fetchRemote").start();
         pb.reset("fetch").command("fetch").parameter("progress").parameter("verbose").create().waitFor();
         m.ok();
     }
 
     public void fastForward() {
-        Meter m = meter.sub("fastForward").start();
+        final Meter m = meter.sub("fastForward").start();
         final CommandLineProcess p = pb.reset("fastForward").command("merge").parameter("ff-only").parameter("progress").parameter("verbose").create();
         p.waitFor();
-        int exitValue = p.exitValue();
+        final int exitValue = p.exitValue();
         m.ok();
     }
 
     public String currentCommit() {
-        Meter m = meter.sub("currentCommit").start();
+        final Meter m = meter.sub("currentCommit").start();
         final CommandLineProcess p = pb.reset("rev-parse").command("rev-parse").argument("HEAD").create();
-        Scanner scanner = p.createOutScanner();
+        final Scanner scanner = p.createOutScanner();
         p.start();
         final String commit = scanner.next();
         m.ctx("commit", commit).ok();
         return commit;
     }
 
-    public String commitMessagesReport(String fromCommit, String toCommit, String format) {
-        CommandLineProcess p = pb.reset("commitReport").command("log").parameter("reverse").parameter("topo-order").parameter("no-merges")
+    public String commitMessagesReport(final String fromCommit, final String toCommit, final String format) {
+        final CommandLineProcess p = pb.reset("commitReport").command("log").parameter("reverse").parameter("topo-order").parameter("no-merges")
                 .parameter("pretty", "format:" + format).parameter("date", "short").parameter("no-color").argument(fromCommit + ".." + toCommit).create();
         final StringWriter sb = new StringWriter();
         p.addOutWriter(sb);
@@ -99,8 +100,8 @@ class GitCommander {
         return sb.toString();
     }
 
-    public TreeDiff treeDif(String fromCommit, String toCommit) {
-        CommandLineProcess p = pb.reset("treeDiff").command("diff-tree")
+    public TreeDiff treeDif(final String fromCommit, final String toCommit) {
+        final CommandLineProcess p = pb.reset("treeDiff").command("diff-tree")
                 .parameter("find-copies", "30%").parameter("find-copies-harder")
                 .parameter("find-renames", "30%").shortParameter("r")
                 .shortParameter("t").parameter("raw").argument(fromCommit).argument(toCommit).create();
@@ -122,7 +123,7 @@ class GitCommander {
 
         p.addOutWriter(new LineSplittingWriter() {
             @Override
-            protected void processLine(String line) {
+            protected void processLine(final String line) {
                 final String[] data = line.split("\t");
                 final String srcMode = data[0].substring(1, 3);
                 final String dstMode = data[0].substring(8, 10);

@@ -26,7 +26,7 @@ public class LoggerNameFilter extends AbstractMatcherFilter<ILoggingEvent> {
     }
 
     @Override
-    public FilterReply decide(ILoggingEvent event) {
+    public FilterReply decide(final ILoggingEvent event) {
 
         if (event.getLoggerName().startsWith(loggerName)) {
             return onMatch;
@@ -35,7 +35,7 @@ public class LoggerNameFilter extends AbstractMatcherFilter<ILoggingEvent> {
         }
     }
 
-    public void setLoggerName(String loggerName) {
+    public void setLoggerName(final String loggerName) {
         this.loggerName = loggerName;
     }
 

@@ -1,7 +1,8 @@
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.util.concurrent.Callable;
+
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 
 /**
  *
@@ -14,7 +15,7 @@ class GitTreeDiffTask implements Callable<TreeDiff> {
     private final String syncToCommit;
     private final Meter globalMeter;
 
-    GitTreeDiffTask(GitCommander gitCommander, String suncFromCommit, String syncToCommit, Meter outerMeter) {
+    GitTreeDiffTask(final GitCommander gitCommander, final String suncFromCommit, final String syncToCommit, final Meter outerMeter) {
         this.gitCommander = gitCommander;
         this.syncFromCommit = suncFromCommit;
         this.syncToCommit = syncToCommit;
@@ -32,13 +33,13 @@ class GitTreeDiffTask implements Callable<TreeDiff> {
 //            String report = gitCommander.commitMessagesReport(fromCommit, gitCommit, "%an (%ad):%n%s%n");
 //            m2.ok();
             m2 = globalMeter.sub("treeDif").m("Execute tree-diff.").ctx("fromCommit", syncFromCommit).ctx("toCommit", syncToCommit).start();
-            TreeDiff diff = gitCommander.treeDif(syncFromCommit, syncToCommit);
+            final TreeDiff diff = gitCommander.treeDif(syncFromCommit, syncToCommit);
             m2.ok();
 
             globalMeter.ok();
 
             return diff;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             globalMeter.fail(e);
             throw e;
         }

@@ -5,14 +5,15 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  * Syncronizes the Git repository to the ClearCase VOB view directory.
@@ -31,7 +32,7 @@ class SynchronizeTask implements Callable<Void> {
     private final boolean compareOnly;
     private final File compareRoot;
 
-    SynchronizeTask(ClearToolConfigSource cleartoolConfig, GitConfigSource gitConfig, boolean compareOnly, File compareRoot) {
+    SynchronizeTask(final ClearToolConfigSource cleartoolConfig, final GitConfigSource gitConfig, final boolean compareOnly, final File compareRoot) {
         this.gitCommander = new GitCommander(gitConfig);
         this.ctCommander = new ClearToolCommander(cleartoolConfig);
         this.cleartoolConfig = cleartoolConfig;
@@ -70,7 +71,7 @@ class SynchronizeTask implements Callable<Void> {
             } else {
                 syncFromCommit = cleartoolConfig.getOverriddenSyncFromCommit();
             }
-            String syncToCommit = readCurrentCommit();
+            final String syncToCommit = readCurrentCommit();
 
             final TreeDiff diff;
             if (compareOnly) {
@@ -88,39 +89,39 @@ class SynchronizeTask implements Callable<Void> {
             globalMeter.ok();
 
             return null;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             globalMeter.fail(e);
             throw e;
         }
     }
 
     private String readCommitStampFile() throws SyncTaskException {
-        Meter m = globalMeter.sub("commitStamp.read").m("Read sync commit control file.").ctx("file", this.commitStampFile).start();
+        final Meter m = globalMeter.sub("commitStamp.read").m("Read sync commit control file.").ctx("file", this.commitStampFile).start();
         try (Scanner scanner = new Scanner(this.commitStampFile)) {
             final String result = scanner.next();
             m.ctx("fromCommit", result).ok();
             return result;
-        } catch (FileNotFoundException ex) {
+        } catch (final FileNotFoundException ex) {
             m.fail(ex);
             throw new SyncTaskException("Commit stamp file not readable.", ex);
         }
     }
 
     private long readSyncCounterFile() throws SyncTaskException {
-        Meter m = globalMeter.sub("syncCounter.read").m("Read sync counter control file.").ctx("file", this.commitStampFile).start();
+        final Meter m = globalMeter.sub("syncCounter.read").m("Read sync counter control file.").ctx("file", this.commitStampFile).start();
         try (Scanner scanner = new Scanner(this.counterStampFile)) {
             final long result = scanner.nextLong();
             m.ctx("counter", result).ok();
             return result;
-        } catch (FileNotFoundException ex) {
+        } catch (final FileNotFoundException ex) {
             m.fail(ex);
             throw new SyncTaskException("Counter stamp file not readable.", ex);
         }
     }
 
     private String readCurrentCommit() {
-        Meter m = globalMeter.sub("currentCommit.read").m("Read current commit hash.").start();
-        String gitCommit = gitCommander.currentCommit();
+        final Meter m = globalMeter.sub("currentCommit.read").m("Read current commit hash.").start();
+        final String gitCommit = gitCommander.currentCommit();
         m.ctx("commit", gitCommit).ok();
         return gitCommit;
     }

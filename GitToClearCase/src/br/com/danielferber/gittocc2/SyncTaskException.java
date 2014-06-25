@@ -12,11 +12,11 @@ package br.com.danielferber.gittocc2;
 class SyncTaskException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public SyncTaskException(String message) {
+	public SyncTaskException(final String message) {
         super(message);
     }
 
-    public SyncTaskException(String message, Throwable cause) {
+    public SyncTaskException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

@@ -26,7 +26,7 @@ class TreeDiff {
     public final List<File> filesCopiedTo;//
     public final List<File> filesCopiedModified;//
 
-    public TreeDiff(List<File> dirsAdded, List<File> dirsDeleted, List<File> filesAdded, List<File> filesDeleted, List<File> filesModified, List<File> filesMovedFrom, List<File> filesMovedTo, List<File> filesMovedModified, List<File> filesCopiedFrom, List<File> filesCopiedTo, List<File> filesCopiedModified) {
+    public TreeDiff(final List<File> dirsAdded, final List<File> dirsDeleted, final List<File> filesAdded, final List<File> filesDeleted, final List<File> filesModified, final List<File> filesMovedFrom, final List<File> filesMovedTo, final List<File> filesMovedModified, final List<File> filesCopiedFrom, final List<File> filesCopiedTo, final List<File> filesCopiedModified) {
         this.dirsAdded = Collections.unmodifiableList(dirsAdded);
         this.dirsDeleted = Collections.unmodifiableList(dirsDeleted);
         this.filesAdded = Collections.unmodifiableList(filesAdded);

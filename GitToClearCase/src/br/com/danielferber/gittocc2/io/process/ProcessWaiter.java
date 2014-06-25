@@ -18,7 +18,7 @@ class ProcessWaiter implements Runnable {
         super();
     }
 
-    public void start(Process process) {
+    public void start(final Process process) {
         this.process = process;
         thread = new Thread(this);
 //        thread.setDaemon(true);
@@ -33,7 +33,7 @@ class ProcessWaiter implements Runnable {
      * Registers a listener called when process finishes.
      *
      */
-    public ProcessWaiter with(Runnable runnable) {
+    public ProcessWaiter with(final Runnable runnable) {
         listeners.add(runnable);
         return this;
     }
@@ -44,15 +44,15 @@ class ProcessWaiter implements Runnable {
             try {
                 process.exitValue();
                 break;
-            } catch (IllegalThreadStateException e) {
+            } catch (final IllegalThreadStateException e) {
                 try {
                     process.waitFor();
-                } catch (InterruptedException ee) {
+                } catch (final InterruptedException ee) {
                     // ignore
                 }
             }
         }
-        for (Runnable runnable : listeners) {
+        for (final Runnable runnable : listeners) {
             runnable.run();
         }
     }

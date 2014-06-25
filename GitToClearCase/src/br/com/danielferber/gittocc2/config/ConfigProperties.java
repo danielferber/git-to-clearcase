@@ -19,43 +19,43 @@ public class ConfigProperties extends Properties {
         super();
     }
 
-    public ConfigProperties(Properties properties) {
+    public ConfigProperties(final Properties properties) {
         super();
         this.putAll(properties);
     }
 
-    public File getFile(String name) {
+    public File getFile(final String name) {
         final String property = this.getProperty(name);
         return property == null ? null : new File(property);
     }
 
-    public void setFile(String name, File file) {
+    public void setFile(final String name, final File file) {
         this.setProperty(name, file == null ? "" : file.getPath());
     }
 
-    public Boolean getBoolean(String name) {
+    public Boolean getBoolean(final String name) {
         final String property = this.getProperty(name);
         return property == null ? null : Boolean.valueOf(property);
     }
 
-    public void setBoolean(String name, Boolean value) {
+    public void setBoolean(final String name, final Boolean value) {
         this.setProperty(name, value == null ? "" : Boolean.toString(value));
     }
-    
-    public Long getLong(String name) {
+
+    public Long getLong(final String name) {
         final String property = this.getProperty(name);
         return property == null ? null : Long.valueOf(property);
     }
 
-    public void setLong(String name, Long value) {
+    public void setLong(final String name, final Long value) {
         this.setProperty(name, value == null ? "" : Long.toString(value));
     }
-    
-    public String getString(String name) {
+
+    public String getString(final String name) {
         return this.getProperty(name);
     }
 
-    public void setString(String name, String value) {
+    public void setString(final String name, final String value) {
         this.setProperty(name, value);
     }
 }

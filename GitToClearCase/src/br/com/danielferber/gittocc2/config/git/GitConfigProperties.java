@@ -1,8 +1,9 @@
 package br.com.danielferber.gittocc2.config.git;
 
-import br.com.danielferber.gittocc2.config.ConfigProperties;
 import java.io.File;
 import java.util.Properties;
+
+import br.com.danielferber.gittocc2.config.ConfigProperties;
 
 /**
  *
@@ -13,11 +14,11 @@ public class GitConfigProperties implements GitConfig {
     private final ConfigProperties properties;
     private final String prefix;
 
-    public GitConfigProperties(GitConfigSource other) {
+    public GitConfigProperties(final GitConfigSource other) {
         this(other, "");
     }
 
-    public GitConfigProperties(GitConfigSource other, String prefix) {
+    public GitConfigProperties(final GitConfigSource other, final String prefix) {
         this.properties = new ConfigProperties();
         this.prefix = prefix;
         this.setGitExec(other.getGitExec());
@@ -30,11 +31,11 @@ public class GitConfigProperties implements GitConfig {
 
     }
 
-    public GitConfigProperties(Properties properties) {
+    public GitConfigProperties(final Properties properties) {
         this(properties, "");
     }
 
-    public GitConfigProperties(Properties properties, String prefix) {
+    public GitConfigProperties(final Properties properties, final String prefix) {
         this.properties = new ConfigProperties(properties);
         this.prefix = prefix;
     }
@@ -75,43 +76,43 @@ public class GitConfigProperties implements GitConfig {
     }
 
     @Override
-    public GitConfig setCleanLocalGitRepository(Boolean value) {
+    public GitConfig setCleanLocalGitRepository(final Boolean value) {
         properties.setBoolean(prefix + "git.cleanLocalGitRepository", value);
         return this;
     }
 
     @Override
-    public GitConfig setFastForwardLocalGitRepository(Boolean value) {
+    public GitConfig setFastForwardLocalGitRepository(final Boolean value) {
         properties.setBoolean(prefix + "git.fastForwardLocalGitRepository", value);
         return this;
     }
 
     @Override
-    public GitConfig setFetchRemoteGitRepository(Boolean value) {
+    public GitConfig setFetchRemoteGitRepository(final Boolean value) {
         properties.setBoolean(prefix + "git.fetchRemoteGitRepository", value);
         return this;
     }
 
     @Override
-    public GitConfig setGitExec(File file) {
+    public GitConfig setGitExec(final File file) {
         properties.setFile(prefix + "git.exec", file);
         return this;
     }
 
     @Override
-    public GitConfig setRepositoryDir(File dir) {
+    public GitConfig setRepositoryDir(final File dir) {
         properties.setFile(prefix + "repository.dir", dir);
         return this;
     }
 
     @Override
-    public GitConfig setResetLocalGitRepository(Boolean value) {
+    public GitConfig setResetLocalGitRepository(final Boolean value) {
         properties.setBoolean(prefix + "git.resetLocalGitRepository", value);
         return this;
     }
 
     @Override
-    public GitConfig setApplyDefaultGitConfig(Boolean value) {
+    public GitConfig setApplyDefaultGitConfig(final Boolean value) {
         properties.setBoolean(prefix + "git.applyDefaultGitConfig", value);
         return this;
     }

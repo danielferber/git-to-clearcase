@@ -27,7 +27,7 @@ class ProcessOutputRepeater implements Runnable {
         super();
     }
 
-    public void start(InputStream inputStream) {
+    public void start(final InputStream inputStream) {
         reader = new InputStreamReader(inputStream);
         thread = new Thread(this);
         thread.setDaemon(true);
@@ -37,14 +37,14 @@ class ProcessOutputRepeater implements Runnable {
     public void waitFor() throws InterruptedException {
         thread.join();
     }
-    
+
     /**
      * Registers an interested Writer to receive the process output.
      *
      * @param writer The interested Writer.
      * @return the ProcessOutputConsumer itself following the Builder pattern.
      */
-    public ProcessOutputRepeater with(Writer writer) {
+    public ProcessOutputRepeater with(final Writer writer) {
         writers.add(writer);
         return this;
     }
@@ -55,8 +55,8 @@ class ProcessOutputRepeater implements Runnable {
      * @return the Reader that reproduces the process output.
      */
     public Reader split() throws IOException {
-        PipedReader pr = new PipedReader();
-        PipedWriter pw = new PipedWriter(pr);
+        final PipedReader pr = new PipedReader();
+        final PipedWriter pw = new PipedWriter(pr);
         with(pw);
         return pr;
     }
@@ -64,21 +64,21 @@ class ProcessOutputRepeater implements Runnable {
     @Override
     public void run() {
         final int maxlen = 1024;
-        char[] buffer = new char[maxlen];
+        final char[] buffer = new char[maxlen];
         try {
             int len;
             while ((len = reader.read(buffer, 0, maxlen)) != -1) {
                 if (len == 0) {
                     Thread.yield();
                 }
-                for (Writer writer : writers) {
+                for (final Writer writer : writers) {
                     writer.write(buffer, 0, len);
                     writer.flush();
                 }
             };
-        } catch (EOFException e) {
+        } catch (final EOFException e) {
             // empty, ignore
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }

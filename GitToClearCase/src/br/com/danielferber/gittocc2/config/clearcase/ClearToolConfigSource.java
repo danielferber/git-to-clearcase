@@ -9,7 +9,7 @@ import java.io.File;
 public interface ClearToolConfigSource {
 
     String getActivityMessagePattern();
-    
+
     File getClearToolExec();
 
     File getCommitStampFileName();
@@ -25,7 +25,7 @@ public interface ClearToolConfigSource {
     Boolean getUpdateVobRoot();
 
     File getVobViewDir();
-    
+
     File getCommitStampAbsoluteFile();
 
     File getCounterStampAbsoluteFile();

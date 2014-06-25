@@ -10,11 +10,11 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     final ClearToolConfigSource wrapped1;
     final ClearToolConfigSource wrapped2;
 
-    public ClearToolConfigChain(ClearToolConfigSource wrapped1, ClearToolConfigSource wrapped2) {
+    public ClearToolConfigChain(final ClearToolConfigSource wrapped1, final ClearToolConfigSource wrapped2) {
         this.wrapped1 = wrapped1;
         this.wrapped2 = wrapped2;
     }
-    
+
     @Override
     public String getActivityMessagePattern() {
         if (wrapped2.getActivityMessagePattern() != null) {
@@ -30,7 +30,7 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
         }
         return wrapped1.getClearToolExec();
     }
-    
+
         @Override
 		public File getCommitStampFileName() {
 		    if (wrapped2.getCommitStampFileName() != null) {

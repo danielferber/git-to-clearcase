@@ -1,7 +1,8 @@
 package br.com.danielferber.gittocc2.config.clearcase;
 
-import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
+
+import br.com.danielferber.gittocc2.config.ConfigException;
 
 /**
  *
@@ -11,7 +12,7 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
 
     private final ClearToolConfigSource wrapped;
 
-    public ClearToolConfigValidated(ClearToolConfigSource wrapped) {
+    public ClearToolConfigValidated(final ClearToolConfigSource wrapped) {
         this.wrapped = wrapped;
     }
 
@@ -71,7 +72,7 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
 
     @Override
     public File getVobViewDir() {
-        File dir = wrapped.getVobViewDir();
+        final File dir = wrapped.getVobViewDir();
         if (dir == null) {
             throw new ConfigException("Vob view directory: missing property.");
         }

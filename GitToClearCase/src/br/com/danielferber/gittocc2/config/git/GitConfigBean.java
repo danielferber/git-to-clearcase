@@ -25,11 +25,11 @@ public class GitConfigBean implements GitConfig {
         this.wrapped = new GitConfigPojo();
     }
 
-    public GitConfigBean(GitConfig other) {
+    public GitConfigBean(final GitConfig other) {
         this.wrapped = other;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
         this.pcs.addPropertyChangeListener(listener);
     }
 
@@ -68,12 +68,12 @@ public class GitConfigBean implements GitConfig {
         return wrapped.getApplyDefaultGitConfig();
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
         this.pcs.removePropertyChangeListener(listener);
     }
 
     @Override
-    public GitConfig setCleanLocalGitRepository(Boolean value) {
+    public GitConfig setCleanLocalGitRepository(final Boolean value) {
         final Boolean oldValue = wrapped.getCleanLocalGitRepository();
         wrapped.setCleanLocalGitRepository(value);
         this.pcs.firePropertyChange(CLEAN_LOCAL_GIT_REPOSITORY_PROPERTY, oldValue, value);
@@ -81,7 +81,7 @@ public class GitConfigBean implements GitConfig {
     }
 
     @Override
-    public GitConfig setFastForwardLocalGitRepository(Boolean value) {
+    public GitConfig setFastForwardLocalGitRepository(final Boolean value) {
         final Boolean oldValue = wrapped.getFastForwardLocalGitRepository();
         wrapped.setFastForwardLocalGitRepository(value);
         this.pcs.firePropertyChange(FAST_FORWARD_LOCAL_GIT_REPOSITORY_PROPERTY, oldValue, value);
@@ -89,7 +89,7 @@ public class GitConfigBean implements GitConfig {
     }
 
     @Override
-    public GitConfig setFetchRemoteGitRepository(Boolean value) {
+    public GitConfig setFetchRemoteGitRepository(final Boolean value) {
         final Boolean oldValue = wrapped.getFetchRemoteGitRepository();
         wrapped.setFetchRemoteGitRepository(value);
         this.pcs.firePropertyChange(FETCH_REMOTE_GIT_REPOSITORY_PROPERTY, oldValue, value);
@@ -97,7 +97,7 @@ public class GitConfigBean implements GitConfig {
     }
 
     @Override
-    public GitConfig setGitExec(File file) {
+    public GitConfig setGitExec(final File file) {
         final File oldValue = wrapped.getGitExec();
         wrapped.setGitExec(file);
         this.pcs.firePropertyChange(GIT_EXEC_PROPERTY, oldValue, file);
@@ -105,7 +105,7 @@ public class GitConfigBean implements GitConfig {
     }
 
     @Override
-    public GitConfig setRepositoryDir(File dir) {
+    public GitConfig setRepositoryDir(final File dir) {
         final File oldValue = wrapped.getRepositoryDir();
         wrapped.setRepositoryDir(dir);
         this.pcs.firePropertyChange(REPOSITORY_DIR_PROPERTY, oldValue, dir);
@@ -113,7 +113,7 @@ public class GitConfigBean implements GitConfig {
     }
 
     @Override
-    public GitConfig setResetLocalGitRepository(Boolean value) {
+    public GitConfig setResetLocalGitRepository(final Boolean value) {
         final Boolean oldValue = wrapped.getResetLocalGitRepository();
         wrapped.setResetLocalGitRepository(value);
         this.pcs.firePropertyChange(RESET_LOCAL_GIT_REPOSITORY_PROPERTY, oldValue, value);
@@ -121,7 +121,7 @@ public class GitConfigBean implements GitConfig {
     }
 
     @Override
-    public GitConfig setApplyDefaultGitConfig(Boolean value) {
+    public GitConfig setApplyDefaultGitConfig(final Boolean value) {
         final Boolean oldValue = wrapped.getApplyDefaultGitConfig();
         wrapped.setApplyDefaultGitConfig(value);
         this.pcs.firePropertyChange(APPLY_DEFAULT_GIT_CONFIG_PROPERTY, oldValue, value);

@@ -4,12 +4,6 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
-import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
-import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,6 +13,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
+import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  *
@@ -31,27 +32,27 @@ class ClearToolCommander {
     final Set<File> dirsCheckedOut = new TreeSet<>();
     final Meter meter = MeterFactory.getMeter("ClearToolCommander");
 
-    public ClearToolCommander(ClearToolConfigSource config) {
+    public ClearToolCommander(final ClearToolConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getVobViewDir(), config.getClearToolExec(), LoggerFactory.getLogger("ct"));
     }
 
-    public void createActivity(String headline) {
-        Meter m = meter.sub("createActivity").start();
+    public void createActivity(final String headline) {
+        final Meter m = meter.sub("createActivity").start();
         pb.reset("mkactivity").command("mkactivity").arguments("-headline", headline, "-force").create().waitFor();
         m.ok();
     }
 
-    public void checkoutDir(File dir) {
+    public void checkoutDir(final File dir) {
         checkoutDirs(Collections.singleton(dir));
     }
 
-    public void checkoutFile(File file) {
+    public void checkoutFile(final File file) {
         checkoutFiles(Collections.singleton(file));
     }
 
-    public void checkoutDirs(Collection<File> dirs) {
-        Meter m = meter.sub("checkoutDirs").iterations(dirs.size()).start();
-        for (File dir : dirs) {
+    public void checkoutDirs(final Collection<File> dirs) {
+        final Meter m = meter.sub("checkoutDirs").iterations(dirs.size()).start();
+        for (final File dir : dirs) {
             if (!dirsCheckedOut.contains(dir)) {
                 pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create().waitFor();
                 dirsCheckedOut.add(dir);
@@ -61,9 +62,9 @@ class ClearToolCommander {
         m.ok();
     }
 
-    public void checkoutFiles(Collection<File> files) {
-        Meter m = meter.sub("checkoutFiles").iterations(files.size()).start();
-        for (File file : files) {
+    public void checkoutFiles(final Collection<File> files) {
+        final Meter m = meter.sub("checkoutFiles").iterations(files.size()).start();
+        for (final File file : files) {
             if (!filesCheckedOut.contains(file)) {
                 pb.reset("checkoutFile").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(file.getPath()).create().waitFor();
                 filesCheckedOut.add(file);
@@ -73,9 +74,9 @@ class ClearToolCommander {
         m.ok();
     }
 
-    public void checkinDirs(Collection<File> dirs) {
-        Meter m = meter.sub("checkinDirs").iterations(dirs.size()).start();
-        for (File dir : dirs) {
+    public void checkinDirs(final Collection<File> dirs) {
+        final Meter m = meter.sub("checkinDirs").iterations(dirs.size()).start();
+        for (final File dir : dirs) {
             if (dirsCheckedOut.contains(dir)) {
                 pb.reset("checkinDir").command("checkin").argument("-ptime").argument("-nc").argument(dir.getPath()).create().waitFor();
                 dirsCheckedOut.remove(dir);
@@ -85,9 +86,9 @@ class ClearToolCommander {
         m.ok();
     }
 
-    public void checkinFiles(Collection<File> files) {
-        Meter m = meter.sub("checkinFiles").iterations(files.size()).start();
-        for (File file : files) {
+    public void checkinFiles(final Collection<File> files) {
+        final Meter m = meter.sub("checkinFiles").iterations(files.size()).start();
+        for (final File file : files) {
             if (filesCheckedOut.contains(file)) {
                 pb.reset("checkinFile").command("checkin").argument("-ptime").argument("-nc")
                         .argument(file.getPath()).create().waitFor();
@@ -127,26 +128,26 @@ class ClearToolCommander {
         checkinFiles(new TreeSet<File>(filesCheckedOut));
     }
 
-    public void removeFiles(Collection<File> files) {
-        for (File file : files) {
+    public void removeFiles(final Collection<File> files) {
+        for (final File file : files) {
             pb.reset("rmnameFile").command("rmname").argument("-force").argument("-nc").argument(file.getPath()).create().waitFor();
         }
     }
 
-    public void removeDirs(Collection<File> dirs) {
-        for (File dir : dirs) {
+    public void removeDirs(final Collection<File> dirs) {
+        for (final File dir : dirs) {
             pb.reset("rmnameDir").command("rmname").argument("-force").argument("-nc").argument(dir.getPath()).create().waitFor();
         }
     }
 
-    public void moveFile(File source, File target) {
-        Meter m = meter.sub("moveFile").start();
+    public void moveFile(final File source, final File target) {
+        final Meter m = meter.sub("moveFile").start();
         pb.reset("moveFile").command("mv").argument("-nc").argument(source.getPath()).argument(target.getPath()).create().waitFor();
         m.ok();
     }
 
-    private void makeElements(Collection<File> dirs, Collection<File> files) {
-        Meter m = meter.sub("makeElements").start();
+    private void makeElements(final Collection<File> dirs, final Collection<File> files) {
+        final Meter m = meter.sub("makeElements").start();
         final TreeSet<File> dirsToCheckout = new TreeSet<>();
         final TreeSet<File> filesToCheckout = new TreeSet<>();
         final TreeSet<File> dirsToMake = new TreeSet<>();
@@ -170,21 +171,21 @@ class ClearToolCommander {
                 pb.reset("makeDir").command("mkdir").argument("-nc").argument(dirToMake.getPath()).create()
                         .addOutWriter(new LineSplittingWriter() {
                     @Override
-                    protected void processLine(String line) {
-                        Matcher checkoutMatcher = mkdirCheckoutPattern.matcher(line);
+                    protected void processLine(final String line) {
+                        final Matcher checkoutMatcher = mkdirCheckoutPattern.matcher(line);
                         if (checkoutMatcher.find()) {
-                            File dir = new File(checkoutMatcher.group(1));
+                            final File dir = new File(checkoutMatcher.group(1));
                             dirsCheckedOut.add(dir);
                         }
                     }
                 })
                         .addErrWriter(new LineSplittingWriter() {
                     @Override
-                    protected void processLine(String line) {
+                    protected void processLine(final String line) {
                         Matcher matcher = mkdirNeedCheckoutPattern.matcher(line);
                         if (matcher.find()) {
                             /* Parent directory should have been checked out first. */
-                            File dir = new File(matcher.group(1));
+                            final File dir = new File(matcher.group(1));
                             dirsToCheckout.add(dir);
                             dirsToMake.add(dirToMake);
                         }
@@ -196,14 +197,14 @@ class ClearToolCommander {
                         matcher = mkdirParentDirectoryMissingPattern1.matcher(line);
                         if (matcher.find()) {
                             /* Parent directory does not exist, schedule it for creation. */
-                            File dir = new File(matcher.group(1));
+                            final File dir = new File(matcher.group(1));
                             dirsToMake.add(dir);
                             dirsToMake.add(dirToMake);
                         }
                         matcher = mkdirParentDirectoryMissingPattern2.matcher(line);
                         if (matcher.find()) {
                             /* Parent directory does not exist, schedule it for creation. */
-                            File dir = new File(matcher.group(1));
+                            final File dir = new File(matcher.group(1));
                             dirsToMake.add(dir);
                             dirsToMake.add(dirToMake);
                         }
@@ -216,21 +217,21 @@ class ClearToolCommander {
                 pb.reset("makeFile").command("mkelem").argument("-nc").arguments("-eltype", "file").argument(fileToMake.getPath()).create()
                         .addOutWriter(new LineSplittingWriter() {
                     @Override
-                    protected void processLine(String line) {
-                        Matcher matcher = mkfileCheckoutPattern.matcher(line);
+                    protected void processLine(final String line) {
+                        final Matcher matcher = mkfileCheckoutPattern.matcher(line);
                         if (matcher.find()) {
-                            File dir = new File(matcher.group(1));
+                            final File dir = new File(matcher.group(1));
                             filesCheckedOut.add(dir);
                         }
                     }
                 })
                         .addErrWriter(new LineSplittingWriter() {
                     @Override
-                    protected void processLine(String line) {
+                    protected void processLine(final String line) {
                         Matcher matcher = mkfileNeedCheckoutPattern.matcher(line);
                         if (matcher.find()) {
                             /* Parent directory should have been checked out first. */
-                            File dir = new File(matcher.group(1));
+                            final File dir = new File(matcher.group(1));
                             dirsToCheckout.add(dir);
                             filesToMake.add(fileToMake);
                         }
@@ -242,14 +243,14 @@ class ClearToolCommander {
                         matcher = mkfileParentDirectoryMissingPattern1.matcher(line);
                         if (matcher.find()) {
                             /* Parent directory does not exist, schedule it for creation. */
-                            File dir = new File(matcher.group(1));
+                            final File dir = new File(matcher.group(1));
                             dirsToMake.add(dir);
                             filesToMake.add(fileToMake);
                         }
                         matcher = mkfileParentDirectoryMissingPattern2.matcher(line);
                         if (matcher.find()) {
                             /* Parent directory does not exist, schedule it for creation. */
-                            File dir = new File(matcher.group(1));
+                            final File dir = new File(matcher.group(1));
                             dirsToMake.add(dir);
                             filesToMake.add(fileToMake);
                         }
@@ -258,7 +259,7 @@ class ClearToolCommander {
                 m.inc().progress();
             }
         }
-        
+
         m.ok();
     }
     static final Pattern mkfileParentDirectoryMissingPattern1 = Pattern.compile("cleartool: Error: Not a vob object: \"(.*)\"\\.");
@@ -272,21 +273,21 @@ class ClearToolCommander {
     static final Pattern mkdirNeedCheckoutPattern = Pattern.compile("cleartool: Error: Can\'t modify directory \"(.*)\" because it is not checked out\\.");
     static final Pattern mkdirAlreadyExistPattern = Pattern.compile("cleartool: Error: Entry named \"(.*)\" already exists\\.");
 
-    public void makeDirs(List<File> dirsAdded) {
+    public void makeDirs(final List<File> dirsAdded) {
         makeElements(dirsAdded, null);
     }
 
-    public void makeFiles(List<File> filesAdded) {
+    public void makeFiles(final List<File> filesAdded) {
         makeElements(null, filesAdded);
     }
 
-    public void updateFiles(File... files) {
+    public void updateFiles(final File... files) {
         updateFiles(Arrays.asList(files));
     }
 
-    public void updateFiles(Collection<File> files) {
-        Meter m = meter.sub("updateFiles").iterations(files.size()).start();
-        for (File file : files) {
+    public void updateFiles(final Collection<File> files) {
+        final Meter m = meter.sub("updateFiles").iterations(files.size()).start();
+        for (final File file : files) {
             pb.reset("updateFile").command("update").argument("-force").argument(file.getPath()).create().waitFor();
             m.inc().progress();
         }
@@ -294,7 +295,7 @@ class ClearToolCommander {
     }
 
     void updateVobViewDir() {
-        Meter m = meter.sub("updateVobViewDir");
+        final Meter m = meter.sub("updateVobViewDir");
         pb.reset("updateVob").command("update").argument("-force").create().waitFor();
         m.ok();
     }

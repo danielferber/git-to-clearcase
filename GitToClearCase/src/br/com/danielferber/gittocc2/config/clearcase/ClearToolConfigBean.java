@@ -25,11 +25,11 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
         this.wrapped = new ClearToolConfigPojo();
     }
 
-    public ClearToolConfigBean(ClearToolConfig other) {
+    public ClearToolConfigBean(final ClearToolConfig other) {
         this.wrapped = other;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
         this.pcs.addPropertyChangeListener(listener);
     }
 
@@ -78,12 +78,12 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
         return wrapped.getClearToolExec();
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    public void removePropertyChangeListener(final PropertyChangeListener listener) {
         this.pcs.removePropertyChangeListener(listener);
     }
 
     @Override
-    public ClearToolConfig setActivityMessagePattern(String value) {
+    public ClearToolConfig setActivityMessagePattern(final String value) {
         final String oldValue = wrapped.getActivityMessagePattern();
         wrapped.setActivityMessagePattern(value);
         this.pcs.firePropertyChange(ACTIVITY_MESSAGE_PATTERN_PROPERTY, oldValue, value);
@@ -91,7 +91,7 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setClearToolExec(File file) {
+    public ClearToolConfig setClearToolExec(final File file) {
         final File oldValue = wrapped.getClearToolExec();
         wrapped.setClearToolExec(file);
         this.pcs.firePropertyChange(CLEARTOOL_EXEC_PROPERTY, oldValue, file);
@@ -99,15 +99,15 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setCommitStampFileName(File file) {
+    public ClearToolConfig setCommitStampFileName(final File file) {
         final File oldValue = wrapped.getCommitStampFileName();
         wrapped.setCommitStampFileName(file);
         this.pcs.firePropertyChange(COMMIT_STAMP_FILE_NAME_PROPERTY, oldValue, file);
         return this;
     }
-    
+
         @Override
-		public ClearToolConfig setCounterStampFileName(File file) {
+		public ClearToolConfig setCounterStampFileName(final File file) {
 		    final File oldValue = wrapped.getCounterStampFileName();
 		    wrapped.setCounterStampFileName(file);
 		    this.pcs.firePropertyChange(COUNTER_STAMP_FILE_NAME_PROPERTY, oldValue, file);
@@ -115,7 +115,7 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
 		}
 
     @Override
-   public ClearToolConfig setCreateActivity(Boolean value) {
+   public ClearToolConfig setCreateActivity(final Boolean value) {
 	final Boolean oldValue = wrapped.getCreateActivity();
 	wrapped.setCreateActivity(value);
 	this.pcs.firePropertyChange(CREATE_ACTIVITY_PROPERTY, oldValue, value);
@@ -123,23 +123,23 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
    }
 
     @Override
-    public ClearToolConfig setOverriddenSyncCounter(Long value) {
-        Long oldValue = wrapped.getOverriddenSyncCounter();
+    public ClearToolConfig setOverriddenSyncCounter(final Long value) {
+        final Long oldValue = wrapped.getOverriddenSyncCounter();
         wrapped.setOverriddenSyncCounter(value);
         this.pcs.firePropertyChange(OVERRIDDEN_SYNC_COUNTER, oldValue, value);
         return this;
     }
 
     @Override
-    public ClearToolConfig setOverriddenSyncFromCommit(String value) {
-        String oldValue = wrapped.getOverriddenSyncFromCommit();
+    public ClearToolConfig setOverriddenSyncFromCommit(final String value) {
+        final String oldValue = wrapped.getOverriddenSyncFromCommit();
         wrapped.setOverriddenSyncFromCommit(value);
         this.pcs.firePropertyChange(OVERRIDDEN_SYNC_FROM_COMMIT, oldValue, value);
         return this;
     }
 
     @Override
-    public ClearToolConfig setUpdateVobRoot(Boolean value) {
+    public ClearToolConfig setUpdateVobRoot(final Boolean value) {
         final Boolean oldValue = wrapped.getUpdateVobRoot();
         wrapped.setUpdateVobRoot(value);
         this.pcs.firePropertyChange(UPDATE_VOB_ROOT_PROPERTY, oldValue, value);
@@ -147,7 +147,7 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setVobViewDir(File dir) {
+    public ClearToolConfig setVobViewDir(final File dir) {
         final File oldValue = wrapped.getVobViewDir();
         wrapped.setVobViewDir(dir);
         this.pcs.firePropertyChange(VOB_VIEW_DIR_PROPERTY, oldValue, dir);

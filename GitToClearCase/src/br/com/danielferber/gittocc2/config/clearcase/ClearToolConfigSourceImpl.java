@@ -18,5 +18,5 @@ abstract class ClearToolConfigSourceImpl implements ClearToolConfigSource {
     public File getCounterStampAbsoluteFile() {
         return new File(getVobViewDir(), getCounterStampFileName().getPath());
     }
-    
+
 }

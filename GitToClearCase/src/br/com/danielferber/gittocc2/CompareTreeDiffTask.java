@@ -1,7 +1,5 @@
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,8 +16,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 
 /**
  *
@@ -32,7 +30,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
     private final Meter globalMeter;
     private final File compareRoot;
 
-    CompareTreeDiffTask(File gitRootDir, File clearCaseRootDir, File compareRoot, Meter outerMeter) {
+    CompareTreeDiffTask(final File gitRootDir, final File clearCaseRootDir, final File compareRoot, final Meter outerMeter) {
         this.gitRootDir = gitRootDir;
         this.clearCaseRootDir = clearCaseRootDir;
         this.compareRoot = compareRoot;
@@ -51,72 +49,72 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
 
         try {
 
-            FileVisitor<Path> vobVisitor = new SimpleFileVisitor<Path>() {
+            final FileVisitor<Path> vobVisitor = new SimpleFileVisitor<Path>() {
                 Path rootPath = clearCaseRootDir.toPath();
 
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Path path = rootPath.relativize(file);
+                public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+                    final Path path = rootPath.relativize(file);
                     vobFiles.add(path.toFile());
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    Path path = rootPath.relativize(dir);
+                public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
+                    final Path path = rootPath.relativize(dir);
                     vobDirs.add(path.toFile());
                     return FileVisitResult.CONTINUE;
                 }
             };
 
-            FileVisitor<Path> repositoryVisitor = new SimpleFileVisitor<Path>() {
+            final FileVisitor<Path> repositoryVisitor = new SimpleFileVisitor<Path>() {
                 Path rootPath = gitRootDir.toPath();
 
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Path path = rootPath.relativize(file);
+                public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
+                    final Path path = rootPath.relativize(file);
                     repositoryFiles.add(path.toFile());
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    Path path = rootPath.relativize(dir);
+                public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
+                    final Path path = rootPath.relativize(dir);
                     repositoryDirs.add(path.toFile());
                     return FileVisitResult.CONTINUE;
                 }
             };
 
             m2 = globalMeter.sub("vobScan").m("Execute ClearCase VOB scan.").start();
-            File clearCaseCompareDir = new File(clearCaseRootDir, compareRoot.getPath());
+            final File clearCaseCompareDir = new File(clearCaseRootDir, compareRoot.getPath());
             Files.walkFileTree(clearCaseCompareDir.toPath(), vobVisitor);
             m2.ok();
 
             m2 = globalMeter.sub("gitScan").m("Execute GIT repository scan.").start();
-            File gitCompareDir = new File(gitRootDir, compareRoot.getPath());
+            final File gitCompareDir = new File(gitRootDir, compareRoot.getPath());
             Files.walkFileTree(gitCompareDir.toPath(), repositoryVisitor);
             m2.ok();
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             globalMeter.fail(e);
             throw e;
         }
 
-        Set<File> dirsAdded = new TreeSet<>(repositoryDirs);
+        final Set<File> dirsAdded = new TreeSet<>(repositoryDirs);
         dirsAdded.removeAll(vobDirs);
-        Set<File> dirsDeleted = new TreeSet<>(vobDirs);
+        final Set<File> dirsDeleted = new TreeSet<>(vobDirs);
         dirsDeleted.removeAll(repositoryDirs);
-        Set<File> filesAdded = new TreeSet<>(repositoryFiles);
+        final Set<File> filesAdded = new TreeSet<>(repositoryFiles);
         filesAdded.removeAll(vobFiles);
-        Set<File> filesDeleted = new TreeSet<>(vobFiles);
+        final Set<File> filesDeleted = new TreeSet<>(vobFiles);
         filesDeleted.removeAll(repositoryFiles);
 
-        Set<File> filesToCompare = new TreeSet<>(vobFiles);
+        final Set<File> filesToCompare = new TreeSet<>(vobFiles);
         filesToCompare.retainAll(repositoryFiles);
-        Set<File> filesModified = new TreeSet<>();
-        for (File file : filesToCompare) {
-            File gitSourceFile = new File(gitRootDir, file.getPath());
-            File ccTargetFile = new File(clearCaseRootDir, file.getPath());
+        final Set<File> filesModified = new TreeSet<>();
+        for (final File file : filesToCompare) {
+            final File gitSourceFile = new File(gitRootDir, file.getPath());
+            final File ccTargetFile = new File(clearCaseRootDir, file.getPath());
             if (gitSourceFile.length() != ccTargetFile.length()) {
                 filesModified.add(file);
                 continue;
@@ -127,17 +125,17 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
                 if (!compare(i1, i2)) {
                     filesModified.add(file);
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 globalMeter.getLogger().error("Failed to copy file.", e);
             }
 
         }
-        Set<File> filesMovedFrom = Collections.emptySet();
-        Set<File> filesMovedTo = Collections.emptySet();
-        Set<File> filesMovedModified = Collections.emptySet();
-        Set<File> filesCopiedFrom = Collections.emptySet();
-        Set<File> filesCopiedTo = Collections.emptySet();
-        Set<File> filesCopiedModified = Collections.emptySet();
+        final Set<File> filesMovedFrom = Collections.emptySet();
+        final Set<File> filesMovedTo = Collections.emptySet();
+        final Set<File> filesMovedModified = Collections.emptySet();
+        final Set<File> filesCopiedFrom = Collections.emptySet();
+        final Set<File> filesCopiedTo = Collections.emptySet();
+        final Set<File> filesCopiedModified = Collections.emptySet();
 
         return new TreeDiff(
                 new ArrayList<>(dirsAdded),
@@ -153,11 +151,11 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
                 new ArrayList<>(filesCopiedModified));
     }
 
-    private static boolean compare(InputStream input1, InputStream input2) throws IOException {
+    private static boolean compare(final InputStream input1, final InputStream input2) throws IOException {
         boolean error = false;
         try {
-            byte[] buffer1 = new byte[1_024];
-            byte[] buffer2 = new byte[1_024];
+            final byte[] buffer1 = new byte[1_024];
+            final byte[] buffer2 = new byte[1_024];
             try {
                 int numRead1 = 0;
                 int numRead2 = 0;
@@ -187,7 +185,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
         } finally {
             try {
                 input2.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 if (!error) {
                     throw e;
                 }

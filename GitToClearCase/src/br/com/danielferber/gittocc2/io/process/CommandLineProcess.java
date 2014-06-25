@@ -4,8 +4,6 @@
  */
 package br.com.danielferber.gittocc2.io.process;
 
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -14,9 +12,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  * A processes running a command line executable.
@@ -69,15 +71,15 @@ public class CommandLineProcess {
     public static class CommandLineProcessException extends RuntimeException {
     	private static final long serialVersionUID = 1L;
 
-        public CommandLineProcessException(String message) {
+        public CommandLineProcessException(final String message) {
             super(message);
         }
 
-        public CommandLineProcessException(String message, Throwable cause) {
+        public CommandLineProcessException(final String message, final Throwable cause) {
             super(message, cause);
         }
 
-        public CommandLineProcessException(Throwable cause) {
+        public CommandLineProcessException(final Throwable cause) {
             super(cause);
         }
     }
@@ -98,13 +100,13 @@ public class CommandLineProcess {
         this.meter = MeterFactory.getMeter(logger, name);
         this.outRepeater.with(new LineSplittingWriter() {
             @Override
-            protected void processLine(String line) {
+            protected void processLine(final String line) {
                 meter.getLogger().trace(stdoutMarker, line);
             }
         });
         this.errRepeater.with(new LineSplittingWriter() {
             @Override
-            protected void processLine(String line) {
+            protected void processLine(final String line) {
                 meter.getLogger().trace(stderrMarker, line);
             }
         });
@@ -127,7 +129,7 @@ public class CommandLineProcess {
         try {
             meter.ctx("cmd", formatCommandLine(commandLine)).start();
             this.process = new ProcessBuilder(commandLine).directory(directory).start();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             meter.fail(e);
             throw new CommandLineProcessException("Failed to create process", e);
         }
@@ -155,7 +157,7 @@ public class CommandLineProcess {
     public final Scanner createOutScanner() {
         try {
             return new Scanner(outRepeater.split());
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new CommandLineProcessException("Failed to create stdout scanner", ex);
         }
     }
@@ -169,7 +171,7 @@ public class CommandLineProcess {
     public final Scanner createErrScanner() {
         try {
             return new Scanner(errRepeater.split());
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new CommandLineProcessException("Failed to create stderr scanner", ex);
         }
     }
@@ -183,7 +185,7 @@ public class CommandLineProcess {
     public final Reader createOutReader() {
         try {
             return outRepeater.split();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new CommandLineProcessException("Failed to create stdout repeater", ex);
         }
     }
@@ -197,7 +199,7 @@ public class CommandLineProcess {
     public final Reader createErrReader() {
         try {
             return errRepeater.split();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new CommandLineProcessException("Failed to create stderr repeater", ex);
         }
     }
@@ -246,7 +248,7 @@ public class CommandLineProcess {
 
         try {
             process.waitFor();
-        } catch (InterruptedException ex) {
+        } catch (final InterruptedException ex) {
             // ignore
         }
     }
@@ -258,12 +260,12 @@ public class CommandLineProcess {
      * @return the pretty representation of the command that launches the
      * process.
      */
-    protected String formatCommandLine(List<String> commands) {
-        String executable = new File(commands.get(0)).getName();
-        StringBuilder sb = new StringBuilder(executable);
+    protected String formatCommandLine(final List<String> commands) {
+        final String executable = new File(commands.get(0)).getName();
+        final StringBuilder sb = new StringBuilder(executable);
         final Iterator<String> iterator = commands.iterator();
         iterator.next();
-        for (Iterator<String> it = iterator; it.hasNext();) {
+        for (final Iterator<String> it = iterator; it.hasNext();) {
             sb.append(' ');
             sb.append(it.next());
         }

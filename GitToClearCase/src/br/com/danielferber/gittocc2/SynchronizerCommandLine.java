@@ -1,5 +1,17 @@
 package br.com.danielferber.gittocc2;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Properties;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import joptsimple.ValueConversionException;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigChain;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigProperties;
@@ -8,17 +20,6 @@ import br.com.danielferber.gittocc2.config.git.GitConfigChain;
 import br.com.danielferber.gittocc2.config.git.GitConfigPojo;
 import br.com.danielferber.gittocc2.config.git.GitConfigProperties;
 import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Properties;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
-import joptsimple.ValueConversionException;
 
 /**
  *
@@ -46,24 +47,24 @@ class SynchronizerCommandLine {
     final static OptionSpec<String> ccOverriddenSyncFromCommitOpt = parser.accepts("commit", "Assume given commit and ignore commit stamp file.").withRequiredArg().ofType(String.class);
     final static OptionSpec<Void> ccUpdateVobRootOpt = parser.accepts("update", "Before synchronizing, update ClearCase VOB view directory.");
 
-    static void printHelp(PrintStream ps) throws IOException {
+    static void printHelp(final PrintStream ps) throws IOException {
         parser.printHelpOn(ps);
     }
     final OptionSet options;
     final Properties properties;
 
-    SynchronizerCommandLine(String[] argv) {
+    SynchronizerCommandLine(final String[] argv) {
         options = parser.parse(argv);
-        File propertyFile = propertyFileOpt.value(options);
+        final File propertyFile = propertyFileOpt.value(options);
 
         if (propertyFile != null) {
             try (InputStream is = new FileInputStream(propertyFile)) {
                 properties = new Properties();
                 properties.load(is);
                 is.close();
-            } catch (FileNotFoundException e) {
+            } catch (final FileNotFoundException e) {
                 throw new ValueConversionException("Properties file: failed to open.", e);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new ValueConversionException("Properties file: failed to read.", e);
             }
         } else {

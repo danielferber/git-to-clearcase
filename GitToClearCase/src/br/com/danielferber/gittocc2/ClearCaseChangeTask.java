@@ -1,9 +1,5 @@
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,7 +12,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+
 import org.apache.commons.lang3.text.StrSubstitutor;
+
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  *
@@ -32,8 +34,8 @@ public class ClearCaseChangeTask implements Callable<Void> {
     private final String syncToCommit;
     private final Meter globalMeter;
 
-    public ClearCaseChangeTask(ClearToolConfigSource environmentConfig, GitConfigSource gitConfig, ClearToolCommander ctCommander,
-            TreeDiff gitTreeDiff, String syncToCommit, long syncCounter, Meter outerMeter) {
+    public ClearCaseChangeTask(final ClearToolConfigSource environmentConfig, final GitConfigSource gitConfig, final ClearToolCommander ctCommander,
+            final TreeDiff gitTreeDiff, final String syncToCommit, final long syncCounter, final Meter outerMeter) {
         this.cleartoolConfig = environmentConfig;
         this.gitConfig = gitConfig;
         this.ctCommander = ctCommander;
@@ -59,7 +61,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
             chkeckinAllChanges();
 
             globalMeter.ok();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             globalMeter.fail(e);
             throw e;
         }
@@ -68,67 +70,67 @@ public class ClearCaseChangeTask implements Callable<Void> {
 
     private void chkeckinAllChanges() {
         if (ctCommander.checkinDirsRequired()) {
-            Meter m = globalMeter.sub("checkin.dirs").m("Checkin all directories.").iterations(ctCommander.checkinDirsCount()).start();
+            final Meter m = globalMeter.sub("checkin.dirs").m("Checkin all directories.").iterations(ctCommander.checkinDirsCount()).start();
             ctCommander.checkinDirs();
             m.ok();
         }
         if (ctCommander.checkinFilesRequired()) {
-            Meter m = globalMeter.sub("checkin.files").m("Checkin all files.").iterations(ctCommander.checkinFilesCount()).start();
+            final Meter m = globalMeter.sub("checkin.files").m("Checkin all files.").iterations(ctCommander.checkinFilesCount()).start();
             ctCommander.checkinFiles();
             m.ok();
         }
     }
 
-    private void writeCommitStampFile(String commit) throws SyncTaskException {
-        File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
-        Meter m = globalMeter.sub("write.commitFile").m("Write sync commit control file.").ctx("file", commitStampFile).start();
+    private void writeCommitStampFile(final String commit) throws SyncTaskException {
+        final File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
+        final Meter m = globalMeter.sub("write.commitFile").m("Write sync commit control file.").ctx("file", commitStampFile).start();
         try (FileWriter writer = new FileWriter(commitStampFile)) {
             writer.write(commit + "\n");
             m.ok();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             m.fail(ex);
             throw new SyncTaskException("Commit stamp file not writeable.", ex);
         }
     }
 
     private void checkoutCommitStampFile() throws SyncTaskException {
-        File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
-        Meter m = globalMeter.sub("checkout.commitFile").m("Checkout  sync commit control file.").ctx("file", commitStampFile).start();
+        final File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
+        final Meter m = globalMeter.sub("checkout.commitFile").m("Checkout  sync commit control file.").ctx("file", commitStampFile).start();
         ctCommander.checkoutFile(commitStampFile);
         m.ok();
     }
 
-    private void writeSyncCounter(long counter) throws SyncTaskException {
-        File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
-        Meter m = globalMeter.sub("write.commitFile").m("Write sync counter control file.").ctx("file", counterStampFile).start();
+    private void writeSyncCounter(final long counter) throws SyncTaskException {
+        final File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
+        final Meter m = globalMeter.sub("write.commitFile").m("Write sync counter control file.").ctx("file", counterStampFile).start();
         try (FileWriter writer = new FileWriter(counterStampFile)) {
             writer.write(Long.toString(counter) + "\n");
             m.ok();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             m.fail(ex);
             throw new SyncTaskException("Counter stamp file not writeable.", ex);
         }
     }
 
     private void checkoutCounterStampFile() throws SyncTaskException {
-        File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
-        Meter m = globalMeter.sub("checkout.counterFile").m("Checkout sync counter control file.").ctx("file", counterStampFile).start();
+        final File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
+        final Meter m = globalMeter.sub("checkout.counterFile").m("Checkout sync counter control file.").ctx("file", counterStampFile).start();
         ctCommander.checkoutFile(counterStampFile);
         m.ok();
     }
 
-    private void applyDiff(TreeDiff diff, long syncCounter) throws Exception {
-        Meter m = MeterFactory.getMeter("VobUpdate").m("Atualizar VOB.").start();
+    private void applyDiff(final TreeDiff diff, final long syncCounter) throws Exception {
+        final Meter m = MeterFactory.getMeter("VobUpdate").m("Atualizar VOB.").start();
         Meter m2 = null;
 
         try {
             if (cleartoolConfig.getCreateActivity()) {
-                HashMap<String, Object> map = new HashMap<>();
+                final HashMap<String, Object> map = new HashMap<>();
                 map.put("commit", syncToCommit);
                 map.put("date", new Date());
                 map.put("count", syncCounter);
-                StrSubstitutor sub = new StrSubstitutor(map);
-                String resolvedString = sub.replace(cleartoolConfig.getActivityMessagePattern());
+                final StrSubstitutor sub = new StrSubstitutor(map);
+                final String resolvedString = sub.replace(cleartoolConfig.getActivityMessagePattern());
                 m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", resolvedString).start();
                 ctCommander.createActivity(resolvedString);
                 m2.ok();
@@ -137,7 +139,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
             if (!diff.dirsAdded.isEmpty()) {
 
                 m2 = m.sub("checkout.roots.dirsAdded").m("Checkout de raizes com diretórios novos.").start();
-                Collection<File> dirs = parentDirs(roots(diff.dirsAdded));
+                final Collection<File> dirs = parentDirs(roots(diff.dirsAdded));
                 ctCommander.checkoutDirs(dirs);
                 m2.ok();
 
@@ -186,11 +188,11 @@ public class ClearCaseChangeTask implements Callable<Void> {
                 m2.ok();
 
                 m2 = m.sub("move.filesMoved").m("Mover arquivos.").iterations(diff.filesMovedTo.size()).start();
-                Iterator<File> sourceIterator = diff.filesMovedFrom.iterator();
-                Iterator<File> targetIterator = diff.filesMovedTo.iterator();
+                final Iterator<File> sourceIterator = diff.filesMovedFrom.iterator();
+                final Iterator<File> targetIterator = diff.filesMovedTo.iterator();
                 while (sourceIterator.hasNext()) {
-                    File source = sourceIterator.next();
-                    File target = targetIterator.next();
+                    final File source = sourceIterator.next();
+                    final File target = targetIterator.next();
                     ctCommander.moveFile(source, target);
                 }
 
@@ -230,7 +232,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
             }
 
             if (!diff.filesDeleted.isEmpty()) {
-                TreeSet<File> filesToDelete = leafes(diff.dirsDeleted, diff.filesDeleted);
+                final TreeSet<File> filesToDelete = leafes(diff.dirsDeleted, diff.filesDeleted);
 
                 if (!filesToDelete.isEmpty()) {
                     m2 = m.sub("delete.parent.filesDeleted").m("Checkout de diretórios com arquivos removidos.").start();
@@ -243,7 +245,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
                 }
             }
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             if (m2 != null) {
                 m2.fail(e);
             }
@@ -251,10 +253,10 @@ public class ClearCaseChangeTask implements Callable<Void> {
         }
     }
 
-    private static Collection<File> roots(List<File> files) {
-        TreeSet<File> roots = new TreeSet<>();
+    private static Collection<File> roots(final List<File> files) {
+        final TreeSet<File> roots = new TreeSet<>();
 
-        for (File file : files) {
+        for (final File file : files) {
             File parent = file.getParentFile();
             if (parent == null) {
                 parent = new File(".");
@@ -267,10 +269,10 @@ public class ClearCaseChangeTask implements Callable<Void> {
         return roots;
     }
 
-    private static TreeSet<File> leafes(List<File> dirs, List<File> files) {
-        TreeSet<File> leafes = new TreeSet<>();
+    private static TreeSet<File> leafes(final List<File> dirs, final List<File> files) {
+        final TreeSet<File> leafes = new TreeSet<>();
 
-        for (File file : files) {
+        for (final File file : files) {
             File parentDir = file.getParentFile();
             if (parentDir == null) {
                 parentDir = new File(".");
@@ -282,9 +284,9 @@ public class ClearCaseChangeTask implements Callable<Void> {
         return leafes;
     }
 
-    private static Collection<File> parentDirs(Collection<File> files) {
-        TreeSet<File> dirs = new TreeSet<>();
-        for (File file : files) {
+    private static Collection<File> parentDirs(final Collection<File> files) {
+        final TreeSet<File> dirs = new TreeSet<>();
+        for (final File file : files) {
             File parentFile = file.getParentFile();
             if (parentFile == null) {
                 parentFile = new File(".");
@@ -295,12 +297,12 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private void copyFilesFromGit(final List<File> files) {
-        for (File file : files) {
-            File gitSourceFile = new File(gitConfig.getRepositoryDir(), file.getPath());
-            File ccTargetFile = new File(cleartoolConfig.getVobViewDir(), file.getPath());
+        for (final File file : files) {
+            final File gitSourceFile = new File(gitConfig.getRepositoryDir(), file.getPath());
+            final File ccTargetFile = new File(cleartoolConfig.getVobViewDir(), file.getPath());
             try {
                 Files.copy(gitSourceFile.toPath(), ccTargetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 globalMeter.getLogger().error("Failed to copy file.", e);
             }
         }

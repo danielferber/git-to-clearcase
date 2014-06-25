@@ -5,21 +5,22 @@
  */
 package br.com.danielferber.gittocc2.config.clearcase;
 
-import br.com.danielferber.gittocc2.config.ConfigProperties;
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
+
+import br.com.danielferber.gittocc2.config.ConfigProperties;
 
 public class ClearToolConfigProperties extends ClearToolConfigSourceImpl implements ClearToolConfig {
 
     private final ConfigProperties properties;
     private final String prefix;
 
-    public ClearToolConfigProperties(ClearToolConfigSource other) {
+    public ClearToolConfigProperties(final ClearToolConfigSource other) {
         this(other, "");
     }
 
-    public ClearToolConfigProperties(ClearToolConfigSource other, String prefix) {
+    public ClearToolConfigProperties(final ClearToolConfigSource other, final String prefix) {
         this.properties = new ConfigProperties();
         this.prefix = prefix;
         this.setClearToolExec(other.getClearToolExec());
@@ -33,22 +34,22 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
         this.setOverriddenSyncFromCommit(other.getOverriddenSyncFromCommit());
     }
 
-    public ClearToolConfigProperties(Map<String, String> map) {
+    public ClearToolConfigProperties(final Map<String, String> map) {
         this(map, "");
     }
 
-    public ClearToolConfigProperties(Map<String, String> map, String prefix) {
+    public ClearToolConfigProperties(final Map<String, String> map, final String prefix) {
         this.properties = new ConfigProperties();
         this.properties.putAll(map);
         this.prefix = prefix;
 
     }
 
-    public ClearToolConfigProperties(Properties properties) {
+    public ClearToolConfigProperties(final Properties properties) {
         this(properties, "");
     }
 
-    public ClearToolConfigProperties(Properties properties, String prefix) {
+    public ClearToolConfigProperties(final Properties properties, final String prefix) {
         this.properties = new ConfigProperties(properties);
         this.prefix = prefix;
     }
@@ -103,55 +104,55 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public ClearToolConfig setActivityMessagePattern(String value) {
+    public ClearToolConfig setActivityMessagePattern(final String value) {
         properties.setString(prefix + "cc.activityMessagePattern", value);
         return this;
     }
 
     @Override
-    public ClearToolConfig setClearToolExec(File file) {
+    public ClearToolConfig setClearToolExec(final File file) {
         properties.setFile(prefix + "cleartool.exec", file);
         return this;
     }
 
     @Override
-    public ClearToolConfig setCommitStampFileName(File file) {
+    public ClearToolConfig setCommitStampFileName(final File file) {
         properties.setFile(prefix + "cc.commitStampFileName", file);
         return this;
     }
 
     @Override
-    public ClearToolConfig setCounterStampFileName(File file) {
+    public ClearToolConfig setCounterStampFileName(final File file) {
         properties.setFile(prefix + "cc.counterStampFileName", file);
         return this;
     }
 
     @Override
-    public ClearToolConfig setCreateActivity(Boolean value) {
+    public ClearToolConfig setCreateActivity(final Boolean value) {
         properties.setBoolean(prefix + "git.createActivity", value);
         return this;
     }
 
     @Override
-    public ClearToolConfig setOverriddenSyncCounter(Long value) {
+    public ClearToolConfig setOverriddenSyncCounter(final Long value) {
         properties.setLong(prefix + "cc.overriddenSyncCounter", value);
         return this;
     }
 
     @Override
-    public ClearToolConfig setOverriddenSyncFromCommit(String value) {
+    public ClearToolConfig setOverriddenSyncFromCommit(final String value) {
         properties.setString(prefix + "cc.overriddenSyncFromCommit", value);
         return this;
     }
 
     @Override
-    public ClearToolConfig setUpdateVobRoot(Boolean value) {
+    public ClearToolConfig setUpdateVobRoot(final Boolean value) {
         properties.setBoolean(prefix + "cc.updateVobRoot", value);
         return this;
     }
 
     @Override
-    public ClearToolConfig setVobViewDir(File dir) {
+    public ClearToolConfig setVobViewDir(final File dir) {
         properties.setFile(prefix + "vobview.dir", dir);
         return this;
     }

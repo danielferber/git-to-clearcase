@@ -20,12 +20,12 @@ public class GitConfigPojo implements GitConfig {
         super();
     }
 
-    public GitConfigPojo(File gitExec, File repositoryDir) {
+    public GitConfigPojo(final File gitExec, final File repositoryDir) {
         this.gitExec = gitExec;
         this.repositoryDir = repositoryDir;
     }
 
-    public GitConfigPojo(GitConfigSource other) {
+    public GitConfigPojo(final GitConfigSource other) {
         this.gitExec = other.getGitExec();
         this.repositoryDir = other.getRepositoryDir();
         fetchRemoteGitRepository = other.getFetchRemoteGitRepository();
@@ -71,43 +71,43 @@ public class GitConfigPojo implements GitConfig {
     }
 
     @Override
-    public GitConfig setCleanLocalGitRepository(Boolean value) {
+    public GitConfig setCleanLocalGitRepository(final Boolean value) {
         this.cleanLocalGitRepository = value;
         return this;
     }
 
     @Override
-    public GitConfig setFastForwardLocalGitRepository(Boolean value) {
+    public GitConfig setFastForwardLocalGitRepository(final Boolean value) {
         this.fastForwardLocalGitRepository = value;
         return this;
     }
 
     @Override
-    public GitConfig setFetchRemoteGitRepository(Boolean value) {
+    public GitConfig setFetchRemoteGitRepository(final Boolean value) {
         this.fetchRemoteGitRepository = value;
         return this;
     }
 
     @Override
-    public GitConfig setGitExec(File file) {
+    public GitConfig setGitExec(final File file) {
         this.gitExec = file;
         return this;
     }
 
     @Override
-    public GitConfig setRepositoryDir(File dir) {
+    public GitConfig setRepositoryDir(final File dir) {
         this.repositoryDir = dir;
         return this;
     }
 
     @Override
-    public GitConfig setResetLocalGitRepository(Boolean value) {
+    public GitConfig setResetLocalGitRepository(final Boolean value) {
         this.resetLocationGitRepository = value;
         return this;
     }
 
     @Override
-    public GitConfig setApplyDefaultGitConfig(Boolean value) {
+    public GitConfig setApplyDefaultGitConfig(final Boolean value) {
         this.applyDefaultGitConfig = value;
         return this;
     }

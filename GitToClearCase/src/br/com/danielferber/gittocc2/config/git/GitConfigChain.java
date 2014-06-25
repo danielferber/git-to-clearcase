@@ -11,7 +11,7 @@ public class GitConfigChain implements GitConfigSource {
     private final GitConfigSource wrapped1;
     private final GitConfigSource wrapped2;
 
-    public GitConfigChain(GitConfigSource wrapped1, GitConfigSource wrapped2) {
+    public GitConfigChain(final GitConfigSource wrapped1, final GitConfigSource wrapped2) {
         this.wrapped1 = wrapped1;
         this.wrapped2 = wrapped2;
     }

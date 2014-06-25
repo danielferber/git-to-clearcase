@@ -1,7 +1,8 @@
 package br.com.danielferber.gittocc2.config.git;
 
-import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
+
+import br.com.danielferber.gittocc2.config.ConfigException;
 
 /**
  *
@@ -11,7 +12,7 @@ public class GitConfigValidated implements GitConfigSource {
 
     private final GitConfigSource wrapped;
 
-    public GitConfigValidated(GitConfigSource wrapped) {
+    public GitConfigValidated(final GitConfigSource wrapped) {
         this.wrapped = wrapped;
     }
 
@@ -50,7 +51,7 @@ public class GitConfigValidated implements GitConfigSource {
 
     @Override
     public File getRepositoryDir() {
-        File dir = wrapped.getRepositoryDir();
+        final File dir = wrapped.getRepositoryDir();
         if (dir == null) {
             throw new ConfigException("Repository directory: missing property.");
         }
@@ -60,7 +61,7 @@ public class GitConfigValidated implements GitConfigSource {
         if (!dir.isDirectory()) {
             throw new ConfigException("Repository directory: not a directory.");
         }
-        File repositoryMetadataDir = new File(dir, ".git");
+        final File repositoryMetadataDir = new File(dir, ".git");
         if (!repositoryMetadataDir.isDirectory() || !repositoryMetadataDir.isDirectory()) {
             throw new ConfigException("Repository directory: not like a git repository.");
         }

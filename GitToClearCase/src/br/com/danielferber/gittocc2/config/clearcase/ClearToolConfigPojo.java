@@ -24,7 +24,7 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
         super();
     }
 
-    public ClearToolConfigPojo(ClearToolConfigSource other) {
+    public ClearToolConfigPojo(final ClearToolConfigSource other) {
         this.clearToolExec = other.getClearToolExec();
         this.vobViewDir = other.getVobViewDir();
         this.updateVobRoot = other.getUpdateVobRoot();
@@ -36,7 +36,7 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
         this.overriddenSyncFromCommit = other.getOverriddenSyncFromCommit();
     }
 
-    public ClearToolConfigPojo(File clearToolExec, File vobViewDir) {
+    public ClearToolConfigPojo(final File clearToolExec, final File vobViewDir) {
         this.clearToolExec = clearToolExec;
         this.vobViewDir = vobViewDir;
     }
@@ -87,55 +87,55 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setActivityMessagePattern(String value) {
+    public ClearToolConfig setActivityMessagePattern(final String value) {
         this.activityMessagePattern = value;
         return this;
     }
 
     @Override
-    public ClearToolConfig setClearToolExec(File file) {
+    public ClearToolConfig setClearToolExec(final File file) {
         this.clearToolExec = file;
         return this;
     }
 
     @Override
-    public ClearToolConfig setCommitStampFileName(File file) {
+    public ClearToolConfig setCommitStampFileName(final File file) {
         this.commitStampFileName = file;
         return this;
     }
 
     @Override
-    public ClearToolConfig setCounterStampFileName(File file) {
+    public ClearToolConfig setCounterStampFileName(final File file) {
         this.counterStampFileName = file;
         return this;
     }
 
     @Override
-    public ClearToolConfig setCreateActivity(Boolean value) {
+    public ClearToolConfig setCreateActivity(final Boolean value) {
         this.createActivity = value;
         return this;
     }
 
     @Override
-    public ClearToolConfig setOverriddenSyncCounter(Long value) {
+    public ClearToolConfig setOverriddenSyncCounter(final Long value) {
         this.overriddenSyncCounter = value;
         return this;
     }
 
     @Override
-    public ClearToolConfig setOverriddenSyncFromCommit(String value) {
+    public ClearToolConfig setOverriddenSyncFromCommit(final String value) {
         this.overriddenSyncFromCommit = value;
         return this;
     }
 
     @Override
-    public ClearToolConfig setUpdateVobRoot(Boolean value) {
+    public ClearToolConfig setUpdateVobRoot(final Boolean value) {
         this.updateVobRoot = value;
         return this;
     }
 
     @Override
-    public ClearToolConfig setVobViewDir(File dir) {
+    public ClearToolConfig setVobViewDir(final File dir) {
         this.vobViewDir = dir;
         return this;
     }
