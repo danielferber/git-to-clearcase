@@ -1,6 +1,5 @@
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfig;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigChain;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigProperties;

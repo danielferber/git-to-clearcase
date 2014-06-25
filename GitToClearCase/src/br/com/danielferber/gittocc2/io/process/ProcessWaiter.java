@@ -12,7 +12,7 @@ class ProcessWaiter implements Runnable {
 
     Process process;
     Thread thread;
-    final List<Runnable> listeners = new ArrayList<Runnable>();
+    final List<Runnable> listeners = new ArrayList<>();
 
     public ProcessWaiter() {
         super();

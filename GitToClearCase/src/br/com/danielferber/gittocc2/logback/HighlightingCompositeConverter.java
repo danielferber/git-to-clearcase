@@ -7,7 +7,11 @@ package br.com.danielferber.gittocc2.logback;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import static ch.qos.logback.core.pattern.color.ANSIConstants.*;
+import static ch.qos.logback.core.pattern.color.ANSIConstants.BOLD;
+import static ch.qos.logback.core.pattern.color.ANSIConstants.CYAN_FG;
+import static ch.qos.logback.core.pattern.color.ANSIConstants.DEFAULT_FG;
+import static ch.qos.logback.core.pattern.color.ANSIConstants.RED_FG;
+import static ch.qos.logback.core.pattern.color.ANSIConstants.YELLOW_FG;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
 
 /**

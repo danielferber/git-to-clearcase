@@ -6,7 +6,9 @@ package br.com.danielferber.gittocc2.config;
  */
 public class ConfigException extends RuntimeException {
 
-    public ConfigException() {
+	private static final long serialVersionUID = 1L;
+
+	public ConfigException() {
     }
 
     public ConfigException(String message) {

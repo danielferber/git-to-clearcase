@@ -67,6 +67,7 @@ public class CommandLineProcess {
     protected static final Marker stderrMarker = MarkerFactory.getMarker("stderr");
 
     public static class CommandLineProcessException extends RuntimeException {
+    	private static final long serialVersionUID = 1L;
 
         public CommandLineProcessException(String message) {
             super(message);

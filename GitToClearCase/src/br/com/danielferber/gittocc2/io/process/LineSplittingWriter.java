@@ -17,6 +17,7 @@ public abstract class LineSplittingWriter extends Writer {
         super();
     }
 
+    @Override
     public void write(char cbuf[], int off, int len) throws IOException {
         sb.append(cbuf, off, len);
         int sblength = sb.length();

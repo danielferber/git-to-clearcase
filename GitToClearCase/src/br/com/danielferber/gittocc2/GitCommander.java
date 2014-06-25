@@ -105,20 +105,20 @@ class GitCommander {
                 .parameter("find-renames", "30%").shortParameter("r")
                 .shortParameter("t").parameter("raw").argument(fromCommit).argument(toCommit).create();
 
-        final List<File> dirsAdded = new ArrayList<File>();
-        final List<File> dirsDeleted = new ArrayList<File>();
+        final List<File> dirsAdded = new ArrayList<>();
+        final List<File> dirsDeleted = new ArrayList<>();
 
-        final List<File> filesAdded = new ArrayList<File>();
-        final List<File> filesDeleted = new ArrayList<File>();
-        final List<File> filesModified = new ArrayList<File>();
+        final List<File> filesAdded = new ArrayList<>();
+        final List<File> filesDeleted = new ArrayList<>();
+        final List<File> filesModified = new ArrayList<>();
 
-        final List<File> filesMovedFrom = new ArrayList<File>();
-        final List<File> filesMovedTo = new ArrayList<File>();
-        final List<File> filesMovedModified = new ArrayList<File>();
+        final List<File> filesMovedFrom = new ArrayList<>();
+        final List<File> filesMovedTo = new ArrayList<>();
+        final List<File> filesMovedModified = new ArrayList<>();
 
-        final List<File> filesCopiedFrom = new ArrayList<File>();
-        final List<File> filesCopiedTo = new ArrayList<File>();
-        final List<File> filesCopiedModified = new ArrayList<File>();
+        final List<File> filesCopiedFrom = new ArrayList<>();
+        final List<File> filesCopiedTo = new ArrayList<>();
+        final List<File> filesCopiedModified = new ArrayList<>();
 
         p.addOutWriter(new LineSplittingWriter() {
             @Override

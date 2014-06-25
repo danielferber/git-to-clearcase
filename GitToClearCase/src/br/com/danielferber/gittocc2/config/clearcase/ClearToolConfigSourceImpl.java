@@ -9,6 +9,7 @@ import java.io.File;
 
 abstract class ClearToolConfigSourceImpl implements ClearToolConfigSource {
 
+    @Override
     public File getCommitStampAbsoluteFile() {
         return new File(getVobViewDir(), getCommitStampFileName().getPath());
     }

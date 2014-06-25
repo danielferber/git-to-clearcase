@@ -10,8 +10,9 @@ package br.com.danielferber.gittocc2;
  * @author Daniel Felix Ferber
  */
 class SyncTaskException extends Exception {
+	private static final long serialVersionUID = 1L;
 
-    public SyncTaskException(String message) {
+	public SyncTaskException(String message) {
         super(message);
     }
 

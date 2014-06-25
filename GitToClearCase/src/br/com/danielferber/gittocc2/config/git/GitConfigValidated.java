@@ -9,7 +9,7 @@ import java.io.File;
  */
 public class GitConfigValidated implements GitConfigSource {
 
-    private GitConfigSource wrapped;
+    private final GitConfigSource wrapped;
 
     public GitConfigValidated(GitConfigSource wrapped) {
         this.wrapped = wrapped;

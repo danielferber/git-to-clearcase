@@ -123,7 +123,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
 
         try {
             if (cleartoolConfig.getCreateActivity()) {
-                HashMap<String, Object> map = new HashMap<String, Object>();
+                HashMap<String, Object> map = new HashMap<>();
                 map.put("commit", syncToCommit);
                 map.put("date", new Date());
                 map.put("count", syncCounter);
@@ -252,7 +252,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private static Collection<File> roots(List<File> files) {
-        TreeSet<File> roots = new TreeSet<File>();
+        TreeSet<File> roots = new TreeSet<>();
 
         for (File file : files) {
             File parent = file.getParentFile();
@@ -268,7 +268,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private static TreeSet<File> leafes(List<File> dirs, List<File> files) {
-        TreeSet<File> leafes = new TreeSet<File>();
+        TreeSet<File> leafes = new TreeSet<>();
 
         for (File file : files) {
             File parentDir = file.getParentFile();
@@ -283,7 +283,7 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private static Collection<File> parentDirs(Collection<File> files) {
-        TreeSet<File> dirs = new TreeSet<File>();
+        TreeSet<File> dirs = new TreeSet<>();
         for (File file : files) {
             File parentFile = file.getParentFile();
             if (parentFile == null) {

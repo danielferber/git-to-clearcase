@@ -1,6 +1,5 @@
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.util.concurrent.Callable;
 

@@ -5,7 +5,6 @@
 package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
@@ -28,8 +27,8 @@ import java.util.regex.Pattern;
 class ClearToolCommander {
 
     final CommandLineProcessBuilder pb;
-    final Set<File> filesCheckedOut = new TreeSet<File>();
-    final Set<File> dirsCheckedOut = new TreeSet<File>();
+    final Set<File> filesCheckedOut = new TreeSet<>();
+    final Set<File> dirsCheckedOut = new TreeSet<>();
     final Meter meter = MeterFactory.getMeter("ClearToolCommander");
 
     public ClearToolCommander(ClearToolConfigSource config) {
@@ -113,7 +112,7 @@ class ClearToolCommander {
     }
 
     public void checkinDirs() {
-        ClearToolCommander.this.checkinDirs(new TreeSet(dirsCheckedOut));
+        ClearToolCommander.this.checkinDirs(new TreeSet<File>(dirsCheckedOut));
     }
 
     public int checkinFilesCount() {
@@ -125,7 +124,7 @@ class ClearToolCommander {
     }
 
     public void checkinFiles() {
-        checkinFiles(new TreeSet(filesCheckedOut));
+        checkinFiles(new TreeSet<File>(filesCheckedOut));
     }
 
     public void removeFiles(Collection<File> files) {
@@ -148,10 +147,10 @@ class ClearToolCommander {
 
     private void makeElements(Collection<File> dirs, Collection<File> files) {
         Meter m = meter.sub("makeElements").start();
-        final TreeSet<File> dirsToCheckout = new TreeSet<File>();
-        final TreeSet<File> filesToCheckout = new TreeSet<File>();
-        final TreeSet<File> dirsToMake = new TreeSet<File>();
-        final TreeSet<File> filesToMake = new TreeSet<File>();
+        final TreeSet<File> dirsToCheckout = new TreeSet<>();
+        final TreeSet<File> filesToCheckout = new TreeSet<>();
+        final TreeSet<File> dirsToMake = new TreeSet<>();
+        final TreeSet<File> filesToMake = new TreeSet<>();
         if (files != null) {
             filesToMake.addAll(files);
         }
@@ -160,7 +159,6 @@ class ClearToolCommander {
         }
         m.iterations(filesToMake.size() + dirsToMake.size());
 
-        outer:
         while (!dirsToCheckout.isEmpty() || !filesToCheckout.isEmpty() || !dirsToMake.isEmpty() || !filesToMake.isEmpty()) {
             checkoutDirs(dirsToCheckout);
             dirsToCheckout.clear();

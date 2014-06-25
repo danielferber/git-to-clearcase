@@ -6,16 +6,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,14 +44,14 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
         globalMeter.start();
 
         Meter m2 = null;
-        final Set<File> vobDirs = new TreeSet<File>();
-        final Set<File> vobFiles = new TreeSet<File>();
-        final Set<File> repositoryDirs = new TreeSet<File>();
-        final Set<File> repositoryFiles = new TreeSet<File>();
+        final Set<File> vobDirs = new TreeSet<>();
+        final Set<File> vobFiles = new TreeSet<>();
+        final Set<File> repositoryDirs = new TreeSet<>();
+        final Set<File> repositoryFiles = new TreeSet<>();
 
         try {
 
-            FileVisitor vobVisitor = new SimpleFileVisitor<Path>() {
+            FileVisitor<Path> vobVisitor = new SimpleFileVisitor<Path>() {
                 Path rootPath = clearCaseRootDir.toPath();
 
                 @Override
@@ -74,7 +69,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
                 }
             };
 
-            FileVisitor repositoryVisitor = new SimpleFileVisitor<Path>() {
+            FileVisitor<Path> repositoryVisitor = new SimpleFileVisitor<Path>() {
                 Path rootPath = gitRootDir.toPath();
 
                 @Override
@@ -107,18 +102,18 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
             throw e;
         }
 
-        Set<File> dirsAdded = new TreeSet<File>(repositoryDirs);
+        Set<File> dirsAdded = new TreeSet<>(repositoryDirs);
         dirsAdded.removeAll(vobDirs);
-        Set<File> dirsDeleted = new TreeSet<File>(vobDirs);
+        Set<File> dirsDeleted = new TreeSet<>(vobDirs);
         dirsDeleted.removeAll(repositoryDirs);
-        Set<File> filesAdded = new TreeSet<File>(repositoryFiles);
+        Set<File> filesAdded = new TreeSet<>(repositoryFiles);
         filesAdded.removeAll(vobFiles);
-        Set<File> filesDeleted = new TreeSet<File>(vobFiles);
+        Set<File> filesDeleted = new TreeSet<>(vobFiles);
         filesDeleted.removeAll(repositoryFiles);
 
-        Set<File> filesToCompare = new TreeSet<File>(vobFiles);
+        Set<File> filesToCompare = new TreeSet<>(vobFiles);
         filesToCompare.retainAll(repositoryFiles);
-        Set<File> filesModified = new TreeSet<File>();
+        Set<File> filesModified = new TreeSet<>();
         for (File file : filesToCompare) {
             File gitSourceFile = new File(gitRootDir, file.getPath());
             File ccTargetFile = new File(clearCaseRootDir, file.getPath());
@@ -131,7 +126,6 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
                 InputStream i2 = new FileInputStream(ccTargetFile) ) {
                 if (!compare(i1, i2)) {
                     filesModified.add(file);
-                    continue;
                 }
             } catch (IOException e) {
                 globalMeter.getLogger().error("Failed to copy file.", e);
@@ -146,32 +140,24 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
         Set<File> filesCopiedModified = Collections.emptySet();
 
         return new TreeDiff(
-                new ArrayList<File>(dirsAdded),
-                new ArrayList<File>(dirsDeleted),
-                new ArrayList<File>(filesAdded),
-                new ArrayList<File>(filesDeleted),
-                new ArrayList<File>(filesModified),
-                new ArrayList<File>(filesMovedFrom),
-                new ArrayList<File>(filesMovedTo),
-                new ArrayList<File>(filesMovedModified),
-                new ArrayList<File>(filesCopiedFrom),
-                new ArrayList<File>(filesCopiedTo),
-                new ArrayList<File>(filesCopiedModified));
-    }
-
-    public static void main(String[] argv) {
-        try {
-            new CompareTreeDiffTask(new File("/home/daniel/Git"), new File("/home/daniel/Vob"), new File("a"), MeterFactory.getMeter("teste")).call();
-        } catch (Exception ex) {
-            Logger.getLogger(CompareTreeDiffTask.class.getName()).log(Level.SEVERE, null, ex);
-        }
+                new ArrayList<>(dirsAdded),
+                new ArrayList<>(dirsDeleted),
+                new ArrayList<>(filesAdded),
+                new ArrayList<>(filesDeleted),
+                new ArrayList<>(filesModified),
+                new ArrayList<>(filesMovedFrom),
+                new ArrayList<>(filesMovedTo),
+                new ArrayList<>(filesMovedModified),
+                new ArrayList<>(filesCopiedFrom),
+                new ArrayList<>(filesCopiedTo),
+                new ArrayList<>(filesCopiedModified));
     }
 
     private static boolean compare(InputStream input1, InputStream input2) throws IOException {
         boolean error = false;
         try {
-            byte[] buffer1 = new byte[1024];
-            byte[] buffer2 = new byte[1024];
+            byte[] buffer1 = new byte[1_024];
+            byte[] buffer2 = new byte[1_024];
             try {
                 int numRead1 = 0;
                 int numRead2 = 0;
@@ -195,10 +181,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
             } finally {
                 input1.close();
             }
-        } catch (IOException e) {
-            error = true; // this error should be thrown, even if there is an error closing stream 2
-            throw e;
-        } catch (RuntimeException e) {
+        } catch (IOException | RuntimeException e) {
             error = true; // this error should be thrown, even if there is an error closing stream 2
             throw e;
         } finally {

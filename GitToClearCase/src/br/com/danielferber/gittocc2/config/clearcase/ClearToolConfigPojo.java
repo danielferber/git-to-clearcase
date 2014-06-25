@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @author Daniel
  */
 public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements ClearToolConfig, Serializable {
+	private static final long serialVersionUID = 1L;
 
     private File clearToolExec;
     private File vobViewDir;

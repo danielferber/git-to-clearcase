@@ -5,7 +5,6 @@
 package br.com.danielferber.gittocc2.io.process;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -51,9 +50,9 @@ public class CommandLineProcessBuilder {
     protected String name;
     
     String command;
-    final List<String> parameters = new ArrayList<String>();
-    final List<String> options = new ArrayList<String>();
-    final List<String> arguments = new ArrayList<String>();
+    final List<String> parameters = new ArrayList<>();
+    final List<String> options = new ArrayList<>();
+    final List<String> arguments = new ArrayList<>();
 
     public CommandLineProcessBuilder(File executionDirectory, File executableFile, Logger logger) {
         this.executionDirectory = executionDirectory;
@@ -68,7 +67,7 @@ public class CommandLineProcessBuilder {
         this.arguments.clear();
         this.command = null;
 
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     public File getExecutableFile() {
@@ -85,46 +84,46 @@ public class CommandLineProcessBuilder {
 
     public CommandLineProcessBuilder command(String command) {
         this.command = command;
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     public CommandLineProcessBuilder option(String option) {
         options.add("--" + option);
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     public CommandLineProcessBuilder shortParameter(String parameter) {
         parameters.add("-" + parameter);
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     public CommandLineProcessBuilder parameter(String parameter) {
         parameters.add("--" + parameter);
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     public CommandLineProcessBuilder parameter(String parameter, String value) {
         parameters.add("--" + parameter + "=" + value);
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     public CommandLineProcessBuilder arguments(String... arguments) {
         for (String string : arguments) {
             this.arguments.add(string);
         }
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     public CommandLineProcessBuilder argument(String argument) {
         arguments.add(argument);
-        return (CommandLineProcessBuilder) this;
+        return this;
     }
 
     /**
      * @return the command used to launch the process
      */
     protected List<String> buildCommandLine() {
-        List<String> commandLine = new ArrayList<String>(options.size() + parameters.size() + arguments.size() + 2);
+        List<String> commandLine = new ArrayList<>(options.size() + parameters.size() + arguments.size() + 2);
         commandLine.add(executableFile.getAbsolutePath());
         commandLine.addAll(options);
         commandLine.add(command);

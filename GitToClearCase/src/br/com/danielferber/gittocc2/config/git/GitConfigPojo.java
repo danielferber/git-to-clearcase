@@ -1,6 +1,5 @@
 package br.com.danielferber.gittocc2.config.git;
 
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfig;
 import java.io.File;
 
 /**

@@ -21,7 +21,7 @@ class ProcessOutputRepeater implements Runnable {
 
     Reader reader;
     Thread thread;
-    final List<Writer> writers = new ArrayList<Writer>();
+    final List<Writer> writers = new ArrayList<>();
 
     public ProcessOutputRepeater() {
         super();
