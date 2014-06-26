@@ -27,7 +27,7 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     public ClearToolConfigPojo(final ClearToolConfigSource other) {
         this.clearToolExec = other.getClearToolExec();
         this.vobViewDir = other.getVobViewDir();
-        this.updateVobRoot = other.getupdateVobViewDir();
+        this.updateVobRoot = other.getUpdateVobViewDir();
         this.createActivity = other.getCreateActivity();
         this.activityMessagePattern = other.getActivityMessagePattern();
         this.commitStampFileName = other.getCommitStampFileName();
@@ -77,7 +77,7 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getupdateVobViewDir() {
+    public Boolean getUpdateVobViewDir() {
         return this.updateVobRoot;
     }
 

@@ -24,7 +24,7 @@ public interface ClearToolConfigSource {
 
     String getOverriddenSyncFromCommit();
 
-    Boolean getupdateVobViewDir();
+    Boolean getUpdateVobViewDir();
 
     File getVobViewDir();
 
@@ -39,7 +39,7 @@ public interface ClearToolConfigSource {
             ps.println(" * Executable file: " + config.getClearToolExec());
             ps.println(" * VOB view directory: " + config.getVobViewDir());
             ps.println(" * Before synchronizing, do:");
-            ps.println("    - update VOB view: " + config.getupdateVobViewDir());
+            ps.println("    - update VOB view: " + config.getUpdateVobViewDir());
             ps.println("    - create new activity: " + config.getCreateActivity());
             if (config.getCreateActivity() != null && config.getCreateActivity()) {
                 ps.println("      activity message pattern: " + config.getActivityMessagePattern());

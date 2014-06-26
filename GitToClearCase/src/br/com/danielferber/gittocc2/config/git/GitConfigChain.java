@@ -1,6 +1,10 @@
 package br.com.danielferber.gittocc2.config.git;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -8,67 +12,90 @@ import java.io.File;
  */
 public class GitConfigChain implements GitConfigSource {
 
-    private final GitConfigSource wrapped1;
-    private final GitConfigSource wrapped2;
+    private final List<GitConfigSource> sources;
 
-    public GitConfigChain(final GitConfigSource wrapped1, final GitConfigSource wrapped2) {
-        this.wrapped1 = wrapped1;
-        this.wrapped2 = wrapped2;
+    public GitConfigChain(final GitConfigSource... sources) {
+        this.sources = new ArrayList<>(Arrays.asList(sources));
     }
 
+    public void add(GitConfigSource source) {
+        this.add(source);
+    }
+    
     @Override
     public Boolean getCleanLocalGitRepository() {
-        if (wrapped2.getCleanLocalGitRepository() != null) {
-            return wrapped2.getCleanLocalGitRepository();
+        for (GitConfigSource config : sources) {
+            Boolean value = config.getCleanLocalGitRepository();
+            if (value != null) {
+                return value;
+            }
         }
-        return wrapped1.getCleanLocalGitRepository();
+        return null;
     }
 
     @Override
     public Boolean getFastForwardLocalGitRepository() {
-        if (wrapped2.getFastForwardLocalGitRepository() != null) {
-            return wrapped2.getFastForwardLocalGitRepository();
+        for (GitConfigSource config : sources) {
+            Boolean value = config.getFastForwardLocalGitRepository();
+            if (value != null) {
+                return value;
+            }
         }
-        return wrapped1.getFastForwardLocalGitRepository();
+        return null;
     }
 
     @Override
     public Boolean getFetchRemoteGitRepository() {
-        if (wrapped2.getFetchRemoteGitRepository() != null) {
-            return wrapped2.getFetchRemoteGitRepository();
+        for (GitConfigSource config : sources) {
+            Boolean value = config.getFetchRemoteGitRepository();
+            if (value != null) {
+                return value;
+            }
         }
-        return wrapped1.getFetchRemoteGitRepository();
+        return null;
     }
 
     @Override
     public File getGitExec() {
-        if (wrapped2.getGitExec() != null) {
-            return wrapped2.getGitExec();
+        for (GitConfigSource config : sources) {
+            File value = config.getGitExec();
+            if (value != null) {
+                return value;
+            }
         }
-        return wrapped1.getGitExec();
+        return null;
     }
 
     @Override
     public File getRepositoryDir() {
-        if (wrapped2.getRepositoryDir() != null) {
-            return wrapped2.getRepositoryDir();
+        for (GitConfigSource config : sources) {
+            File value = config.getRepositoryDir();
+            if (value != null) {
+                return value;
+            }
         }
-        return wrapped1.getRepositoryDir();
+        return null;
     }
 
     @Override
     public Boolean getResetLocalGitRepository() {
-        if (wrapped2.getResetLocalGitRepository() != null) {
-            return wrapped2.getResetLocalGitRepository();
+        for (GitConfigSource config : sources) {
+            Boolean value = config.getResetLocalGitRepository();
+            if (value != null) {
+                return value;
+            }
         }
-        return wrapped1.getResetLocalGitRepository();
+        return null;
     }
 
     @Override
     public Boolean getApplyDefaultGitConfig() {
-        if (wrapped2.getApplyDefaultGitConfig() != null) {
-            return wrapped2.getApplyDefaultGitConfig();
+        for (GitConfigSource config : sources) {
+            Boolean value = config.getApplyDefaultGitConfig();
+            if (value != null) {
+                return value;
+            }
         }
-        return wrapped1.getApplyDefaultGitConfig();
+        return null;
     }
 }
