@@ -54,9 +54,9 @@
         <!-- Usa cores em terminais com suporte ansi -->
         <withJansi>true</withJansi>
         <!-- Informa somente tarefas concluídas e informações. -->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>debug</level>
-        </filter>
+<!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>trace</level>
+        </filter>-->
         <!-- Não informa progresso dos processos individuais. -->
         <filter class="br.com.danielferber.gittocc2.logback.LoggerNameFilter">
             <loggerName>git</loggerName>

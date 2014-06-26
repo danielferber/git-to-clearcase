@@ -10,6 +10,7 @@ import static ch.qos.logback.core.pattern.color.ANSIConstants.CYAN_FG;
 import static ch.qos.logback.core.pattern.color.ANSIConstants.DEFAULT_FG;
 import static ch.qos.logback.core.pattern.color.ANSIConstants.RED_FG;
 import static ch.qos.logback.core.pattern.color.ANSIConstants.YELLOW_FG;
+import static ch.qos.logback.core.pattern.color.ANSIConstants.BLACK_FG;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.pattern.color.ForegroundCompositeConverterBase;
@@ -30,6 +31,8 @@ public class HighlightingCompositeConverter extends ForegroundCompositeConverter
                 return YELLOW_FG;
             case Level.INFO_INT:
                 return CYAN_FG;
+            case Level.TRACE_INT:
+                return BOLD+BLACK_FG; // actually displays as gray.
             default:
                 return DEFAULT_FG;
         }
