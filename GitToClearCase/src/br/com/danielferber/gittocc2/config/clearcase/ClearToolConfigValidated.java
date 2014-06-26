@@ -18,6 +18,9 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
 
     @Override
     public String getActivityMessagePattern() {
+        if (wrapped.getActivityMessagePattern() == null) {
+            throw new ConfigException("Activity message pattern: missing value.");
+        }
         return wrapped.getActivityMessagePattern();
     }
 
@@ -39,35 +42,56 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
         return exec;
     }
 
-
     @Override
     public File getCommitStampFileName() {
+        if (wrapped.getCommitStampFileName() == null) {
+            throw new ConfigException("Commit stamp file name: missing value.");
+        }
         return wrapped.getCommitStampFileName();
     }
 
     @Override
     public File getCounterStampFileName() {
+        if (wrapped.getCounterStampFileName() == null) {
+            throw new ConfigException("counter stamp file name: missing value.");
+        }
         return wrapped.getCounterStampFileName();
     }
 
     @Override
     public Boolean getCreateActivity() {
+        if (wrapped.getCreateActivity() == null) {
+            throw new ConfigException("Create activity: missing value.");
+        }
+        if (wrapped.getActivityMessagePattern() == null) {
+            throw new ConfigException("Create activity: requires value for activity message pattern.");
+        }
+
         return wrapped.getCreateActivity();
     }
 
     @Override
     public Long getOverriddenSyncCounter() {
+        if (wrapped.getOverriddenSyncCounter() == null) {
+            throw new ConfigException("Overridden sync counter with: missing value.");
+        }
         return wrapped.getOverriddenSyncCounter();
     }
 
     @Override
     public String getOverriddenSyncFromCommit() {
+        if (wrapped.getOverriddenSyncFromCommit() == null) {
+            throw new ConfigException("Overridden sync from commit with: missing value.");
+        }
         return wrapped.getOverriddenSyncFromCommit();
     }
 
     @Override
-    public Boolean getupdateVobViewDir() {
-        return wrapped.getupdateVobViewDir();
+    public Boolean getUpdateVobViewDir() {
+        if (wrapped.getUpdateVobViewDir() == null) {
+            throw new ConfigException("Update VOB view directory: missing value.");
+        }
+        return wrapped.getUpdateVobViewDir();
     }
 
     @Override
@@ -84,5 +108,4 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
         }
         return dir;
     }
-
 }

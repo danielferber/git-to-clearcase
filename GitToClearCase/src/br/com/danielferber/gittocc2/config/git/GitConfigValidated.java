@@ -18,16 +18,25 @@ public class GitConfigValidated implements GitConfigSource {
 
     @Override
     public Boolean getCleanLocalGitRepository() {
+         if (wrapped.getCleanLocalGitRepository() == null) {
+            throw new ConfigException("Clean local git repository: missing value.");
+        }
         return wrapped.getCleanLocalGitRepository();
     }
 
     @Override
     public Boolean getFastForwardLocalGitRepository() {
+         if (wrapped.getFastForwardLocalGitRepository() == null) {
+            throw new ConfigException("Fast forward local git repository: missing value.");
+        }
         return wrapped.getFastForwardLocalGitRepository();
     }
 
     @Override
     public Boolean getFetchRemoteGitRepository() {
+         if (wrapped.getFetchRemoteGitRepository() == null) {
+            throw new ConfigException("Fetch remote git repository: missing value.");
+        }
         return wrapped.getFetchRemoteGitRepository();
     }
 
@@ -35,7 +44,7 @@ public class GitConfigValidated implements GitConfigSource {
     public File getGitExec() {
         final File exec = wrapped.getGitExec();
         if (exec == null) {
-            throw new ConfigException("Git executable: missing property.");
+            throw new ConfigException("Git executable: missing value.");
         }
         if (!exec.exists()) {
             throw new ConfigException("Git executable: does not exist.");
@@ -53,7 +62,7 @@ public class GitConfigValidated implements GitConfigSource {
     public File getRepositoryDir() {
         final File dir = wrapped.getRepositoryDir();
         if (dir == null) {
-            throw new ConfigException("Repository directory: missing property.");
+            throw new ConfigException("Repository directory: missing value.");
         }
         if (!dir.exists()) {
             throw new ConfigException("Repository directory: does not exist.");
@@ -70,11 +79,17 @@ public class GitConfigValidated implements GitConfigSource {
 
     @Override
     public Boolean getResetLocalGitRepository() {
+        if (wrapped.getResetLocalGitRepository() == null) {
+            throw new ConfigException("Reset local git repository: missing value.");
+        }
         return wrapped.getResetLocalGitRepository();
     }
 
     @Override
     public Boolean getApplyDefaultGitConfig() {
+        if (wrapped.getApplyDefaultGitConfig() == null) {
+            throw new ConfigException("Apply default git config: missing value.");
+        }
         return wrapped.getApplyDefaultGitConfig();
     }
 }
