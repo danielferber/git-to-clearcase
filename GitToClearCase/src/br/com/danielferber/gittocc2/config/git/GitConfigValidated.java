@@ -92,4 +92,15 @@ public class GitConfigValidated implements GitConfigSource {
         }
         return wrapped.getApplyDefaultGitConfig();
     }
+
+	public void validateAll() {
+		getApplyDefaultGitConfig();
+		getCleanLocalGitRepository();
+		getFastForwardLocalGitRepository();
+		getFetchRemoteGitRepository();
+		getGitExec();
+		getRepositoryDir();
+		getResetLocalGitRepository();
+
+	}
 }

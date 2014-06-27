@@ -52,9 +52,13 @@ class SynchronizerCommandLine {
     }
     final OptionSet options;
     final Properties properties;
+    final GitConfigSource gitConfigDefault;
+    final ClearToolConfigSource clearToolConfigDefault;
 
-    SynchronizerCommandLine(final String[] argv) {
+    SynchronizerCommandLine(final String[] argv, GitConfigSource gitConfigDefault, ClearToolConfigSource clearToolConfigDefault) {
         options = parser.parse(argv);
+        this.gitConfigDefault = gitConfigDefault;
+        this.clearToolConfigDefault = clearToolConfigDefault;
         final File propertyFile = propertyFileOpt.value(options);
 
         if (propertyFile != null) {
@@ -87,41 +91,53 @@ class SynchronizerCommandLine {
         }
         if (options.has(ccCommitStampFileOpt)) {
             config.setCommitStampFileName(options.valueOf(ccCommitStampFileOpt));
-        } else {
-            config.setCommitStampFileName(new File("sync-commit-stamp.txt"));
         }
         if (options.has(ccCounterStampFileOpt)) {
             config.setCounterStampFileName(options.valueOf(ccCounterStampFileOpt));
-        } else {
-            config.setCounterStampFileName(new File("sync-counter-stamp.txt"));
         }
-        config.setCreateActivity(options.has(ccCreateActivityOpt));
+        if (options.has(ccCreateActivityOpt)) {
+        	config.setCreateActivity(true);
+        }
         if (options.has(ccOverriddenSyncCounterOpt)) {
             config.setOverriddenSyncCounter(options.valueOf(ccOverriddenSyncCounterOpt));
         }
         if (options.has(ccOverriddenSyncFromCommitOpt)) {
             config.setOverriddenSyncFromCommit(options.valueOf(ccOverriddenSyncFromCommitOpt));
         }
-        config.setUpdateVobRoot(options.has(ccUpdateVobRootOpt));
+        if (options.has(ccUpdateVobRootOpt)) {
+        	config.setUpdateVobRoot(true);
+        }
 
         if (properties == null) {
-            return config;
+            return new ClearToolConfigChain(config, clearToolConfigDefault);
         }
-        return new ClearToolConfigChain(config, new ClearToolConfigProperties(properties));
+        return new ClearToolConfigChain(config, new ClearToolConfigProperties(properties), clearToolConfigDefault);
     }
 
     GitConfigSource getGitConfig() {
         final GitConfigPojo config = new GitConfigPojo(gitExecOpt.value(options), gitRepositoryDirOpt.value(options));
-        config.setFastForwardLocalGitRepository(options.has(gitFastForwardLocalGitRepositoryOpt));
-        config.setCleanLocalGitRepository(options.has(gitCleanLocalGitRepositoryOpt));
-        config.setResetLocalGitRepository(options.has(gitResetLocalGitRepositoryOpt));
-        config.setFastForwardLocalGitRepository(options.has(gitFastForwardLocalGitRepositoryOpt));
-        config.setFetchRemoteGitRepository(options.has(gitFetchRemoteGitRepositoryOpt));
-        config.setApplyDefaultGitConfig(options.has(gitApplyDefaultGitConfigOpt));
+        if (options.has(gitFastForwardLocalGitRepositoryOpt)) {
+        	config.setFastForwardLocalGitRepository(true);
+        }
+        if (options.has(gitCleanLocalGitRepositoryOpt)) {
+        	config.setCleanLocalGitRepository(true);
+        }
+        if (options.has(gitResetLocalGitRepositoryOpt)) {
+        	config.setResetLocalGitRepository(true);
+        }
+        if (options.has(gitFastForwardLocalGitRepositoryOpt)) {
+        	config.setFastForwardLocalGitRepository(true);
+        }
+        if (options.has(gitFetchRemoteGitRepositoryOpt)) {
+        	config.setFetchRemoteGitRepository(true);
+        }
+        if (options.has(gitApplyDefaultGitConfigOpt)) {
+        	config.setApplyDefaultGitConfig(true);
+        }
 
         if (properties == null) {
-            return config;
+            return new GitConfigChain(config, new GitConfigProperties(properties), gitConfigDefault);
         }
-        return new GitConfigChain(config, new GitConfigProperties(properties));
+        return new GitConfigChain(config, new GitConfigProperties(properties), gitConfigDefault);
     }
 }

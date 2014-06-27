@@ -37,7 +37,20 @@ public class Synchronizer {
         final boolean compareOnly;
         final File compareRoot;
         try {
-            final SynchronizerCommandLine cl = new SynchronizerCommandLine(argv);
+        	final GitConfigPojo gitConfigDefault = new GitConfigPojo();
+        	gitConfigDefault.setApplyDefaultGitConfig(false);
+        	gitConfigDefault.setCleanLocalGitRepository(false);
+        	gitConfigDefault.setFastForwardLocalGitRepository(false);
+        	gitConfigDefault.setFetchRemoteGitRepository(false);
+        	gitConfigDefault.setResetLocalGitRepository(false);
+        	
+        	final ClearToolConfigPojo clearToolConfigDefault = new ClearToolConfigPojo();
+        	clearToolConfigDefault.setCommitStampFileName(new File("sync-commit-stamp.txt"));
+        	clearToolConfigDefault.setCounterStampFileName(new File("sync-counter-stamp.txt"));
+        	clearToolConfigDefault.setCreateActivity(false);
+        	clearToolConfigDefault.setUpdateVobRoot(false);
+        	
+            final SynchronizerCommandLine cl = new SynchronizerCommandLine(argv, gitConfigDefault, clearToolConfigDefault);
             nonValidatedClearToolConfig = cl.getClearToolConfig();
             nonValidateGitConfig = cl.getGitConfig();
             compareOnly = cl.isCompareOnly();
@@ -67,18 +80,20 @@ public class Synchronizer {
             }
         }
 
-        final ClearToolConfigSource cleartoolConfig;
-        final GitConfigSource gitConfig;
+        final ClearToolConfigValidated cleartoolConfig;
+        final GitConfigValidated gitConfig;
 
         try {
-            cleartoolConfig = new ClearToolConfigPojo(new ClearToolConfigValidated(nonValidatedClearToolConfig));
-            gitConfig = new GitConfigPojo(new GitConfigValidated(nonValidateGitConfig));
+            cleartoolConfig = new ClearToolConfigValidated(nonValidatedClearToolConfig);
+            cleartoolConfig.validateAll();
+            gitConfig = new GitConfigValidated(nonValidateGitConfig);
+            gitConfig.validateAll();
         } catch (final ConfigException e) {
             logger.error("Incorrent environment configuration: {}", e.getMessage());
             return;
         }
 
-        final SynchronizeTask task = new SynchronizeTask(cleartoolConfig, gitConfig, compareOnly,compareRoot);
+        final SynchronizeTask task = new SynchronizeTask(cleartoolConfig, gitConfig, compareOnly, compareRoot);
         try {
             task.call();
         } catch (final Exception ex) {

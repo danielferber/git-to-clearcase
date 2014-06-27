@@ -72,17 +72,11 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
 
     @Override
     public Long getOverriddenSyncCounter() {
-        if (wrapped.getOverriddenSyncCounter() == null) {
-            throw new ConfigException("Overridden sync counter with: missing value.");
-        }
         return wrapped.getOverriddenSyncCounter();
     }
 
     @Override
     public String getOverriddenSyncFromCommit() {
-        if (wrapped.getOverriddenSyncFromCommit() == null) {
-            throw new ConfigException("Overridden sync from commit with: missing value.");
-        }
         return wrapped.getOverriddenSyncFromCommit();
     }
 
@@ -107,5 +101,16 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
             throw new ConfigException("Vob view directory: not a directory.");
         }
         return dir;
+    }
+    
+    public void validateAll() {
+    	if (getCreateActivity()) {
+    		getActivityMessagePattern();
+    	}
+    	getClearToolExec();
+    	getVobViewDir();
+    	getUpdateVobViewDir();
+    	getCommitStampAbsoluteFile();
+    	getCounterStampAbsoluteFile();
     }
 }
