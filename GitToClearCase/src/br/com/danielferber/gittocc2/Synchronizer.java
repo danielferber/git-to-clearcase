@@ -47,7 +47,7 @@ public class Synchronizer {
         	final ClearToolConfigPojo clearToolConfigDefault = new ClearToolConfigPojo();
         	clearToolConfigDefault.setCommitStampFileName(new File("sync-commit-stamp.txt"));
         	clearToolConfigDefault.setCounterStampFileName(new File("sync-counter-stamp.txt"));
-        	clearToolConfigDefault.setCreateActivity(false);
+        	clearToolConfigDefault.setUseSyncActivity(false);
         	clearToolConfigDefault.setUpdateVobRoot(false);
         	
             final SynchronizerCommandLine cl = new SynchronizerCommandLine(argv, gitConfigDefault, clearToolConfigDefault);
@@ -77,6 +77,7 @@ public class Synchronizer {
 
                 ClearToolConfigSource.Utils.printConfig(ps, nonValidatedClearToolConfig);
                 GitConfigSource.Utils.printConfig(ps, nonValidateGitConfig);
+                ps.close();
             }
         }
 

@@ -7,13 +7,13 @@ import java.io.File;
 public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements ClearToolConfig {
 
     private final ClearToolConfig wrapped;
-
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-
-    public static final String CREATE_ACTIVITY_PROPERTY = "cc.createActivity";
+    public static final String USE_SYNC_ACTIVITY_PROPERTY = "cc.useSyncActivity";
+    public static final String USE_STAMP_ACTIVITY_PROPERTY = "cc.useStampActivity";
     public static final String CLEARTOOL_EXEC_PROPERTY = "cc.cleartool.exec";
     public static final String VOB_VIEW_DIR_PROPERTY = "cc.view.dir";
-    public static final String ACTIVITY_MESSAGE_PATTERN_PROPERTY = "cc.activityMessagePattern";
+    public static final String SYNC_ACTIVITY_NAME_PROPERTY = "cc.syncActivityName";
+    public static final String STAMP_ACTIVITY_NAME_PROPERTY = "cc.stampActivityName";
     public static final String UPDATE_VOB_ROOT_PROPERTY = "cc.updateVobRoot";
     public static final String COMMIT_STAMP_FILE_NAME_PROPERTY = "cc.commitStampFileName";
     public static final String COUNTER_STAMP_FILE_NAME_PROPERTY = "cc.counterStampFileName";
@@ -34,8 +34,13 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public String getActivityMessagePattern() {
-        return wrapped.getActivityMessagePattern();
+    public String getSyncActivityName() {
+        return wrapped.getSyncActivityName();
+    }
+
+    @Override
+    public String getStampActivityName() {
+        return wrapped.getStampActivityName();
     }
 
     @Override
@@ -54,8 +59,13 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getCreateActivity() {
-        return wrapped.getCreateActivity();
+    public Boolean getUseSyncActivity() {
+        return wrapped.getUseSyncActivity();
+    }
+
+    @Override
+    public Boolean getUseStampActivity() {
+        return wrapped.getUseStampActivity();
     }
 
     @Override
@@ -83,10 +93,18 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setActivityMessagePattern(final String value) {
-        final String oldValue = wrapped.getActivityMessagePattern();
-        wrapped.setActivityMessagePattern(value);
-        this.pcs.firePropertyChange(ACTIVITY_MESSAGE_PATTERN_PROPERTY, oldValue, value);
+    public ClearToolConfig setSyncActivityName(final String value) {
+        final String oldValue = wrapped.getSyncActivityName();
+        wrapped.setSyncActivityName(value);
+        this.pcs.firePropertyChange(SYNC_ACTIVITY_NAME_PROPERTY, oldValue, value);
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setStampActivityName(final String value) {
+        final String oldValue = wrapped.getStampActivityName();
+        wrapped.setStampActivityName(value);
+        this.pcs.firePropertyChange(STAMP_ACTIVITY_NAME_PROPERTY, oldValue, value);
         return this;
     }
 
@@ -106,21 +124,29 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
         return this;
     }
 
-        @Override
-		public ClearToolConfig setCounterStampFileName(final File file) {
-		    final File oldValue = wrapped.getCounterStampFileName();
-		    wrapped.setCounterStampFileName(file);
-		    this.pcs.firePropertyChange(COUNTER_STAMP_FILE_NAME_PROPERTY, oldValue, file);
-		    return this;
-		}
+    @Override
+    public ClearToolConfig setCounterStampFileName(final File file) {
+        final File oldValue = wrapped.getCounterStampFileName();
+        wrapped.setCounterStampFileName(file);
+        this.pcs.firePropertyChange(COUNTER_STAMP_FILE_NAME_PROPERTY, oldValue, file);
+        return this;
+    }
 
     @Override
-   public ClearToolConfig setCreateActivity(final Boolean value) {
-	final Boolean oldValue = wrapped.getCreateActivity();
-	wrapped.setCreateActivity(value);
-	this.pcs.firePropertyChange(CREATE_ACTIVITY_PROPERTY, oldValue, value);
-	return this;
-   }
+    public ClearToolConfig setUseSyncActivity(final Boolean value) {
+        final Boolean oldValue = wrapped.getUseSyncActivity();
+        wrapped.setUseSyncActivity(value);
+        this.pcs.firePropertyChange(USE_SYNC_ACTIVITY_PROPERTY, oldValue, value);
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setUseStampActivity(final Boolean value) {
+        final Boolean oldValue = wrapped.getUseStampActivity();
+        wrapped.setUseStampActivity(value);
+        this.pcs.firePropertyChange(USE_STAMP_ACTIVITY_PROPERTY, oldValue, value);
+        return this;
+    }
 
     @Override
     public ClearToolConfig setOverriddenSyncCounter(final Long value) {
@@ -153,5 +179,4 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
         this.pcs.firePropertyChange(VOB_VIEW_DIR_PROPERTY, oldValue, dir);
         return this;
     }
-
 }

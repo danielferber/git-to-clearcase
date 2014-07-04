@@ -17,11 +17,19 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public String getActivityMessagePattern() {
-        if (wrapped.getActivityMessagePattern() == null) {
-            throw new ConfigException("Activity message pattern: missing value.");
+    public String getSyncActivityName() {
+        if (wrapped.getSyncActivityName() == null) {
+            throw new ConfigException("Sync activity name: missing value.");
         }
-        return wrapped.getActivityMessagePattern();
+        return wrapped.getSyncActivityName();
+    }
+
+    @Override
+    public String getStampActivityName() {
+        if (wrapped.getStampActivityName() == null) {
+            throw new ConfigException("Stamp activity name: missing value.");
+        }
+        return wrapped.getStampActivityName();
     }
 
     @Override
@@ -59,15 +67,19 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public Boolean getCreateActivity() {
-        if (wrapped.getCreateActivity() == null) {
-            throw new ConfigException("Create activity: missing value.");
+    public Boolean getUseSyncActivity() {
+        if (wrapped.getUseSyncActivity() == null) {
+            throw new ConfigException("Use sync activity: missing value.");
         }
-        if (wrapped.getActivityMessagePattern() == null) {
-            throw new ConfigException("Create activity: requires value for activity message pattern.");
-        }
+        return wrapped.getUseSyncActivity();
+    }
 
-        return wrapped.getCreateActivity();
+    @Override
+    public Boolean getUseStampActivity() {
+        if (wrapped.getUseStampActivity() == null) {
+            throw new ConfigException("Use stamp activity: missing value.");
+        }
+        return wrapped.getUseStampActivity();
     }
 
     @Override
@@ -102,15 +114,15 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
         }
         return dir;
     }
-    
+
     public void validateAll() {
-    	if (getCreateActivity()) {
-    		getActivityMessagePattern();
-    	}
-    	getClearToolExec();
-    	getVobViewDir();
-    	getUpdateVobViewDir();
-    	getCommitStampAbsoluteFile();
-    	getCounterStampAbsoluteFile();
+        if (getUseSyncActivity()) {
+            getSyncActivityName();
+        }
+        getClearToolExec();
+        getVobViewDir();
+        getUpdateVobViewDir();
+        getCommitStampAbsoluteFile();
+        getCounterStampAbsoluteFile();
     }
 }

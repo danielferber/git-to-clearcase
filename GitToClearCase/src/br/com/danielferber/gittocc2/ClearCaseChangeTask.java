@@ -124,13 +124,13 @@ public class ClearCaseChangeTask implements Callable<Void> {
         Meter m2 = null;
 
         try {
-            if (cleartoolConfig.getCreateActivity()) {
+            if (cleartoolConfig.getUseSyncActivity()) {
                 final HashMap<String, Object> map = new HashMap<>();
                 map.put("commit", syncToCommit);
                 map.put("date", new Date());
                 map.put("count", syncCounter);
                 final StrSubstitutor sub = new StrSubstitutor(map);
-                final String resolvedString = sub.replace(cleartoolConfig.getActivityMessagePattern());
+                final String resolvedString = sub.replace(cleartoolConfig.getSyncActivityName());
                 m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", resolvedString).start();
                 ctCommander.createActivity(resolvedString);
                 m2.ok();

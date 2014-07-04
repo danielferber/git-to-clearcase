@@ -9,15 +9,19 @@ import java.io.PrintStream;
  */
 public interface ClearToolConfigSource {
 
-    String getActivityMessagePattern();
+    Boolean getUseSyncActivity();
+
+    Boolean getUseStampActivity();
+
+    String getSyncActivityName();
+
+    String getStampActivityName();
 
     File getClearToolExec();
 
     File getCommitStampFileName();
 
     File getCounterStampFileName();
-
-    Boolean getCreateActivity();
 
     Long getOverriddenSyncCounter();
 
@@ -39,9 +43,12 @@ public interface ClearToolConfigSource {
             ps.println(" * VOB view directory: " + config.getVobViewDir());
             ps.println(" * Before synchronizing, do:");
             ps.println("    - update VOB view: " + config.getUpdateVobViewDir());
-            ps.println("    - create new activity: " + config.getCreateActivity());
-            if (config.getCreateActivity() != null && config.getCreateActivity()) {
-                ps.println("      activity message pattern: " + config.getActivityMessagePattern());
+            ps.println("    - create new activity: " + config.getUseSyncActivity());
+            if (config.getUseSyncActivity() != null && config.getUseSyncActivity()) {
+                ps.println("      activity name: " + config.getSyncActivityName());
+            }
+            if (config.getUseStampActivity() != null && config.getUseStampActivity()) {
+                ps.println("      activity name: " + config.getStampActivityName());
             }
             if (config.getOverriddenSyncFromCommit() != null) {
                 ps.println("    - assume current vob view at commit (ignoring stamp file): " + config.getOverriddenSyncFromCommit());
@@ -49,9 +56,9 @@ public interface ClearToolConfigSource {
                 ps.println("    - read current vob view at commit from stamp file: " + config.getCommitStampAbsoluteFile());
             }
             if (config.getOverriddenSyncCounter() != null) {
-                ps.println("    - assume current vob view at commit (ignoring stamp file): " + config.getOverriddenSyncCounter());
+                ps.println("    - assume counter (ignoring stamp file): " + config.getOverriddenSyncCounter());
             } else if (config.getCounterStampFileName() != null) {
-                ps.println("    - read current vob view at commit from stamp file: " + config.getCounterStampAbsoluteFile());
+                ps.println("    - read counter from stamp file: " + config.getCounterStampAbsoluteFile());
             }
             ps.println(" * After synchronizing, do:");
             if (config.getCommitStampFileName() != null) {

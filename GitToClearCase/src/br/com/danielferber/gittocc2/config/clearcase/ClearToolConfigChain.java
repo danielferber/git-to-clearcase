@@ -22,9 +22,20 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     }
 
     @Override
-    public String getActivityMessagePattern() {
+    public String getSyncActivityName() {
         for (ClearToolConfigSource config : sources) {
-            String value = config.getActivityMessagePattern();
+            String value = config.getSyncActivityName();
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getStampActivityName() {
+        for (ClearToolConfigSource config : sources) {
+            String value = config.getStampActivityName();
             if (value != null) {
                 return value;
             }
@@ -66,9 +77,20 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     }
 
     @Override
-    public Boolean getCreateActivity() {
+    public Boolean getUseSyncActivity() {
         for (ClearToolConfigSource config : sources) {
-            Boolean value = config.getCreateActivity();
+            Boolean value = config.getUseSyncActivity();
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean getUseStampActivity() {
+        for (ClearToolConfigSource config : sources) {
+            Boolean value = config.getUseStampActivity();
             if (value != null) {
                 return value;
             }

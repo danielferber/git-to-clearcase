@@ -8,7 +8,9 @@ import java.io.File;
  */
 public interface ClearToolConfig extends ClearToolConfigSource {
 
-    ClearToolConfig setActivityMessagePattern(String value);
+    ClearToolConfig setSyncActivityName(String value);
+
+    ClearToolConfig setStampActivityName(String value);
 
     ClearToolConfig setClearToolExec(File file);
 
@@ -16,7 +18,9 @@ public interface ClearToolConfig extends ClearToolConfigSource {
 
     ClearToolConfig setCounterStampFileName(File file);
 
-    ClearToolConfig setCreateActivity(Boolean value);
+    ClearToolConfig setUseSyncActivity(Boolean value);
+
+    ClearToolConfig setUseStampActivity(Boolean value);
 
     ClearToolConfig setOverriddenSyncCounter(Long value);
 
@@ -25,5 +29,4 @@ public interface ClearToolConfig extends ClearToolConfigSource {
     ClearToolConfig setUpdateVobRoot(Boolean value);
 
     ClearToolConfig setVobViewDir(File dir);
-
 }

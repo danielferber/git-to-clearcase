@@ -13,8 +13,10 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     private File clearToolExec;
     private File vobViewDir;
     private Boolean updateVobRoot;
-    private Boolean createActivity;
-    private String activityMessagePattern;
+    private Boolean useSyncActivity;
+    private Boolean useStampActivity;
+    private String syncActivityName;
+    private String stampActivityName;
     private File commitStampFileName;
     private File counterStampFileName;
     private Long overriddenSyncCounter;
@@ -28,8 +30,10 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
         this.clearToolExec = other.getClearToolExec();
         this.vobViewDir = other.getVobViewDir();
         this.updateVobRoot = other.getUpdateVobViewDir();
-        this.createActivity = other.getCreateActivity();
-        this.activityMessagePattern = other.getActivityMessagePattern();
+        this.useSyncActivity = other.getUseSyncActivity();
+        this.useStampActivity = other.getUseStampActivity();
+        this.syncActivityName = other.getSyncActivityName();
+        this.stampActivityName = other.getStampActivityName();
         this.commitStampFileName = other.getCommitStampFileName();
         this.counterStampFileName = other.getCounterStampFileName();
         this.overriddenSyncCounter = other.getOverriddenSyncCounter();
@@ -42,8 +46,13 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public String getActivityMessagePattern() {
-        return this.activityMessagePattern;
+    public String getSyncActivityName() {
+        return this.syncActivityName;
+    }
+
+    @Override
+    public String getStampActivityName() {
+        return this.stampActivityName;
     }
 
     @Override
@@ -62,8 +71,13 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getCreateActivity() {
-        return this.createActivity;
+    public Boolean getUseSyncActivity() {
+        return this.useSyncActivity;
+    }
+
+    @Override
+    public Boolean getUseStampActivity() {
+        return this.useStampActivity;
     }
 
     @Override
@@ -87,8 +101,14 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setActivityMessagePattern(final String value) {
-        this.activityMessagePattern = value;
+    public ClearToolConfig setSyncActivityName(final String value) {
+        this.syncActivityName = value;
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setStampActivityName(final String value) {
+        this.stampActivityName = value;
         return this;
     }
 
@@ -111,8 +131,14 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setCreateActivity(final Boolean value) {
-        this.createActivity = value;
+    public ClearToolConfig setUseSyncActivity(final Boolean value) {
+        this.useSyncActivity = value;
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setUseStampActivity(final Boolean value) {
+        this.useStampActivity = value;
         return this;
     }
 
