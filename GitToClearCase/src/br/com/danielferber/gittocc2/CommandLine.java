@@ -25,7 +25,7 @@ import br.com.danielferber.gittocc2.config.git.GitConfigSource;
  *
  * @author Daniel Felix Ferber
  */
-class SynchronizerCommandLine {
+class CommandLine {
 
     final static OptionParser parser = new OptionParser();
     final static OptionSpec<File> propertyFileOpt = parser.accepts("properties", "Properties file.").withRequiredArg().ofType(File.class);
@@ -42,15 +42,14 @@ class SynchronizerCommandLine {
     
     final static OptionSpec<File> ccClearToolExecOpt = parser.accepts("ct", "CleartTool executable file.").withRequiredArg().required().ofType(File.class);
     final static OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").withRequiredArg().required().ofType(File.class);
+    final static OptionSpec<Void> ccVobRootUpdateOpt = parser.accepts("update", "Before synchronizing, update ClearCase VOB view directory.");
     
-    final static OptionSpec<String> ccSyncActivityOpt = parser.accepts("activity", "Create or resuse ClearCase activity for all synchronized files.").withOptionalArg().ofType(String.class);
-    final static OptionSpec<String> ccStampActivityOpt = parser.accepts("activity", "Create or resuse ClearCase activity for all synchronized files.").withOptionalArg().ofType(String.class);
-    final static OptionSpec<String> ccCreateActivityOpt = parser.accepts("stampActivity", "Create or resuse ClearCase activity for all stamp files.").withOptionalArg().ofType(String.class);
-    final static OptionSpec<File> ccCommitStampFileOpt = parser.accepts("commitstamp", "ClearCase sync stamp file relative to vob root directory.").withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> ccCounterStampFileOpt = parser.accepts("counterstamp", "ClearCase counter stamp file relative to vob root directory.").withRequiredArg().ofType(File.class);
+    final static OptionSpec<String> ccSyncActivityOpt = parser.accepts("commitactivity", "Create or resuse ClearCase activity for all synchronized files.").withOptionalArg().ofType(String.class);
+    final static OptionSpec<String> ccStampActivityOpt = parser.accepts("stampactivity", "Create or resuse ClearCase activity for all stamp files.").withOptionalArg().ofType(String.class);
+    final static OptionSpec<File> ccCommitStampFileOpt = parser.accepts("commitstamp", "Last synchronization commit stamp file relative to vob directory.").withOptionalArg().ofType(File.class);
+    final static OptionSpec<File> ccCounterStampFileOpt = parser.accepts("counterstamp", "Synchronization counter stamp file relative to vob directory.").withOptionalArg().ofType(File.class);
     final static OptionSpec<Long> ccOverriddenSyncCounterOpt = parser.accepts("counter", "Assume given counter and ignore counter stamp file.").withRequiredArg().ofType(Long.class);
     final static OptionSpec<String> ccOverriddenSyncFromCommitOpt = parser.accepts("commit", "Assume given commit and ignore commit stamp file.").withRequiredArg().ofType(String.class);
-    final static OptionSpec<Void> ccUpdateVobRootOpt = parser.accepts("update", "Before synchronizing, update ClearCase VOB view directory.");
 
     static void printHelp(final PrintStream ps) throws IOException {
         parser.printHelpOn(ps);
@@ -60,7 +59,7 @@ class SynchronizerCommandLine {
     final GitConfigSource gitConfigDefault;
     final ClearToolConfigSource clearToolConfigDefault;
 
-    SynchronizerCommandLine(final String[] argv, GitConfigSource gitConfigDefault, ClearToolConfigSource clearToolConfigDefault) {
+    CommandLine(final String[] argv, GitConfigSource gitConfigDefault, ClearToolConfigSource clearToolConfigDefault) {
         options = parser.parse(argv);
         this.gitConfigDefault = gitConfigDefault;
         this.clearToolConfigDefault = clearToolConfigDefault;
@@ -91,15 +90,10 @@ class SynchronizerCommandLine {
 
     ClearToolConfigSource getClearToolConfig() {
         final ClearToolConfigPojo config = new ClearToolConfigPojo(ccClearToolExecOpt.value(options), ccVobViewDirOpt.value(options));
-//        if (options.has(ccActivityMessagePatternOpt)) {
-//            config.setSyncActivityName(options.valueOf(ccActivityMessagePatternOpt));
-//        }
-        if (options.has(ccCommitStampFileOpt)) {
-            config.setCommitStampFileName(options.valueOf(ccCommitStampFileOpt));
+        if (options.has(ccVobRootUpdateOpt)) {
+            config.setUpdateVobRoot(true);
         }
-        if (options.has(ccCounterStampFileOpt)) {
-            config.setCounterStampFileName(options.valueOf(ccCounterStampFileOpt));
-        }
+        
         if (options.has(ccSyncActivityOpt)) {
             config.setUseSyncActivity(true);
             if (options.hasArgument(ccSyncActivityOpt)) {
@@ -112,14 +106,24 @@ class SynchronizerCommandLine {
                 config.setStampActivityName(options.valueOf(ccStampActivityOpt));
             }
         }
+
+        if (options.has(ccCommitStampFileOpt)) {
+            config.setUseCommitStampFile(true);
+            if (options.hasArgument(ccCommitStampFileOpt)) {
+                config.setCommitStampFile(options.valueOf(ccCommitStampFileOpt));
+            }
+        }
+        if (options.has(ccCounterStampFileOpt)) {
+            config.setUseCounterStampFile(true);
+            if (options.hasArgument(ccCounterStampFileOpt)) {
+                config.setCounterStampFile(options.valueOf(ccCounterStampFileOpt));
+            }
+        }
         if (options.has(ccOverriddenSyncCounterOpt)) {
             config.setOverriddenSyncCounter(options.valueOf(ccOverriddenSyncCounterOpt));
         }
         if (options.has(ccOverriddenSyncFromCommitOpt)) {
             config.setOverriddenSyncFromCommit(options.valueOf(ccOverriddenSyncFromCommitOpt));
-        }
-        if (options.has(ccUpdateVobRootOpt)) {
-            config.setUpdateVobRoot(true);
         }
 
         if (properties == null) {

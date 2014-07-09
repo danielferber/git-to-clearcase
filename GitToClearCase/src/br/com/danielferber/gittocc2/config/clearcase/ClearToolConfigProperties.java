@@ -13,25 +13,37 @@ import br.com.danielferber.gittocc2.config.ConfigProperties;
 
 public class ClearToolConfigProperties extends ClearToolConfigSourceImpl implements ClearToolConfig {
 
+    public static final String VOB_VIEW_DIR_PROPERTY = "cc.vobview.dir";
+    public static final String VOB_VIEW_UPDATE_PROPERTY = "cc.vobview.update";
+    public static final String CLEAR_TOOL_EXEC_PROPERTY = "cc.cleartool.exec";
+    public static final String USE_SYNC_ACTIVITY_PROPERTY = "cc.syncActivity.use";
+    public static final String USE_STAMP_ACTIVITY_PROPERTY = "cc.stampActivity.use";
+    public static final String SYNC_ACTIVITY_NAME_PROPERTY = "cc.syncActivity.name";
+    public static final String STAMP_ACTIVITY_NAME_PROPERTY = "cc.stampActivity.name";
+    public static final String USE_COMMIT_STAMP_FILE_PROPERTY = "cc.commitStamp.use";
+    public static final String USE_COUNTER_STAMP_FILE_PROPERTY = "cc.counterStamp.use";
+    public static final String COMMIT_STAMP_FILE_PROPERTY = "cc.commitStamp.file";
+    public static final String COUNTER_STAMP_FILE_PROPERTY = "cc.counterStamp.file";
+    public static final String OVERRIDDEN_SYNC_COUNTER_PROPERTY = "cc.commitStamp.override";
+    public static final String OVERRIDDEN_SYNC_COMMIT_PROPERTY = "cc.counterStamp.override";
+
     private final ConfigProperties properties;
-    private final String prefix;
 
     public ClearToolConfigProperties(final ClearToolConfigSource other) {
-        this(other, "");
-    }
-
-    public ClearToolConfigProperties(final ClearToolConfigSource other, final String prefix) {
         this.properties = new ConfigProperties();
-        this.prefix = prefix;
         this.setClearToolExec(other.getClearToolExec());
         this.setVobViewDir(other.getVobViewDir());
-        this.setSyncActivityName(other.getSyncActivityName());
-        this.setStampActivityName(other.getStampActivityName());
+        this.setUpdateVobRoot(other.getVobViewDirUpdate());
+        
         this.setUseSyncActivity(other.getUseSyncActivity());
         this.setUseStampActivity(other.getUseStampActivity());
-        this.setUpdateVobRoot(other.getUpdateVobViewDir());
-        this.setCommitStampFileName(other.getCommitStampFileName());
-        this.setCounterStampFileName(other.getCounterStampFileName());
+        this.setSyncActivityName(other.getSyncActivityName());
+        this.setStampActivityName(other.getStampActivityName());
+        
+        this.setUseCommitStampFile(other.getUseCommitStampFile());
+        this.setUseCounterStampFile(other.getUseCounterStampFile());
+        this.setCommitStampFile(other.getCommitStampFile());
+        this.setCounterStampFile(other.getCounterStampFile());
         this.setOverriddenSyncCounter(other.getOverriddenSyncCounter());
         this.setOverriddenSyncFromCommit(other.getOverriddenSyncFromCommit());
     }
@@ -43,7 +55,6 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     public ClearToolConfigProperties(final Map<String, String> map, final String prefix) {
         this.properties = new ConfigProperties();
         this.properties.putAll(map);
-        this.prefix = prefix;
 
     }
 
@@ -53,52 +64,61 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
 
     public ClearToolConfigProperties(final Properties properties, final String prefix) {
         this.properties = new ConfigProperties(properties);
-        this.prefix = prefix;
     }
 
     @Override
     public String getSyncActivityName() {
-        return properties.getString(prefix + "cc.syncActivityName");
+        return properties.getString(SYNC_ACTIVITY_NAME_PROPERTY);
     }
 
     @Override
     public String getStampActivityName() {
-        return properties.getString(prefix + "cc.stampActivityName");
+        return properties.getString(STAMP_ACTIVITY_NAME_PROPERTY);
     }
 
     @Override
     public File getClearToolExec() {
-        return properties.getFile(prefix + "cleartool.exec");
+        return properties.getFile(CLEAR_TOOL_EXEC_PROPERTY);
     }
 
     @Override
-    public File getCommitStampFileName() {
-        return properties.getFile(prefix + "cc.commitStampFileName");
+    public File getCommitStampFile() {
+        return properties.getFile(COMMIT_STAMP_FILE_PROPERTY);
     }
 
     @Override
-    public File getCounterStampFileName() {
-        return properties.getFile(prefix + "cc.counterStampFileName");
+    public File getCounterStampFile() {
+        return properties.getFile(COUNTER_STAMP_FILE_PROPERTY);
+    }
+
+    @Override
+    public Boolean getUseCommitStampFile() {
+        return properties.getBoolean(USE_COMMIT_STAMP_FILE_PROPERTY);
+    }
+
+    @Override
+    public Boolean getUseCounterStampFile() {
+        return properties.getBoolean(USE_COUNTER_STAMP_FILE_PROPERTY);
     }
 
     @Override
     public Boolean getUseSyncActivity() {
-        return properties.getBoolean(prefix + "git.useSyncActivity");
+        return properties.getBoolean(USE_SYNC_ACTIVITY_PROPERTY);
     }
 
     @Override
     public Boolean getUseStampActivity() {
-        return properties.getBoolean(prefix + "git.useStampActivity");
+        return properties.getBoolean(USE_STAMP_ACTIVITY_PROPERTY);
     }
 
     @Override
     public Long getOverriddenSyncCounter() {
-        return properties.getLong(prefix + "cc.overriddenSyncCounter");
+        return properties.getLong(OVERRIDDEN_SYNC_COUNTER_PROPERTY);
     }
 
     @Override
     public String getOverriddenSyncFromCommit() {
-        return properties.getString(prefix + "cc.overriddenSyncFromCommit");
+        return properties.getString(OVERRIDDEN_SYNC_COMMIT_PROPERTY);
     }
 
     public Properties getProperties() {
@@ -106,78 +126,90 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public Boolean getUpdateVobViewDir() {
-        return properties.getBoolean(prefix + "cc.updateVobRoot");
+    public Boolean getVobViewDirUpdate() {
+        return properties.getBoolean(VOB_VIEW_UPDATE_PROPERTY);
     }
 
     @Override
     public File getVobViewDir() {
-        return properties.getFile(prefix + "vobview.dir");
+        return properties.getFile(VOB_VIEW_DIR_PROPERTY);
     }
 
     @Override
     public ClearToolConfig setSyncActivityName(final String value) {
-        properties.setString(prefix + "cc.syncActivityName", value);
+        properties.setString(SYNC_ACTIVITY_NAME_PROPERTY, value);
         return this;
     }
 
     @Override
     public ClearToolConfig setStampActivityName(final String value) {
-        properties.setString(prefix + "cc.stampActivityName", value);
+        properties.setString(STAMP_ACTIVITY_NAME_PROPERTY, value);
         return this;
     }
 
     @Override
     public ClearToolConfig setClearToolExec(final File file) {
-        properties.setFile(prefix + "cleartool.exec", file);
+        properties.setFile(CLEAR_TOOL_EXEC_PROPERTY, file);
         return this;
     }
 
     @Override
-    public ClearToolConfig setCommitStampFileName(final File file) {
-        properties.setFile(prefix + "cc.commitStampFileName", file);
+    public ClearToolConfig setCommitStampFile(final File file) {
+        properties.setFile(COMMIT_STAMP_FILE_PROPERTY, file);
         return this;
     }
 
     @Override
-    public ClearToolConfig setCounterStampFileName(final File file) {
-        properties.setFile(prefix + "cc.counterStampFileName", file);
+    public ClearToolConfig setCounterStampFile(final File file) {
+        properties.setFile(COUNTER_STAMP_FILE_PROPERTY, file);
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setUseCommitStampFile(final Boolean value) {
+        properties.setBoolean(COMMIT_STAMP_FILE_PROPERTY, value);
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setUseCounterStampFile(final Boolean value) {
+        properties.setBoolean(COUNTER_STAMP_FILE_PROPERTY, value);
         return this;
     }
 
     @Override
     public ClearToolConfig setUseSyncActivity(final Boolean value) {
-        properties.setBoolean(prefix + "git.useSyncActivity", value);
+        properties.setBoolean("git.useSyncActivity", value);
         return this;
     }
 
     @Override
     public ClearToolConfig setUseStampActivity(final Boolean value) {
-        properties.setBoolean(prefix + "git.useStampActivity", value);
+        properties.setBoolean("git.useStampActivity", value);
         return this;
     }
 
     @Override
     public ClearToolConfig setOverriddenSyncCounter(final Long value) {
-        properties.setLong(prefix + "cc.overriddenSyncCounter", value);
+        properties.setLong("cc.overriddenSyncCounter", value);
         return this;
     }
 
     @Override
     public ClearToolConfig setOverriddenSyncFromCommit(final String value) {
-        properties.setString(prefix + "cc.overriddenSyncFromCommit", value);
+        properties.setString("cc.overriddenSyncFromCommit", value);
         return this;
     }
 
     @Override
     public ClearToolConfig setUpdateVobRoot(final Boolean value) {
-        properties.setBoolean(prefix + "cc.updateVobRoot", value);
+        properties.setBoolean("cc.updateVobRoot", value);
         return this;
     }
 
     @Override
     public ClearToolConfig setVobViewDir(final File dir) {
-        properties.setFile(prefix + "vobview.dir", dir);
+        properties.setFile("vobview.dir", dir);
         return this;
     }
 

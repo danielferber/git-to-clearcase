@@ -7,26 +7,21 @@ import java.io.File;
  * @author Daniel
  */
 public interface ClearToolConfig extends ClearToolConfigSource {
-
-    ClearToolConfig setSyncActivityName(String value);
-
-    ClearToolConfig setStampActivityName(String value);
-
     ClearToolConfig setClearToolExec(File file);
-
-    ClearToolConfig setCommitStampFileName(File file);
-
-    ClearToolConfig setCounterStampFileName(File file);
-
-    ClearToolConfig setUseSyncActivity(Boolean value);
-
-    ClearToolConfig setUseStampActivity(Boolean value);
-
-    ClearToolConfig setOverriddenSyncCounter(Long value);
-
-    ClearToolConfig setOverriddenSyncFromCommit(String commit);
-
+    ClearToolConfig setVobViewDir(File dir);
     ClearToolConfig setUpdateVobRoot(Boolean value);
 
-    ClearToolConfig setVobViewDir(File dir);
+    ClearToolConfig setUseSyncActivity(Boolean value);
+    ClearToolConfig setUseStampActivity(Boolean value);
+    ClearToolConfig setSyncActivityName(String value);
+    ClearToolConfig setStampActivityName(String value);
+
+
+    ClearToolConfig setUseCommitStampFile(Boolean value);
+    ClearToolConfig setUseCounterStampFile(Boolean value);
+    ClearToolConfig setCommitStampFile(File file);
+    ClearToolConfig setCounterStampFile(File file);
+    ClearToolConfig setOverriddenSyncCounter(Long value);
+    ClearToolConfig setOverriddenSyncFromCommit(String commit);
+
 }

@@ -51,19 +51,35 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public File getCommitStampFileName() {
-        if (wrapped.getCommitStampFileName() == null) {
+    public File getCommitStampFile() {
+        if (wrapped.getCommitStampFile() == null) {
             throw new ConfigException("Commit stamp file name: missing value.");
         }
-        return wrapped.getCommitStampFileName();
+        return wrapped.getCommitStampFile();
     }
 
     @Override
-    public File getCounterStampFileName() {
-        if (wrapped.getCounterStampFileName() == null) {
+    public File getCounterStampFile() {
+        if (wrapped.getCounterStampFile() == null) {
             throw new ConfigException("counter stamp file name: missing value.");
         }
-        return wrapped.getCounterStampFileName();
+        return wrapped.getCounterStampFile();
+    }
+
+    @Override
+    public Boolean getUseCommitStampFile() {
+        if (wrapped.getCommitStampFile() == null) {
+            throw new ConfigException("Use commit stamp file: missing value.");
+        }
+        return wrapped.getUseCommitStampFile();
+    }
+
+    @Override
+    public Boolean getUseCounterStampFile() {
+        if (wrapped.getCounterStampFile() == null) {
+            throw new ConfigException("Use counter stamp file: missing value.");
+        }
+        return wrapped.getUseCounterStampFile();
     }
 
     @Override
@@ -93,11 +109,11 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public Boolean getUpdateVobViewDir() {
-        if (wrapped.getUpdateVobViewDir() == null) {
+    public Boolean getVobViewDirUpdate() {
+        if (wrapped.getVobViewDirUpdate() == null) {
             throw new ConfigException("Update VOB view directory: missing value.");
         }
-        return wrapped.getUpdateVobViewDir();
+        return wrapped.getVobViewDirUpdate();
     }
 
     @Override
@@ -121,7 +137,7 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
         }
         getClearToolExec();
         getVobViewDir();
-        getUpdateVobViewDir();
+        getVobViewDirUpdate();
         getCommitStampAbsoluteFile();
         getCounterStampAbsoluteFile();
     }

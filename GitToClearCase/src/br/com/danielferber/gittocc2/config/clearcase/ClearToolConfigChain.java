@@ -55,9 +55,9 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     }
 
     @Override
-    public File getCommitStampFileName() {
+    public File getCommitStampFile() {
         for (ClearToolConfigSource config : sources) {
-            File value = config.getCommitStampFileName();
+            File value = config.getCommitStampFile();
             if (value != null) {
                 return value;
             }
@@ -66,9 +66,9 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     }
 
     @Override
-    public File getCounterStampFileName() {
+    public File getCounterStampFile() {
         for (ClearToolConfigSource config : sources) {
-            File value = config.getCounterStampFileName();
+            File value = config.getCounterStampFile();
             if (value != null) {
                 return value;
             }
@@ -121,9 +121,9 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     }
 
     @Override
-    public Boolean getUpdateVobViewDir() {
+    public Boolean getVobViewDirUpdate() {
         for (ClearToolConfigSource config : sources) {
-            Boolean value = config.getUpdateVobViewDir();
+            Boolean value = config.getVobViewDirUpdate();
             if (value != null) {
                 return value;
             }
@@ -141,4 +141,27 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
         }
         return null;
     }
+
+    @Override
+    public Boolean getUseCommitStampFile() {
+        for (ClearToolConfigSource config : sources) {
+            Boolean value = config.getUseCommitStampFile();
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean getUseCounterStampFile() {
+        for (ClearToolConfigSource config : sources) {
+            Boolean value = config.getUseCounterStampFile();
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
+
 }

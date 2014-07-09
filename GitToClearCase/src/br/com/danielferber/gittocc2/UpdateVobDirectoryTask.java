@@ -28,7 +28,7 @@ public class UpdateVobDirectoryTask implements Callable<Void> {
     public Void call() throws Exception {
         meter.start();
         try {
-            if (cleartoolConfig.getUpdateVobViewDir()) {
+            if (cleartoolConfig.getVobViewDirUpdate()) {
                 updateFullVob();
             } else {
                 updateCommitStampFile();

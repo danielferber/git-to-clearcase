@@ -17,6 +17,8 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     public static final String UPDATE_VOB_ROOT_PROPERTY = "cc.updateVobRoot";
     public static final String COMMIT_STAMP_FILE_NAME_PROPERTY = "cc.commitStampFileName";
     public static final String COUNTER_STAMP_FILE_NAME_PROPERTY = "cc.counterStampFileName";
+    public static final String USE_COMMIT_STAMP_FILE_PROPERTY = "cc.useCommitStampFile";
+    public static final String USE_COUNTER_STAMP_FILE_PROPERTY = "cc.useCounterStampFile";
     public static final String OVERRIDDEN_SYNC_COUNTER = "cc.overriddenSyncCounter";
     public static final String OVERRIDDEN_SYNC_FROM_COMMIT = "cc.overridenSyncFromCommit";
 
@@ -49,13 +51,23 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public File getCommitStampFileName() {
-        return wrapped.getCommitStampFileName();
+    public File getCommitStampFile() {
+        return wrapped.getCommitStampFile();
     }
 
     @Override
-    public File getCounterStampFileName() {
-        return wrapped.getCounterStampFileName();
+    public File getCounterStampFile() {
+        return wrapped.getCounterStampFile();
+    }
+
+    @Override
+    public Boolean getUseCommitStampFile() {
+        return wrapped.getUseCommitStampFile();
+    }
+
+    @Override
+    public Boolean getUseCounterStampFile() {
+        return wrapped.getUseCounterStampFile();
     }
 
     @Override
@@ -79,8 +91,8 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getUpdateVobViewDir() {
-        return wrapped.getUpdateVobViewDir();
+    public Boolean getVobViewDirUpdate() {
+        return wrapped.getVobViewDirUpdate();
     }
 
     @Override
@@ -117,18 +129,34 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setCommitStampFileName(final File file) {
-        final File oldValue = wrapped.getCommitStampFileName();
-        wrapped.setCommitStampFileName(file);
+    public ClearToolConfig setCommitStampFile(final File file) {
+        final File oldValue = wrapped.getCommitStampFile();
+        wrapped.setCommitStampFile(file);
         this.pcs.firePropertyChange(COMMIT_STAMP_FILE_NAME_PROPERTY, oldValue, file);
         return this;
     }
 
     @Override
-    public ClearToolConfig setCounterStampFileName(final File file) {
-        final File oldValue = wrapped.getCounterStampFileName();
-        wrapped.setCounterStampFileName(file);
+    public ClearToolConfig setCounterStampFile(final File file) {
+        final File oldValue = wrapped.getCounterStampFile();
+        wrapped.setCounterStampFile(file);
         this.pcs.firePropertyChange(COUNTER_STAMP_FILE_NAME_PROPERTY, oldValue, file);
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setUseCommitStampFile(final Boolean value) {
+        final Boolean oldValue = wrapped.getUseCommitStampFile();
+        wrapped.setUseCommitStampFile(value);
+        this.pcs.firePropertyChange(USE_COMMIT_STAMP_FILE_PROPERTY, oldValue, value);
+        return this;
+    }
+
+    @Override
+    public ClearToolConfig setUseCounterStampFile(final Boolean value) {
+        final Boolean oldValue = wrapped.getUseCounterStampFile();
+        wrapped.setUseCounterStampFile(value);
+        this.pcs.firePropertyChange(USE_COUNTER_STAMP_FILE_PROPERTY, oldValue, value);
         return this;
     }
 
@@ -166,7 +194,7 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
 
     @Override
     public ClearToolConfig setUpdateVobRoot(final Boolean value) {
-        final Boolean oldValue = wrapped.getUpdateVobViewDir();
+        final Boolean oldValue = wrapped.getVobViewDirUpdate();
         wrapped.setUpdateVobRoot(value);
         this.pcs.firePropertyChange(UPDATE_VOB_ROOT_PROPERTY, oldValue, value);
         return this;

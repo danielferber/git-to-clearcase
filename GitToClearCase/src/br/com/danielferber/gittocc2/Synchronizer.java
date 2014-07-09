@@ -45,12 +45,14 @@ public class Synchronizer {
         	gitConfigDefault.setResetLocalGitRepository(false);
         	
         	final ClearToolConfigPojo clearToolConfigDefault = new ClearToolConfigPojo();
-        	clearToolConfigDefault.setCommitStampFileName(new File("sync-commit-stamp.txt"));
-        	clearToolConfigDefault.setCounterStampFileName(new File("sync-counter-stamp.txt"));
+        	clearToolConfigDefault.setUseCommitStampFile(false);
+        	clearToolConfigDefault.setUseCounterStampFile(false);
+        	clearToolConfigDefault.setCommitStampFile(new File("sync-commit-stamp.txt"));
+        	clearToolConfigDefault.setCounterStampFile(new File("sync-counter-stamp.txt"));
         	clearToolConfigDefault.setUseSyncActivity(false);
         	clearToolConfigDefault.setUpdateVobRoot(false);
         	
-            final SynchronizerCommandLine cl = new SynchronizerCommandLine(argv, gitConfigDefault, clearToolConfigDefault);
+            final CommandLine cl = new CommandLine(argv, gitConfigDefault, clearToolConfigDefault);
             nonValidatedClearToolConfig = cl.getClearToolConfig();
             nonValidateGitConfig = cl.getGitConfig();
             compareOnly = cl.isCompareOnly();
@@ -61,7 +63,7 @@ public class Synchronizer {
         } catch (final OptionException e) {
             logger.error("Incorrect command line arguments: {} ", e.getMessage());
             try (PrintStream ps = LoggerFactory.getErrorPrintStream(logger)) {
-                SynchronizerCommandLine.printHelp(ps);
+                CommandLine.printHelp(ps);
             } catch (final IOException ex) {
                 logger.error("Failed to print command line help.", ex);
             }

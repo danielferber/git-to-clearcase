@@ -8,7 +8,8 @@ import java.io.Serializable;
  * @author Daniel
  */
 public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements ClearToolConfig, Serializable {
-	private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 1L;
 
     private File clearToolExec;
     private File vobViewDir;
@@ -17,6 +18,8 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     private Boolean useStampActivity;
     private String syncActivityName;
     private String stampActivityName;
+    private Boolean useCommitStampFile;
+    private Boolean useCounterStampFile;
     private File commitStampFileName;
     private File counterStampFileName;
     private Long overriddenSyncCounter;
@@ -29,13 +32,15 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     public ClearToolConfigPojo(final ClearToolConfigSource other) {
         this.clearToolExec = other.getClearToolExec();
         this.vobViewDir = other.getVobViewDir();
-        this.updateVobRoot = other.getUpdateVobViewDir();
+        this.updateVobRoot = other.getVobViewDirUpdate();
         this.useSyncActivity = other.getUseSyncActivity();
         this.useStampActivity = other.getUseStampActivity();
         this.syncActivityName = other.getSyncActivityName();
         this.stampActivityName = other.getStampActivityName();
-        this.commitStampFileName = other.getCommitStampFileName();
-        this.counterStampFileName = other.getCounterStampFileName();
+        this.useCommitStampFile = other.getUseCommitStampFile();
+        this.useCounterStampFile = other.getUseCounterStampFile();
+        this.commitStampFileName = other.getCommitStampFile();
+        this.counterStampFileName = other.getCounterStampFile();
         this.overriddenSyncCounter = other.getOverriddenSyncCounter();
         this.overriddenSyncFromCommit = other.getOverriddenSyncFromCommit();
     }
@@ -61,12 +66,12 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public File getCommitStampFileName() {
+    public File getCommitStampFile() {
         return commitStampFileName;
     }
 
     @Override
-    public File getCounterStampFileName() {
+    public File getCounterStampFile() {
         return counterStampFileName;
     }
 
@@ -91,13 +96,23 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getUpdateVobViewDir() {
+    public Boolean getVobViewDirUpdate() {
         return this.updateVobRoot;
     }
 
     @Override
     public File getVobViewDir() {
         return vobViewDir;
+    }
+
+    @Override
+    public Boolean getUseCommitStampFile() {
+        return useCommitStampFile;
+    }
+
+    @Override
+    public Boolean getUseCounterStampFile() {
+        return useCounterStampFile;
     }
 
     @Override
@@ -119,13 +134,13 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setCommitStampFileName(final File file) {
+    public ClearToolConfig setCommitStampFile(final File file) {
         this.commitStampFileName = file;
         return this;
     }
 
     @Override
-    public ClearToolConfig setCounterStampFileName(final File file) {
+    public ClearToolConfig setCounterStampFile(final File file) {
         this.counterStampFileName = file;
         return this;
     }
@@ -163,6 +178,18 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     @Override
     public ClearToolConfig setVobViewDir(final File dir) {
         this.vobViewDir = dir;
+        return this;
+    }
+
+    @Override
+    public ClearToolConfigPojo setUseCommitStampFile(Boolean value) {
+        this.useCommitStampFile = value;
+        return this;
+    }
+
+    @Override
+    public ClearToolConfigPojo setUseCounterStampFile(Boolean value) {
+        this.useCounterStampFile = value;
         return this;
     }
 
