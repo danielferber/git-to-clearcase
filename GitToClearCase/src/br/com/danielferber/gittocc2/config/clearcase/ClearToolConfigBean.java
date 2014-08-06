@@ -36,13 +36,8 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public String getSyncActivityName() {
-        return wrapped.getSyncActivityName();
-    }
-
-    @Override
-    public String getStampActivityName() {
-        return wrapped.getStampActivityName();
+    public String getActivityName() {
+        return wrapped.getActivityName();
     }
 
     @Override
@@ -71,13 +66,8 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getUseSyncActivity() {
-        return wrapped.getUseSyncActivity();
-    }
-
-    @Override
-    public Boolean getUseStampActivity() {
-        return wrapped.getUseStampActivity();
+    public Boolean getUseActivity() {
+        return wrapped.getUseActivity();
     }
 
     @Override
@@ -105,18 +95,10 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setSyncActivityName(final String value) {
-        final String oldValue = wrapped.getSyncActivityName();
-        wrapped.setSyncActivityName(value);
+    public ClearToolConfig setActivityName(final String value) {
+        final String oldValue = wrapped.getActivityName();
+        wrapped.setActivityName(value);
         this.pcs.firePropertyChange(SYNC_ACTIVITY_NAME_PROPERTY, oldValue, value);
-        return this;
-    }
-
-    @Override
-    public ClearToolConfig setStampActivityName(final String value) {
-        final String oldValue = wrapped.getStampActivityName();
-        wrapped.setStampActivityName(value);
-        this.pcs.firePropertyChange(STAMP_ACTIVITY_NAME_PROPERTY, oldValue, value);
         return this;
     }
 
@@ -161,18 +143,10 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public ClearToolConfig setUseSyncActivity(final Boolean value) {
-        final Boolean oldValue = wrapped.getUseSyncActivity();
-        wrapped.setUseSyncActivity(value);
+    public ClearToolConfig setUseActivity(final Boolean value) {
+        final Boolean oldValue = wrapped.getUseActivity();
+        wrapped.setUseActivity(value);
         this.pcs.firePropertyChange(USE_SYNC_ACTIVITY_PROPERTY, oldValue, value);
-        return this;
-    }
-
-    @Override
-    public ClearToolConfig setUseStampActivity(final Boolean value) {
-        final Boolean oldValue = wrapped.getUseStampActivity();
-        wrapped.setUseStampActivity(value);
-        this.pcs.firePropertyChange(USE_STAMP_ACTIVITY_PROPERTY, oldValue, value);
         return this;
     }
 

@@ -35,25 +35,13 @@ public interface ClearToolConfigSource {
      * @return If true, reuse or create an activity for file synchronization .
      * If false, reuse the current activity.
      */
-    Boolean getUseSyncActivity();
+    Boolean getUseActivity();
 
     /**
-     * @return If true, reuse or create an activity for stamp files. If false,
-     * reuse the current activity.
-     */
-    Boolean getUseStampActivity();
-
-    /**
-     * @return If {@link #getUseSyncActivity()} is true, the expected name for
+     * @return If {@link #getUseActivity()} is true, the expected name for
      * the file synchronization activity.
      */
-    String getSyncActivityName();
-
-    /**
-     * @return If {@link #getUseStampActivity()} is true, the expected name for
-     * the time stamp file activity.
-     */
-    String getStampActivityName();
+    String getActivityName();
 
     /* Synchronization tracking. */
     /**
@@ -115,13 +103,9 @@ public interface ClearToolConfigSource {
             ps.println("Bahavior:");
             ps.println(" * Update vob view directory: " + config.getVobViewDirUpdate());
             ps.println("Activity:");
-            ps.println(" * Use synchronization activity: " + config.getUseSyncActivity());
-            if (config.getUseSyncActivity() != null && config.getUseSyncActivity()) {
-                ps.println("   activity name: " + config.getSyncActivityName());
-            }
-            ps.println(" * Use stamp file activity: " + config.getUseStampActivity());
-            if (config.getUseStampActivity() != null && config.getUseStampActivity()) {
-                ps.println("   activity name: " + config.getStampActivityName());
+            ps.println(" * Use activity: " + config.getUseActivity());
+            if (config.getUseActivity() != null && config.getUseActivity()) {
+                ps.println("   activity name: " + config.getActivityName());
             }
             ps.println("Synchronization tracking (current state of vob view directory):");
             ps.println(" * Commit hash of last synchronization:");

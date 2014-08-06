@@ -17,19 +17,11 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public String getSyncActivityName() {
-        if (wrapped.getSyncActivityName() == null) {
+    public String getActivityName() {
+        if (wrapped.getActivityName() == null) {
             throw new ConfigException("Sync activity name: missing value.");
         }
-        return wrapped.getSyncActivityName();
-    }
-
-    @Override
-    public String getStampActivityName() {
-        if (wrapped.getStampActivityName() == null) {
-            throw new ConfigException("Stamp activity name: missing value.");
-        }
-        return wrapped.getStampActivityName();
+        return wrapped.getActivityName();
     }
 
     @Override
@@ -83,19 +75,11 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public Boolean getUseSyncActivity() {
-        if (wrapped.getUseSyncActivity() == null) {
+    public Boolean getUseActivity() {
+        if (wrapped.getUseActivity() == null) {
             throw new ConfigException("Use sync activity: missing value.");
         }
-        return wrapped.getUseSyncActivity();
-    }
-
-    @Override
-    public Boolean getUseStampActivity() {
-        if (wrapped.getUseStampActivity() == null) {
-            throw new ConfigException("Use stamp activity: missing value.");
-        }
-        return wrapped.getUseStampActivity();
+        return wrapped.getUseActivity();
     }
 
     @Override
@@ -132,8 +116,8 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     public void validateAll() {
-        if (getUseSyncActivity()) {
-            getSyncActivityName();
+        if (getUseActivity()) {
+            getActivityName();
         }
         getClearToolExec();
         getVobViewDir();

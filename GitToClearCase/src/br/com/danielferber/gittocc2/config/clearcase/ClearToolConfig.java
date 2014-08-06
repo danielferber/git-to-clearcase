@@ -11,11 +11,8 @@ public interface ClearToolConfig extends ClearToolConfigSource {
     ClearToolConfig setVobViewDir(File dir);
     ClearToolConfig setUpdateVobRoot(Boolean value);
 
-    ClearToolConfig setUseSyncActivity(Boolean value);
-    ClearToolConfig setUseStampActivity(Boolean value);
-    ClearToolConfig setSyncActivityName(String value);
-    ClearToolConfig setStampActivityName(String value);
-
+    ClearToolConfig setUseActivity(Boolean value);
+    ClearToolConfig setActivityName(String value);
 
     ClearToolConfig setUseCommitStampFile(Boolean value);
     ClearToolConfig setUseCounterStampFile(Boolean value);

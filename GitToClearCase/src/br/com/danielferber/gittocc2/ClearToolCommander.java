@@ -21,12 +21,13 @@ import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
+import java.io.IOException;
 
 /**
  *
  * @author X7WS
  */
-class ClearToolCommander {
+public class ClearToolCommander {
 
     final CommandLineProcessBuilder pb;
     final Set<File> filesCheckedOut = new TreeSet<>();
@@ -35,12 +36,6 @@ class ClearToolCommander {
 
     public ClearToolCommander(final ClearToolConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getVobViewDir(), config.getClearToolExec(), LoggerFactory.getLogger("ct"));
-    }
-
-    public void createActivity(final String headline) {
-        final Meter m = meter.sub("createActivity").start();
-        pb.reset("mkactivity").command("mkactivity").arguments("-headline", headline, "-force").create().waitFor();
-        m.ok();
     }
 
     public void checkoutDir(final File dir) {
@@ -52,12 +47,23 @@ class ClearToolCommander {
     }
     static final Pattern checkoutDirUpdateInProgress = Pattern.compile("cleartool: Error: Checkouts are not permitted in a snapshot view while an update is in progress.");
     static final Pattern checkoutDirNoActivity = Pattern.compile("cleartool: Error: To operate on UCM branch, must be set to an activity and a UCM view.");
+    static final Pattern checkoutDirSuccess = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\"\\.");
+    static final Pattern checkoutDirAlready = Pattern.compile("cleartool: Error: Element \"(.*)\" is already checked out to view \"(.*)\"\\.");
 
     public void checkoutDirs(final Collection<File> dirs) {
         final Meter m = meter.sub("checkoutDirs").iterations(dirs.size()).start();
         for (final File dir : dirs) {
             if (!dirsCheckedOut.contains(dir)) {
                 final CommandLineProcess process = pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create();
+                process.addOutWriter(new LineSplittingWriter() {
+                    @Override
+                    protected void processLine(final String line) {
+                        Matcher matcher = checkoutDirSuccess.matcher(line);
+                        if (matcher.find()) {
+                            dirsCheckedOut.add(dir);
+                        }
+                    }
+                });
                 process.addErrWriter(new LineSplittingWriter() {
                     @Override
                     protected void processLine(final String line) {
@@ -69,6 +75,10 @@ class ClearToolCommander {
                         if (matcher.find()) {
                             throw new ClearToolException.NoActivity();
                         }
+                        matcher = checkoutDirAlready.matcher(line);
+                        if (matcher.find()) {
+                            dirsCheckedOut.add(dir);
+                        }
                     }
                 });
                 process.waitFor();
@@ -78,7 +88,6 @@ class ClearToolCommander {
                 } else if (exception != null) {
                     throw new RuntimeException(exception);
                 }
-                dirsCheckedOut.add(dir);
                 m.inc().progress();
             }
         }
@@ -86,12 +95,23 @@ class ClearToolCommander {
     }
     static final Pattern checkoutFileUpdateInProgress = Pattern.compile("cleartool: Error: Checkouts are not permitted in a snapshot view while an update is in progress.");
     static final Pattern checkoutFileNoActivity = Pattern.compile("cleartool: Error: To operate on UCM branch, must be set to an activity and a UCM view.");
+    static final Pattern checkoutFileSuccess = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\"\\.");
+    static final Pattern checkoutFileAlready = Pattern.compile("cleartool: Error: Element \"(.*)\" is already checked out to view \"(.*)\"\\.");
 
     public void checkoutFiles(final Collection<File> files) {
         final Meter m = meter.sub("checkoutFiles").iterations(files.size()).start();
         for (final File file : files) {
             if (!filesCheckedOut.contains(file)) {
                 final CommandLineProcess process = pb.reset("checkoutFile").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(file.getPath()).create();
+                process.addOutWriter(new LineSplittingWriter() {
+                    @Override
+                    protected void processLine(final String line) {
+                        Matcher matcher = checkoutFileSuccess.matcher(line);
+                        if (matcher.find()) {
+                            filesCheckedOut.add(file);
+                        }
+                    }
+                });
                 process.addErrWriter(new LineSplittingWriter() {
                     @Override
                     protected void processLine(final String line) {
@@ -103,6 +123,10 @@ class ClearToolCommander {
                         if (matcher.find()) {
                             throw new ClearToolException.NoActivity();
                         }
+                        matcher = checkoutFileAlready.matcher(line);
+                        if (matcher.find()) {
+                            filesCheckedOut.add(file);
+                        }
                     }
                 });
                 process.waitFor();
@@ -112,7 +136,6 @@ class ClearToolCommander {
                 } else if (exception != null) {
                     throw new RuntimeException(exception);
                 }
-                filesCheckedOut.add(file);
                 m.inc().progress();
             }
         }
@@ -342,6 +365,85 @@ class ClearToolCommander {
     void updateVobViewDir() {
         final Meter m = meter.sub("updateVobViewDir");
         pb.reset("updateVob").command("update").argument("-force").create().waitFor();
+        m.ok();
+    }
+    static final Pattern currentActivityPattern = Pattern.compile("(.*)  (.*)  X7WS   \"(.*)\"");
+
+    private static class LsActivityResult {
+
+        String date;
+        String name;
+        String headline;
+        boolean found = false;
+    }
+
+    public String currentActivity() {
+        final Meter m = meter.sub("currentActivity").start();
+        final LsActivityResult result = new LsActivityResult();
+        pb.reset("lsactivity").command("lsactivity").argument("-cact").create().addOutWriter(new LineSplittingWriter() {
+            @Override
+            protected void processLine(java.lang.String line) throws IOException {
+                Matcher matcher = currentActivityPattern.matcher(line);
+                if (matcher.find()) {
+                    result.found = true;
+                    result.date = matcher.group(1);
+                    result.name = matcher.group(2);
+                    result.headline = matcher.group(3);
+                }
+            }
+        }).addErrWriter(new LineSplittingWriter() {
+            @Override
+            protected void processLine(java.lang.String line) throws IOException {
+                System.out.println(line);
+            }
+        }).waitFor();
+        m.ok();
+        if (result.found) {
+            return result.name;
+        }
+        return null;
+    }
+
+    public void createActivity(final String name) {
+        final Meter m = meter.sub("createActivity").start();
+        pb.reset("mkactivity").command("mkactivity").arguments("-force", name).create().addOutWriter(new LineSplittingWriter() {
+            @Override
+            protected void processLine(java.lang.String line) throws IOException {
+                System.out.println(line);
+            }
+        }).addErrWriter(new LineSplittingWriter() {
+            @Override
+            protected void processLine(java.lang.String line) throws IOException {
+                System.out.println(line);
+            }
+        }).waitFor();
+        m.ok();
+    }
+    static final Pattern setActivityNotFoundPattern = Pattern.compile("cleartool: Error: Unable to find activity \"(.*)\"\\.");
+
+    public void setActivity(final String name) {
+        final Meter m = meter.sub("chactivity").start();
+        final CommandLineProcess process = pb.reset("setactivity").command("setactivity").arguments(name).create();
+        process.addOutWriter(new LineSplittingWriter() {
+            @Override
+            protected void processLine(java.lang.String line) throws IOException {
+                System.out.println(line);
+            }
+        }).addErrWriter(new LineSplittingWriter() {
+            @Override
+            protected void processLine(java.lang.String line) throws IOException {
+                Matcher matcher = setActivityNotFoundPattern.matcher(line);
+                if (matcher.find()) {
+                    throw new ClearToolException.ActivityNotFound();
+                }
+            }
+        }).waitFor();
+        Exception exception = process.getException();
+        if (exception instanceof ClearToolException) {
+            throw (ClearToolException) exception;
+        } else if (exception != null) {
+            throw new RuntimeException(exception);
+        }
         m.ok();
     }
 }

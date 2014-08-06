@@ -36,21 +36,10 @@ public class Synchronizer {
         final GitConfigSource nonValidateGitConfig;
         final boolean compareOnly;
         final File compareRoot;
+       
         try {
-            final GitConfigPojo gitConfigDefault = new GitConfigPojo();
-            gitConfigDefault.setApplyDefaultGitConfig(false);
-            gitConfigDefault.setCleanLocalGitRepository(false);
-            gitConfigDefault.setFastForwardLocalGitRepository(false);
-            gitConfigDefault.setFetchRemoteGitRepository(false);
-            gitConfigDefault.setResetLocalGitRepository(false);
-
-            final ClearToolConfigPojo clearToolConfigDefault = new ClearToolConfigPojo();
-            clearToolConfigDefault.setUseCommitStampFile(false);
-            clearToolConfigDefault.setUseCounterStampFile(false);
-            clearToolConfigDefault.setCommitStampFile(new File("sync-commit-stamp.txt"));
-            clearToolConfigDefault.setCounterStampFile(new File("sync-counter-stamp.txt"));
-            clearToolConfigDefault.setUseSyncActivity(false);
-            clearToolConfigDefault.setUpdateVobRoot(false);
+            GitConfigPojo gitConfigDefault = createDefaultGitConfig();
+            ClearToolConfigPojo clearToolConfigDefault = createDefaultClearToolConfig();
 
             final CommandLine cl = new CommandLine(argv, gitConfigDefault, clearToolConfigDefault);
             nonValidatedClearToolConfig = cl.getClearToolConfig();
@@ -102,5 +91,26 @@ public class Synchronizer {
         } catch (final Exception ex) {
             logger.error("Failed to execute Sync Task.", ex);
         }
+    }
+
+    private static GitConfigPojo createDefaultGitConfig() {
+        final GitConfigPojo gitConfigDefault = new GitConfigPojo();
+        gitConfigDefault.setApplyDefaultGitConfig(false);
+        gitConfigDefault.setCleanLocalGitRepository(false);
+        gitConfigDefault.setFastForwardLocalGitRepository(false);
+        gitConfigDefault.setFetchRemoteGitRepository(false);
+        gitConfigDefault.setResetLocalGitRepository(false);
+        return gitConfigDefault;
+    }
+
+    private static ClearToolConfigPojo createDefaultClearToolConfig() {
+        final ClearToolConfigPojo clearToolConfigDefault = new ClearToolConfigPojo();
+        clearToolConfigDefault.setUseCommitStampFile(false);
+        clearToolConfigDefault.setUseCounterStampFile(false);
+        clearToolConfigDefault.setCommitStampFile(new File("sync-commit-stamp.txt"));
+        clearToolConfigDefault.setCounterStampFile(new File("sync-counter-stamp.txt"));
+        clearToolConfigDefault.setUseActivity(false);
+        clearToolConfigDefault.setUpdateVobRoot(false);
+        return clearToolConfigDefault;
     }
 }

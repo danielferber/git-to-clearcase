@@ -18,67 +18,67 @@ class UpdateGitRepositoryTask implements Callable<Void> {
 
     private final GitConfigSource gitConfig;
     private final GitCommander gitCommander;
-    private final Meter meter;
+    private final Meter taskMeter;
 
     UpdateGitRepositoryTask(final GitConfigSource environmentConfig, final GitCommander ctCommander, final Meter outerMeter) {
         this.gitConfig = environmentConfig;
         this.gitCommander = ctCommander;
-        this.meter = MeterFactory.getMeter("UpdateGitRepositoryTask");
+        this.taskMeter = MeterFactory.getMeter("UpdateGitRepositoryTask").m("Update Git Repository.");
     }
 
     @Override
     public Void call() throws Exception {
-        meter.start();
+        taskMeter.start();
         try {
-            if (gitConfig.getApplyDefaultGitConfig() != null && gitConfig.getApplyDefaultGitConfig()) {
+            if (gitConfig.getApplyDefaultGitConfig()) {
                 applyDefaultGitConfig();
             }
-            if (gitConfig.getResetLocalGitRepository() != null && gitConfig.getResetLocalGitRepository()) {
+            if (gitConfig.getResetLocalGitRepository()) {
                 resetLocalGitRepository();
             }
-            if (gitConfig.getCleanLocalGitRepository() != null && gitConfig.getCleanLocalGitRepository()) {
+            if (gitConfig.getCleanLocalGitRepository()) {
                 cleanLocalGitRepository();
             }
-            if (gitConfig.getFetchRemoteGitRepository() != null && gitConfig.getFetchRemoteGitRepository()) {
+            if (gitConfig.getFetchRemoteGitRepository()) {
                 fetchRemoteGitRepository();
             }
-            if (gitConfig.getFastForwardLocalGitRepository() != null && gitConfig.getFastForwardLocalGitRepository()) {
+            if (gitConfig.getFastForwardLocalGitRepository()) {
                 fastForwardLocalGitRepository();
             }
-            meter.ok();
+            taskMeter.ok();
         } catch (final Exception e) {
-            meter.fail(e);
+            taskMeter.fail(e);
             throw e;
         }
         return null;
     }
 
     private void cleanLocalGitRepository() {
-        final Meter m = meter.sub("cleanLocalGitRepository").m("Clean local GIT repository.").start();
+        final Meter m = taskMeter.sub("cleanLocalGitRepository").m("Clean local GIT repository.").start();
         gitCommander.cleanLocal();
         m.ok();
     }
 
     private void resetLocalGitRepository() {
-        final Meter m = meter.sub("resetLocalGitRepository").m("Reset local GIT repository.").start();
+        final Meter m = taskMeter.sub("resetLocalGitRepository").m("Reset local GIT repository.").start();
         gitCommander.resetLocal();
         m.ok();
     }
 
     private void fastForwardLocalGitRepository() {
-        final Meter m = meter.sub("fastForwardLocalGitRepository").m("Fast forward commits on local GIT repository.").start();
+        final Meter m = taskMeter.sub("fastForwardLocalGitRepository").m("Fast forward commits on local GIT repository.").start();
         gitCommander.fastForward();
         m.ok();
     }
 
     private void fetchRemoteGitRepository() {
-        final Meter m = meter.sub("fetchRemoteGitRepository").m("Fetch new commits from remote GIT rempository.").start();
+        final Meter m = taskMeter.sub("fetchRemoteGitRepository").m("Fetch new commits from remote GIT rempository.").start();
         gitCommander.fetchRemote();
         m.ok();
     }
 
     private void applyDefaultGitConfig() {
-        final Meter m = meter.sub("applyDefaultGitConfig").m("Fetch new commits from remote GIT rempository.").start();
+        final Meter m = taskMeter.sub("applyDefaultGitConfig").m("Fetch new commits from remote GIT rempository.").start();
         gitCommander.setConfig("merge.defaultToUpstream", "true");
         gitCommander.setConfig("diff.renameLimit", "10000");
         m.ok();

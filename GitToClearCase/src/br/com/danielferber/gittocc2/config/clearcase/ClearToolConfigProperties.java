@@ -35,10 +35,8 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
         this.setVobViewDir(other.getVobViewDir());
         this.setUpdateVobRoot(other.getVobViewDirUpdate());
         
-        this.setUseSyncActivity(other.getUseSyncActivity());
-        this.setUseStampActivity(other.getUseStampActivity());
-        this.setSyncActivityName(other.getSyncActivityName());
-        this.setStampActivityName(other.getStampActivityName());
+        this.setUseActivity(other.getUseActivity());
+        this.setActivityName(other.getActivityName());
         
         this.setUseCommitStampFile(other.getUseCommitStampFile());
         this.setUseCounterStampFile(other.getUseCounterStampFile());
@@ -67,13 +65,8 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public String getSyncActivityName() {
+    public String getActivityName() {
         return properties.getString(SYNC_ACTIVITY_NAME_PROPERTY);
-    }
-
-    @Override
-    public String getStampActivityName() {
-        return properties.getString(STAMP_ACTIVITY_NAME_PROPERTY);
     }
 
     @Override
@@ -102,13 +95,8 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public Boolean getUseSyncActivity() {
+    public Boolean getUseActivity() {
         return properties.getBoolean(USE_SYNC_ACTIVITY_PROPERTY);
-    }
-
-    @Override
-    public Boolean getUseStampActivity() {
-        return properties.getBoolean(USE_STAMP_ACTIVITY_PROPERTY);
     }
 
     @Override
@@ -136,14 +124,8 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public ClearToolConfig setSyncActivityName(final String value) {
+    public ClearToolConfig setActivityName(final String value) {
         properties.setString(SYNC_ACTIVITY_NAME_PROPERTY, value);
-        return this;
-    }
-
-    @Override
-    public ClearToolConfig setStampActivityName(final String value) {
-        properties.setString(STAMP_ACTIVITY_NAME_PROPERTY, value);
         return this;
     }
 
@@ -178,14 +160,8 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public ClearToolConfig setUseSyncActivity(final Boolean value) {
+    public ClearToolConfig setUseActivity(final Boolean value) {
         properties.setBoolean("git.useSyncActivity", value);
-        return this;
-    }
-
-    @Override
-    public ClearToolConfig setUseStampActivity(final Boolean value) {
-        properties.setBoolean("git.useStampActivity", value);
         return this;
     }
 

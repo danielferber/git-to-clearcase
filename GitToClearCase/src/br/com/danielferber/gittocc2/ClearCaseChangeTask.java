@@ -43,12 +43,15 @@ public class ClearCaseChangeTask implements Callable<Void> {
         this.syncCounter = syncCounter;
         this.globalMeter = outerMeter.sub("UpdateVob");
         this.syncToCommit = syncToCommit;
+
     }
 
     @Override
     public Void call() throws Exception {
         globalMeter.start();
         try {
+            applyCommitAcitivity();
+
             /* ClearCase update task. */
             checkoutCommitStampFile();
             checkoutCounterStampFile();
@@ -66,6 +69,24 @@ public class ClearCaseChangeTask implements Callable<Void> {
             throw e;
         }
         return null;
+    }
+
+    private void applyCommitAcitivity() {
+        if (cleartoolConfig.getUseActivity()) {
+            final HashMap<String, Object> map = new HashMap<>();
+            map.put("commit", syncToCommit);
+            map.put("date", new Date());
+            map.put("count", syncCounter);
+            final StrSubstitutor sub = new StrSubstitutor(map);
+            final String resolvedString = sub.replace(cleartoolConfig.getActivityName());
+            final Meter m = globalMeter.sub("activity.stamp").m("Apply Sync Activity.").ctx("name", resolvedString).start();
+            try {
+                ctCommander.setActivity(resolvedString);
+            } catch (ClearToolException.ActivityNotFound e) {
+                ctCommander.createActivity(resolvedString);
+            }
+            m.ok();
+        }
     }
 
     private void chkeckinAllChanges() {
@@ -124,18 +145,6 @@ public class ClearCaseChangeTask implements Callable<Void> {
         Meter m2 = null;
 
         try {
-            if (cleartoolConfig.getUseSyncActivity()) {
-                final HashMap<String, Object> map = new HashMap<>();
-                map.put("commit", syncToCommit);
-                map.put("date", new Date());
-                map.put("count", syncCounter);
-                final StrSubstitutor sub = new StrSubstitutor(map);
-                final String resolvedString = sub.replace(cleartoolConfig.getSyncActivityName());
-                m2 = m.sub("createActivity").m("Criar atividade.").ctx("headline", resolvedString).start();
-                ctCommander.createActivity(resolvedString);
-                m2.ok();
-            }
-
             if (!diff.dirsAdded.isEmpty()) {
 
                 m2 = m.sub("checkout.roots.dirsAdded").m("Checkout de raizes com diretórios novos.").start();
@@ -307,5 +316,4 @@ public class ClearCaseChangeTask implements Callable<Void> {
             }
         }
     }
-
 }
