@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
@@ -56,7 +57,8 @@ class ClearToolCommander {
         final Meter m = meter.sub("checkoutDirs").iterations(dirs.size()).start();
         for (final File dir : dirs) {
             if (!dirsCheckedOut.contains(dir)) {
-                pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create().addErrWriter(new LineSplittingWriter() {
+                final CommandLineProcess process = pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create();
+                process.addErrWriter(new LineSplittingWriter() {
                     @Override
                     protected void processLine(final String line) {
                         Matcher matcher = checkoutDirUpdateInProgress.matcher(line);
@@ -68,7 +70,14 @@ class ClearToolCommander {
                             throw new ClearToolException.NoActivity();
                         }
                     }
-                }).waitFor();
+                });
+                process.waitFor();
+                Exception exception = process.getException();
+                if (exception instanceof ClearToolException) {
+                    throw (ClearToolException) exception;
+                } else if (exception != null) {
+                    throw new RuntimeException(exception);
+                }
                 dirsCheckedOut.add(dir);
                 m.inc().progress();
             }
@@ -82,7 +91,27 @@ class ClearToolCommander {
         final Meter m = meter.sub("checkoutFiles").iterations(files.size()).start();
         for (final File file : files) {
             if (!filesCheckedOut.contains(file)) {
-                pb.reset("checkoutFile").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(file.getPath()).create().waitFor();
+                final CommandLineProcess process = pb.reset("checkoutFile").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(file.getPath()).create();
+                process.addErrWriter(new LineSplittingWriter() {
+                    @Override
+                    protected void processLine(final String line) {
+                        Matcher matcher = checkoutFileUpdateInProgress.matcher(line);
+                        if (matcher.find()) {
+                            throw new ClearToolException.UpdateInProgress();
+                        }
+                        matcher = checkoutFileNoActivity.matcher(line);
+                        if (matcher.find()) {
+                            throw new ClearToolException.NoActivity();
+                        }
+                    }
+                });
+                process.waitFor();
+                Exception exception = process.getException();
+                if (exception instanceof ClearToolException) {
+                    throw (ClearToolException) exception;
+                } else if (exception != null) {
+                    throw new RuntimeException(exception);
+                }
                 filesCheckedOut.add(file);
                 m.inc().progress();
             }
