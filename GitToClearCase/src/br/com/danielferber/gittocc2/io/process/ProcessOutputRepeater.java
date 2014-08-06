@@ -19,9 +19,22 @@ import java.util.List;
  */
 class ProcessOutputRepeater implements Runnable {
 
+    /**
+     * Reader that wraps process outputstream and handles encoding.
+     */
     Reader reader;
+    /**
+     * Thread that redirects process output to interested Readers and Writers.
+     */
     Thread thread;
+    /**
+     * Interested writers that receive process output.
+     */
     final List<Writer> writers = new ArrayList<>();
+    /**
+     * Exception raised while redirecting process output.
+     */
+    Exception exception = null;
 
     public ProcessOutputRepeater() {
         super();
@@ -36,6 +49,10 @@ class ProcessOutputRepeater implements Runnable {
 
     public void waitFor() throws InterruptedException {
         thread.join();
+    }
+
+    public Exception getException() {
+        return exception;
     }
 
     /**
@@ -75,12 +92,16 @@ class ProcessOutputRepeater implements Runnable {
                     writer.write(buffer, 0, len);
                     writer.flush();
                 }
-            };
+            }
         } catch (final EOFException e) {
             // empty, ignore
-        } catch (final IOException e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            this.exception = e;
+            try {
+                reader.close();
+            } catch (IOException ee) {
+                // ignore
+            }
         }
     }
-
 }

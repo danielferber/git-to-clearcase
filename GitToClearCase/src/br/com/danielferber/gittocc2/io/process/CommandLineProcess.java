@@ -68,18 +68,34 @@ public class CommandLineProcess {
     protected static final Marker stdoutMarker = MarkerFactory.getMarker("stdout");
     protected static final Marker stderrMarker = MarkerFactory.getMarker("stderr");
 
-    public static class CommandLineProcessException extends RuntimeException {
+    public static class CommandLineProcessCreationException extends RuntimeException {
     	private static final long serialVersionUID = 1L;
 
-        public CommandLineProcessException(final String message) {
+        public CommandLineProcessCreationException(final String message) {
             super(message);
         }
 
-        public CommandLineProcessException(final String message, final Throwable cause) {
+        public CommandLineProcessCreationException(final String message, final Throwable cause) {
             super(message, cause);
         }
 
-        public CommandLineProcessException(final Throwable cause) {
+        public CommandLineProcessCreationException(final Throwable cause) {
+            super(cause);
+        }
+    }
+    
+      public static class CommandLineProcessExecutionException extends RuntimeException {
+    	private static final long serialVersionUID = 1L;
+
+        public CommandLineProcessExecutionException(final String message) {
+            super(message);
+        }
+
+        public CommandLineProcessExecutionException(final String message, final Throwable cause) {
+            super(message, cause);
+        }
+
+        public CommandLineProcessExecutionException(final Throwable cause) {
             super(cause);
         }
     }
@@ -101,18 +117,30 @@ public class CommandLineProcess {
         this.outRepeater.with(new LineSplittingWriter() {
             @Override
             protected void processLine(final String line) {
-                meter.getLogger().trace(stdoutMarker, line);
+                if (! line.equals("\r")) {
+                    meter.getLogger().trace(stdoutMarker, line);
+                }
             }
         });
         this.errRepeater.with(new LineSplittingWriter() {
             @Override
             protected void processLine(final String line) {
-                meter.getLogger().trace(stderrMarker, line);
+                if (! line.equals("\r")) {
+                    meter.getLogger().trace(stderrMarker, line);
+                }
             }
         });
         this.processWaiter.with(new Runnable() {
             @Override
             public void run() {
+                final Exception stderrException = CommandLineProcess.this.errRepeater.getException();
+                if (stderrException != null) {
+                    meter.ctx("stderrException", stderrException);
+                }
+                final Exception stdoutException = CommandLineProcess.this.outRepeater.getException();
+                if (stdoutException != null) {
+                    meter.ctx("stdoutException", stdoutException);
+                }
                 meter.ctx("exitValue", getProcess().exitValue()).ok();
             }
         });
@@ -131,7 +159,7 @@ public class CommandLineProcess {
             this.process = new ProcessBuilder(commandLine).directory(directory).start();
         } catch (final IOException e) {
             meter.fail(e);
-            throw new CommandLineProcessException("Failed to create process", e);
+            throw new CommandLineProcessCreationException("Failed to create process", e);
         }
         this.processWaiter.start(process);
         this.outRepeater.start(process.getInputStream());
@@ -158,7 +186,7 @@ public class CommandLineProcess {
         try {
             return new Scanner(outRepeater.split());
         } catch (final IOException ex) {
-            throw new CommandLineProcessException("Failed to create stdout scanner", ex);
+            throw new CommandLineProcessCreationException("Failed to create stdout scanner", ex);
         }
     }
 
@@ -172,7 +200,7 @@ public class CommandLineProcess {
         try {
             return new Scanner(errRepeater.split());
         } catch (final IOException ex) {
-            throw new CommandLineProcessException("Failed to create stderr scanner", ex);
+            throw new CommandLineProcessCreationException("Failed to create stderr scanner", ex);
         }
     }
 
@@ -186,7 +214,7 @@ public class CommandLineProcess {
         try {
             return outRepeater.split();
         } catch (final IOException ex) {
-            throw new CommandLineProcessException("Failed to create stdout repeater", ex);
+            throw new CommandLineProcessCreationException("Failed to create stdout repeater", ex);
         }
     }
 
@@ -200,7 +228,7 @@ public class CommandLineProcess {
         try {
             return errRepeater.split();
         } catch (final IOException ex) {
-            throw new CommandLineProcessException("Failed to create stderr repeater", ex);
+            throw new CommandLineProcessCreationException("Failed to create stderr repeater", ex);
         }
     }
 
@@ -236,7 +264,19 @@ public class CommandLineProcess {
     public final int exitValue() {
         return process.exitValue();
     }
-
+    
+    public Exception getException() {
+        final Exception errException = errRepeater.getException();
+        if (errException != null) {
+            return errException;
+        }
+        final Exception outException = outRepeater.getException();
+        if (outException != null) {
+            return outException;
+        }
+        return null;
+    }
+    
     /**
      * Block until the command line executable finishes. Starts the command line
      * executable if not already running

@@ -49,18 +49,34 @@ class ClearToolCommander {
     public void checkoutFile(final File file) {
         checkoutFiles(Collections.singleton(file));
     }
+    static final Pattern checkoutDirUpdateInProgress = Pattern.compile("cleartool: Error: Checkouts are not permitted in a snapshot view while an update is in progress.");
+    static final Pattern checkoutDirNoActivity = Pattern.compile("cleartool: Error: To operate on UCM branch, must be set to an activity and a UCM view.");
 
     public void checkoutDirs(final Collection<File> dirs) {
         final Meter m = meter.sub("checkoutDirs").iterations(dirs.size()).start();
         for (final File dir : dirs) {
             if (!dirsCheckedOut.contains(dir)) {
-                pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create().waitFor();
+                pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create().addErrWriter(new LineSplittingWriter() {
+                    @Override
+                    protected void processLine(final String line) {
+                        Matcher matcher = checkoutDirUpdateInProgress.matcher(line);
+                        if (matcher.find()) {
+                            throw new ClearToolException.UpdateInProgress();
+                        }
+                        matcher = checkoutDirNoActivity.matcher(line);
+                        if (matcher.find()) {
+                            throw new ClearToolException.NoActivity();
+                        }
+                    }
+                }).waitFor();
                 dirsCheckedOut.add(dir);
                 m.inc().progress();
             }
         }
         m.ok();
     }
+    static final Pattern checkoutFileUpdateInProgress = Pattern.compile("cleartool: Error: Checkouts are not permitted in a snapshot view while an update is in progress.");
+    static final Pattern checkoutFileNoActivity = Pattern.compile("cleartool: Error: To operate on UCM branch, must be set to an activity and a UCM view.");
 
     public void checkoutFiles(final Collection<File> files) {
         final Meter m = meter.sub("checkoutFiles").iterations(files.size()).start();

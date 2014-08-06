@@ -2,6 +2,8 @@ package br.com.danielferber.gittocc2.io.process;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Writer that identifies lines and allows taking an action upon each.
@@ -10,11 +12,16 @@ import java.io.Writer;
  */
 public abstract class LineSplittingWriter extends Writer {
 
-    StringBuilder sb = new StringBuilder();
-    int end = 0;
+    private final List<Exception> parseExceptions = new ArrayList<>();
+    private StringBuilder sb = new StringBuilder();
+    private int end = 0;
 
     public LineSplittingWriter() {
         super();
+    }
+
+    public List<Exception> getParseExceptions() {
+        return parseExceptions;
     }
 
     @Override
@@ -40,8 +47,12 @@ public abstract class LineSplittingWriter extends Writer {
     public void flush() throws IOException {
         // ignore
     }
+    
+    protected void addParseException(Exception e)  {
+        parseExceptions.add(e);
+    }
 
-    protected abstract void processLine(String line);
+    protected abstract void processLine(String line) throws IOException;
 
     protected void finished() {
         // ignore
