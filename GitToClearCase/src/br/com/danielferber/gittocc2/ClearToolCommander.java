@@ -24,34 +24,62 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.IOException;
 
 /**
+ * Executes ClearTool.exe commands and keeps track of checkedout files.
  *
- * @author X7WS
+ * @author Daniel Felix Ferber
  */
 public class ClearToolCommander {
 
+    /**
+     * Command line process builder able to create cleartool.exe instances.
+     */
     final CommandLineProcessBuilder pb;
+    /**
+     * All files checked out so far.
+     */
     final Set<File> filesCheckedOut = new TreeSet<>();
+    /**
+     * All directories checked out so far.
+     */
     final Set<File> dirsCheckedOut = new TreeSet<>();
-    final Meter meter = MeterFactory.getMeter("ClearToolCommander");
+    final Meter taskMeter = MeterFactory.getMeter("ClearToolCommander");
 
     public ClearToolCommander(final ClearToolConfigSource config) {
         this.pb = new CommandLineProcessBuilder(config.getVobViewDir(), config.getClearToolExec(), LoggerFactory.getLogger("ct"));
     }
 
-    public void checkoutDir(final File dir) {
-        checkoutDirs(Collections.singleton(dir));
+    /**
+     * Check out a single directory.
+     *
+     * @throws ClearToolException if one checkout fails.
+     */
+    public void checkoutDir(File... dir) {
+        checkoutDirs(Arrays.asList(dir));
     }
 
-    public void checkoutFile(final File file) {
-        checkoutFiles(Collections.singleton(file));
+    /**
+     * Check out a single file.
+     *
+     * @throws ClearToolException if one checkout fails.
+     */
+    public void checkoutFile(File... file) {
+        checkoutFiles(Arrays.asList(file));
     }
+    /*
+     * Messages parsed in order to know if directory checkout was successful.
+     */
     static final Pattern checkoutDirUpdateInProgress = Pattern.compile("cleartool: Error: Checkouts are not permitted in a snapshot view while an update is in progress.");
     static final Pattern checkoutDirNoActivity = Pattern.compile("cleartool: Error: To operate on UCM branch, must be set to an activity and a UCM view.");
     static final Pattern checkoutDirSuccess = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\"\\.");
     static final Pattern checkoutDirAlready = Pattern.compile("cleartool: Error: Element \"(.*)\" is already checked out to view \"(.*)\"\\.");
 
+    /**
+     * Check out multiples directories.
+     *
+     * @throws ClearToolException if one checkout fails.
+     */
     public void checkoutDirs(final Collection<File> dirs) {
-        final Meter m = meter.sub("checkoutDirs").iterations(dirs.size()).start();
+        final Meter m = taskMeter.sub("checkoutDirs").iterations(dirs.size()).start();
         for (final File dir : dirs) {
             if (!dirsCheckedOut.contains(dir)) {
                 final CommandLineProcess process = pb.reset("checkoutDir").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(dir.getPath()).create();
@@ -93,13 +121,21 @@ public class ClearToolCommander {
         }
         m.ok();
     }
+    /*
+     * Messages parsed in order to know if fire checkout was successful.
+     */
     static final Pattern checkoutFileUpdateInProgress = Pattern.compile("cleartool: Error: Checkouts are not permitted in a snapshot view while an update is in progress.");
     static final Pattern checkoutFileNoActivity = Pattern.compile("cleartool: Error: To operate on UCM branch, must be set to an activity and a UCM view.");
     static final Pattern checkoutFileSuccess = Pattern.compile("Checked out \"(.*)\" from version \"(.*)\"\\.");
     static final Pattern checkoutFileAlready = Pattern.compile("cleartool: Error: Element \"(.*)\" is already checked out to view \"(.*)\"\\.");
 
+    /**
+     * Check out multiples files.
+     *
+     * @throws ClearToolException if one checkout fails.
+     */
     public void checkoutFiles(final Collection<File> files) {
-        final Meter m = meter.sub("checkoutFiles").iterations(files.size()).start();
+        final Meter m = taskMeter.sub("checkoutFiles").iterations(files.size()).start();
         for (final File file : files) {
             if (!filesCheckedOut.contains(file)) {
                 final CommandLineProcess process = pb.reset("checkoutFile").command("checkout").argument("-ptime").argument("-nc").argument("-nquery").argument(file.getPath()).create();
@@ -142,8 +178,18 @@ public class ClearToolCommander {
         m.ok();
     }
 
+    /**
+     * Check in multiples directories.
+     */
+    public void checkinDir(File... dirs) {
+        checkinDirs(Arrays.asList(dirs));
+    }
+
+    /**
+     * Check in multiples directories.
+     */
     public void checkinDirs(final Collection<File> dirs) {
-        final Meter m = meter.sub("checkinDirs").iterations(dirs.size()).start();
+        final Meter m = taskMeter.sub("checkinDirs").iterations(dirs.size()).start();
         for (final File dir : dirs) {
             if (dirsCheckedOut.contains(dir)) {
                 pb.reset("checkinDir").command("checkin").argument("-ptime").argument("-nc").argument(dir.getPath()).create().waitFor();
@@ -154,8 +200,18 @@ public class ClearToolCommander {
         m.ok();
     }
 
+    /**
+     * Check in multiples files.
+     */
+    public void checkinFile(File... files) {
+        checkinFiles(Arrays.asList(files));
+    }
+
+    /**
+     * Check in multiples files.
+     */
     public void checkinFiles(final Collection<File> files) {
-        final Meter m = meter.sub("checkinFiles").iterations(files.size()).start();
+        final Meter m = taskMeter.sub("checkinFiles").iterations(files.size()).start();
         for (final File file : files) {
             if (filesCheckedOut.contains(file)) {
                 pb.reset("checkinFile").command("checkin").argument("-ptime").argument("-nc")
@@ -167,55 +223,110 @@ public class ClearToolCommander {
         m.ok();
     }
 
+    /**
+     * Check in all files and directories that were checked out by this
+     * commander.
+     */
     public void checkinAll() {
         checkinFiles();
         checkinDirs();
     }
 
+    /**
+     * @return number of directories to check in.
+     */
     public int checkinDirsCount() {
         return dirsCheckedOut.size();
     }
 
+    /**
+     * @return true if there are directories to check in.
+     */
     public boolean checkinDirsRequired() {
         return !dirsCheckedOut.isEmpty();
     }
 
+    /**
+     * Checkin all directories that were checked out by this commander.
+     */
     public void checkinDirs() {
         ClearToolCommander.this.checkinDirs(new TreeSet<File>(dirsCheckedOut));
     }
 
+    /**
+     * @return number of files to check in.
+     */
     public int checkinFilesCount() {
         return filesCheckedOut.size();
     }
 
+    /**
+     * @return true if there are files to check in.
+     */
     public boolean checkinFilesRequired() {
         return !filesCheckedOut.isEmpty();
     }
 
+    /**
+     * Checkin all files that were checked out by this commander.
+     */
     public void checkinFiles() {
         checkinFiles(new TreeSet<File>(filesCheckedOut));
     }
 
+    /**
+     * Remove multiple files.
+     */
+    public void removeFile(File... files) {
+        removeFiles(Arrays.asList(files));
+    }
+
+    /**
+     * Remove multiple files.
+     */
     public void removeFiles(final Collection<File> files) {
+        final Meter m = taskMeter.sub("removeFiles").iterations(files.size()).start();
         for (final File file : files) {
             pb.reset("rmnameFile").command("rmname").argument("-force").argument("-nc").argument(file.getPath()).create().waitFor();
+            m.inc().progress();
         }
+        m.ok();
     }
 
+    /**
+     * Remove multiple directories.
+     */
+    public void removeDir(File... dirs) {
+        removeDirs(Arrays.asList(dirs));
+    }
+
+    /**
+     * Remove multiple directories.
+     */
     public void removeDirs(final Collection<File> dirs) {
+        final Meter m = taskMeter.sub("removeFiles").iterations(dirs.size()).start();
         for (final File dir : dirs) {
             pb.reset("rmnameDir").command("rmname").argument("-force").argument("-nc").argument(dir.getPath()).create().waitFor();
+            m.inc().progress();
         }
+        m.ok();
     }
 
+    /**
+     * Move a single file.
+     */
     public void moveFile(final File source, final File target) {
-        final Meter m = meter.sub("moveFile").start();
+        final Meter m = taskMeter.sub("moveFile").start();
         pb.reset("moveFile").command("mv").argument("-nc").argument(source.getPath()).argument(target.getPath()).create().waitFor();
         m.ok();
     }
 
+    /**
+     * Helper method to create files and directories. Create parent directories
+     * if necessary. Checks out parent directories if necessary.
+     */
     private void makeElements(final Collection<File> dirs, final Collection<File> files) {
-        final Meter m = meter.sub("makeElements").start();
+        final Meter m = taskMeter.sub("makeElements").start();
         final TreeSet<File> dirsToCheckout = new TreeSet<>();
         final TreeSet<File> filesToCheckout = new TreeSet<>();
         final TreeSet<File> dirsToMake = new TreeSet<>();
@@ -341,20 +452,32 @@ public class ClearToolCommander {
     static final Pattern mkdirNeedCheckoutPattern = Pattern.compile("cleartool: Error: Can\'t modify directory \"(.*)\" because it is not checked out\\.");
     static final Pattern mkdirAlreadyExistPattern = Pattern.compile("cleartool: Error: Entry named \"(.*)\" already exists\\.");
 
+    /**
+     * Create multiple directories.
+     */
     public void makeDirs(final List<File> dirsAdded) {
         makeElements(dirsAdded, null);
     }
 
+    /**
+     * Create multiple files.
+     */
     public void makeFiles(final List<File> filesAdded) {
         makeElements(null, filesAdded);
     }
 
+    /**
+     * Update multiple files.
+     */
     public void updateFiles(final File... files) {
         updateFiles(Arrays.asList(files));
     }
 
+    /**
+     * Update multiple files.
+     */
     public void updateFiles(final Collection<File> files) {
-        final Meter m = meter.sub("updateFiles").iterations(files.size()).start();
+        final Meter m = taskMeter.sub("updateFiles").iterations(files.size()).start();
         for (final File file : files) {
             pb.reset("updateFile").command("update").argument("-force").argument(file.getPath()).create().waitFor();
             m.inc().progress();
@@ -362,12 +485,15 @@ public class ClearToolCommander {
         m.ok();
     }
 
+    /**
+     * Update the entire vob view directory.
+     */
     void updateVobViewDir() {
-        final Meter m = meter.sub("updateVobViewDir");
+        final Meter m = taskMeter.sub("updateVobViewDir");
         pb.reset("updateVob").command("update").argument("-force").create().waitFor();
         m.ok();
     }
-    static final Pattern currentActivityPattern = Pattern.compile("(.*)  (.*)  X7WS   \"(.*)\"");
+    private static final Pattern currentActivityPattern = Pattern.compile("(.*)  (.*)  X7WS   \"(.*)\"");
 
     private static class LsActivityResult {
 
@@ -378,7 +504,7 @@ public class ClearToolCommander {
     }
 
     public String currentActivity() {
-        final Meter m = meter.sub("currentActivity").start();
+        final Meter m = taskMeter.sub("currentActivity").start();
         final LsActivityResult result = new LsActivityResult();
         pb.reset("lsactivity").command("lsactivity").argument("-cact").create().addOutWriter(new LineSplittingWriter() {
             @Override
@@ -391,11 +517,6 @@ public class ClearToolCommander {
                     result.headline = matcher.group(3);
                 }
             }
-        }).addErrWriter(new LineSplittingWriter() {
-            @Override
-            protected void processLine(java.lang.String line) throws IOException {
-                System.out.println(line);
-            }
         }).waitFor();
         m.ok();
         if (result.found) {
@@ -405,7 +526,7 @@ public class ClearToolCommander {
     }
 
     public void createActivity(final String name) {
-        final Meter m = meter.sub("createActivity").start();
+        final Meter m = taskMeter.sub("createActivity").start();
         pb.reset("mkactivity").command("mkactivity").arguments("-force", name).create().addOutWriter(new LineSplittingWriter() {
             @Override
             protected void processLine(java.lang.String line) throws IOException {
@@ -422,7 +543,7 @@ public class ClearToolCommander {
     static final Pattern setActivityNotFoundPattern = Pattern.compile("cleartool: Error: Unable to find activity \"(.*)\"\\.");
 
     public void setActivity(final String name) {
-        final Meter m = meter.sub("chactivity").start();
+        final Meter m = taskMeter.sub("chactivity").start();
         final CommandLineProcess process = pb.reset("setactivity").command("setactivity").arguments(name).create();
         process.addOutWriter(new LineSplittingWriter() {
             @Override
