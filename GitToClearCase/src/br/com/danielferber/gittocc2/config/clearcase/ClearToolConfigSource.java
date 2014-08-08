@@ -97,42 +97,40 @@ public interface ClearToolConfigSource {
     final class Utils {
 
         public static void printConfig(PrintStream ps, ClearToolConfigSource config) {
-            ps.println("Clear case environment:");
+            ps.println("Clear case properties:");
             ps.println(" * Executable file: " + config.getClearToolExec());
             ps.println(" * VOB view directory: " + config.getVobViewDir());
-            ps.println("Bahavior:");
             ps.println(" * Update vob view directory: " + config.getVobViewDirUpdate());
-            ps.println("Activity:");
             ps.println(" * Use activity: " + config.getUseActivity());
             if (config.getUseActivity() != null && config.getUseActivity()) {
                 ps.println("   activity name: " + config.getActivityName());
             }
-            ps.println("Synchronization tracking (current state of vob view directory):");
-            ps.println(" * Commit hash of last synchronization:");
+            ps.println("* Synchronization tracking (current state of vob view directory):");
+            ps.println("  - Commit hash of last synchronization:");
             boolean nothing = true;
             if (config.getOverriddenSyncFromCommit() != null) {
-                ps.println("    initial commit stamp: " + config.getOverriddenSyncFromCommit());
+                ps.println("      initial commit stamp: " + config.getOverriddenSyncFromCommit());
                 nothing = false;
             }
             if (config.getUseCommitStampFile() != null && config.getUseCommitStampFile()) {
-                ps.println("    commit stamp: file " + config.getCommitStampFile());
+                ps.println("      commit stamp: file " + config.getCommitStampFile());
                 nothing = false;
             }
             if (nothing) {
-                ps.println("    do not track commit");
+                ps.println("      do not track commit");
             }
-            ps.println(" * Last synchronization number:");
+            ps.println("  - Last synchronization number:");
             nothing = true;
             if (config.getOverriddenSyncCounter() != null) {
-                ps.println("    initial counter stamp: " + config.getOverriddenSyncCounter());
+                ps.println("      initial counter stamp: " + config.getOverriddenSyncCounter());
                 nothing = false;
             }
             if (config.getUseCounterStampFile() != null && config.getUseCounterStampFile()) {
-                ps.println("    counter stamp: file " + config.getCounterStampFile());
+                ps.println("      counter stamp: file " + config.getCounterStampFile());
                 nothing = false;
             }
             if (nothing) {
-                ps.println("    do not track counter");
+                ps.println("      do not track counter");
             }
         }
     }

@@ -50,16 +50,26 @@ public class ClearCaseChangeTask implements Callable<Void> {
     public Void call() throws Exception {
         globalMeter.start();
         try {
-            applyCommitAcitivity();
+            if (cleartoolConfig.getUseActivity()) {
+                applyCommitAcitivity();
+            }
 
             /* ClearCase update task. */
-            checkoutCommitStampFile();
-            checkoutCounterStampFile();
+            if (cleartoolConfig.getUseCommitStampFile()) {
+                checkoutCommitStampFile();
+            }
+            if (cleartoolConfig.getUseCounterStampFile()) {
+                checkoutCounterStampFile();
+            }
 
-            applyDiff(gitTreeDiff, syncCounter);
+            applyChanges(gitTreeDiff, syncCounter);
 
-            writeCommitStampFile(syncToCommit);
-            writeSyncCounter(syncCounter);
+            if (cleartoolConfig.getUseCommitStampFile()) {
+                writeCommitStampFile(syncToCommit);
+            }
+            if (cleartoolConfig.getUseCounterStampFile()) {
+                writeSyncCounter(syncCounter);
+            }
 
             chkeckinAllChanges();
 
@@ -72,21 +82,20 @@ public class ClearCaseChangeTask implements Callable<Void> {
     }
 
     private void applyCommitAcitivity() {
-        if (cleartoolConfig.getUseActivity()) {
-            final HashMap<String, Object> map = new HashMap<>();
-            map.put("commit", syncToCommit);
-            map.put("date", new Date());
-            map.put("count", syncCounter);
-            final StrSubstitutor sub = new StrSubstitutor(map);
-            final String resolvedString = sub.replace(cleartoolConfig.getActivityName());
-            final Meter m = globalMeter.sub("activity.stamp").m("Apply Sync Activity.").ctx("name", resolvedString).start();
-            try {
-                ctCommander.setActivity(resolvedString);
-            } catch (ClearToolException.ActivityNotFound e) {
-                ctCommander.createActivity(resolvedString);
-            }
-            m.ok();
+        final Meter m = globalMeter.sub("applyCommitAcitivity").m("Create or reuse activity.").start();
+
+        final HashMap<String, Object> map = new HashMap<>();
+        map.put("commit", syncToCommit);
+        map.put("date", new Date());
+        map.put("count", syncCounter);
+        final StrSubstitutor sub = new StrSubstitutor(map);
+        final String resolvedString = sub.replace(cleartoolConfig.getActivityName());
+        try {
+            ctCommander.setActivity(resolvedString);
+        } catch (ClearToolException.ActivityNotFound e) {
+            ctCommander.createActivity(resolvedString);
         }
+        m.ok();
     }
 
     private void chkeckinAllChanges() {
@@ -140,8 +149,8 @@ public class ClearCaseChangeTask implements Callable<Void> {
         m.ok();
     }
 
-    private void applyDiff(final TreeDiff diff, final long syncCounter) throws Exception {
-        final Meter m = MeterFactory.getMeter("VobUpdate").m("Atualizar VOB.").start();
+    private void applyChanges(final TreeDiff diff, final long syncCounter) throws Exception {
+        final Meter m = globalMeter.sub("applyChanges").m("Apply changes.").start();
         Meter m2 = null;
 
         try {

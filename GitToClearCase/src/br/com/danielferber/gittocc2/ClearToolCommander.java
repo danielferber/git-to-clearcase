@@ -42,6 +42,9 @@ public class ClearToolCommander {
      * All directories checked out so far.
      */
     final Set<File> dirsCheckedOut = new TreeSet<>();
+    /**
+     * Dedicated meter to track ClearTool execution.
+     */
     final Meter taskMeter = MeterFactory.getMeter("ClearToolCommander");
 
     public ClearToolCommander(final ClearToolConfigSource config) {
@@ -89,6 +92,7 @@ public class ClearToolCommander {
                         Matcher matcher = checkoutDirSuccess.matcher(line);
                         if (matcher.find()) {
                             dirsCheckedOut.add(dir);
+                            taskMeter.getLogger().debug("Checkout (new) (directory): {}", dir);
                         }
                     }
                 });
@@ -106,14 +110,17 @@ public class ClearToolCommander {
                         matcher = checkoutDirAlready.matcher(line);
                         if (matcher.find()) {
                             dirsCheckedOut.add(dir);
+                            taskMeter.getLogger().debug("Checkout (reuse) (directory): {}", dir);
                         }
                     }
                 });
                 process.waitFor();
                 Exception exception = process.getException();
                 if (exception instanceof ClearToolException) {
+                    m.fail(exception);
                     throw (ClearToolException) exception;
                 } else if (exception != null) {
+                    m.fail(exception);
                     throw new RuntimeException(exception);
                 }
                 m.inc().progress();
@@ -145,6 +152,7 @@ public class ClearToolCommander {
                         Matcher matcher = checkoutFileSuccess.matcher(line);
                         if (matcher.find()) {
                             filesCheckedOut.add(file);
+                            taskMeter.getLogger().debug("Checkout (new) (file): {}", file);
                         }
                     }
                 });
@@ -162,14 +170,17 @@ public class ClearToolCommander {
                         matcher = checkoutFileAlready.matcher(line);
                         if (matcher.find()) {
                             filesCheckedOut.add(file);
+                            taskMeter.getLogger().debug("Checkout (reuse) (file): {}", file);
                         }
                     }
                 });
                 process.waitFor();
                 Exception exception = process.getException();
                 if (exception instanceof ClearToolException) {
+                    m.fail(exception);
                     throw (ClearToolException) exception;
                 } else if (exception != null) {
+                    m.fail(exception);
                     throw new RuntimeException(exception);
                 }
                 m.inc().progress();
@@ -177,6 +188,11 @@ public class ClearToolCommander {
         }
         m.ok();
     }
+
+    /*cleartool: Error: Unable to check in \"(.*)\".*/
+    static final Pattern checkinFileFailure = Pattern.compile("Checked in \"(.*)\" version \"(.*)\"\\.");
+    static final Pattern checkinFileSuccess = Pattern.compile("Checked in \"(.*)\" version \"(.*)\"\\.");
+    static final Pattern checkinDirSuccess = Pattern.compile("Checked in \"(.*)\" version \"(.*)\"\\.");
 
     /**
      * Check in multiples directories.
@@ -192,8 +208,18 @@ public class ClearToolCommander {
         final Meter m = taskMeter.sub("checkinDirs").iterations(dirs.size()).start();
         for (final File dir : dirs) {
             if (dirsCheckedOut.contains(dir)) {
-                pb.reset("checkinDir").command("checkin").argument("-ptime").argument("-nc").argument(dir.getPath()).create().waitFor();
-                dirsCheckedOut.remove(dir);
+                final CommandLineProcess process = pb.reset("checkinDir").command("checkin").argument("-ptime").argument("-nc").argument(dir.getPath()).create();
+                process.addOutWriter(new LineSplittingWriter() {
+                    @Override
+                    protected void processLine(final String line) {
+                        Matcher matcher = checkinDirSuccess.matcher(line);
+                        if (matcher.find()) {
+                            dirsCheckedOut.remove(dir);
+                            taskMeter.getLogger().debug("Checkin (dir): {}", dir);
+                        }
+                    }
+                });
+                process.waitFor();
                 m.inc().progress();
             }
         }
@@ -214,9 +240,18 @@ public class ClearToolCommander {
         final Meter m = taskMeter.sub("checkinFiles").iterations(files.size()).start();
         for (final File file : files) {
             if (filesCheckedOut.contains(file)) {
-                pb.reset("checkinFile").command("checkin").argument("-ptime").argument("-nc")
-                        .argument(file.getPath()).create().waitFor();
-                filesCheckedOut.remove(file);
+                final CommandLineProcess process = pb.reset("checkinFile").command("checkin").argument("-ptime").argument("-nc").argument(file.getPath()).create();
+                process.addOutWriter(new LineSplittingWriter() {
+                    @Override
+                    protected void processLine(final String line) {
+                        Matcher matcher = checkinDirSuccess.matcher(line);
+                        if (matcher.find()) {
+                            filesCheckedOut.remove(file);
+                            taskMeter.getLogger().debug("Checkin (file): {}", file);
+                        }
+                    }
+                });
+                process.waitFor();
                 m.inc().progress();
             }
         }
@@ -473,6 +508,7 @@ public class ClearToolCommander {
         updateFiles(Arrays.asList(files));
     }
 
+    /* Update: "Done loading "\JCONSUELO\Fontes\atualizacao-contador.txt" (1 objects, copied 0 KB)." */
     /**
      * Update multiple files.
      */
