@@ -356,6 +356,20 @@ public class ClearToolCommander {
         m.ok();
     }
 
+    /*
+     * TRACE 08 17:20 ct.makeFile: Created element "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" (type "file").
+ 
+TRACE 08 17:20 ct.makeFile: Created branch "JCONSUELO_UCM_DVL" from "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" version "\main\0".
+ 
+TRACE 08 17:20 ct.makeFile: Checked out "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" from version "\main\JCONSUELO_UCM_DVL\0".
+ 
+TRACE 08 17:20 ct.makeFile:   Attached activity:
+ 
+TRACE 08 17:20 ct.makeFile:     activity:sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a@\JCONSUELO_UCM  "sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a"
+ 
+
+     */
+    
     /**
      * Helper method to create files and directories. Create parent directories
      * if necessary. Checks out parent directories if necessary.
@@ -561,6 +575,12 @@ public class ClearToolCommander {
         return null;
     }
 
+    /*
+     * cleartool: Error: Invalid name: "sprint 12-atualizacao-58 (8d55de78e115b5e53867fd69c826ec49e45afd4a)".
+     * cleartool: Error: Unable to create activity.
+     * Created activity "sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a".
+     * Set activity "sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a" in view "X7WS_JCONSUELO_DVL_X7WS_MI00308113".
+     */
     public void createActivity(final String name) {
         final Meter m = taskMeter.sub("createActivity").start();
         pb.reset("mkactivity").command("mkactivity").arguments("-force", name).create().addOutWriter(new LineSplittingWriter() {
@@ -597,8 +617,10 @@ public class ClearToolCommander {
         }).waitFor();
         Exception exception = process.getException();
         if (exception instanceof ClearToolException) {
+            m.fail(exception);
             throw (ClearToolException) exception;
         } else if (exception != null) {
+            m.fail(exception);
             throw new RuntimeException(exception);
         }
         m.ok();
