@@ -46,19 +46,20 @@ public class Synchronizer {
             nonValidateGitConfig = cl.getGitConfig();
             compareOnly = cl.isCompareOnly();
             compareRoot = cl.getCompareRoot();
-        } catch (final ValueConversionException e) {
+        } catch (final ValueConversionException | OptionException e) {
             logger.error("Incorrect command line arguments: {} ", e.getMessage());
             return;
-        } catch (final OptionException e) {
-            logger.error("Incorrect command line arguments: {} ", e.getMessage());
-            try (PrintStream ps = LoggerFactory.getErrorPrintStream(logger)) {
+        }
+        
+        if (nonValidateGitConfig == null || nonValidatedClearToolConfig == null) {
+            try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
                 CommandLine.printHelp(ps);
             } catch (final IOException ex) {
                 logger.error("Failed to print command line help.", ex);
             }
             return;
         }
-
+        
         if (logger.isInfoEnabled()) {
             try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
                 ps.println("Infer changes from: " + (compareOnly ? "file by file comparison" : "GIT history"));
