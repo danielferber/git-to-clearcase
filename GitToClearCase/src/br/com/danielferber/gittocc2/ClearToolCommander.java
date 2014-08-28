@@ -604,7 +604,7 @@ TRACE 08 17:20 ct.makeFile:     activity:sprint-12-atualizacao-58-8d55de78e115b5
         process.addOutWriter(new LineSplittingWriter() {
             @Override
             protected void processLine(java.lang.String line) throws IOException {
-                System.out.println(line);
+                // ignore
             }
         }).addErrWriter(new LineSplittingWriter() {
             @Override

@@ -21,7 +21,7 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
- * Task that applied a set of changes on the ClearCase Vob view. The changes are
+ * Task that applies a set of changes on the ClearCase Vob view. The changes are
  * given by the TreeDiff object.
  *
  * @author daniel
@@ -36,14 +36,14 @@ public class ApplyDiffTask implements Callable<Void> {
     private final String syncToCommit;
     private final Meter taskMeter;
 
-    public ApplyDiffTask(final ClearToolConfigSource environmentConfig, final GitConfigSource gitConfig, final ClearToolCommander ctCommander,
+    ApplyDiffTask(final ClearToolConfigSource environmentConfig, final GitConfigSource gitConfig, final ClearToolCommander ctCommander,
             final TreeDiff gitTreeDiff, final String syncToCommit, final long syncCounter, final Meter outerMeter) {
         this.cleartoolConfig = environmentConfig;
         this.gitConfig = gitConfig;
         this.ctCommander = ctCommander;
         this.gitTreeDiff = gitTreeDiff;
         this.syncCounter = syncCounter;
-        this.taskMeter = MeterFactory.getMeter("ApplyDiffTask");
+        this.taskMeter = MeterFactory.getMeter("Apply changes on ClearCase vob view").m(syncToCommit);
         this.syncToCommit = syncToCommit;
 
     }
@@ -68,6 +68,7 @@ public class ApplyDiffTask implements Callable<Void> {
             /* Apply all changes enumerated by gitTreeDiff. */
             applyChanges(gitTreeDiff, syncCounter);
 
+            /* Update stamp files, if requeired. */
             if (cleartoolConfig.getUseCommitStampFile()) {
                 writeCommitStampFile(syncToCommit);
             }
@@ -75,6 +76,7 @@ public class ApplyDiffTask implements Callable<Void> {
                 writeSyncCounter(syncCounter);
             }
 
+            /* Checkin all changes (also unlocks stamp files). */
             chkeckinAllChanges();
 
             taskMeter.ok();
@@ -87,17 +89,16 @@ public class ApplyDiffTask implements Callable<Void> {
 
     private void applyCommitAcitivity() {
         final Meter m = taskMeter.sub("applyCommitAcitivity").m("Create or reuse activity.").start();
-
         final HashMap<String, Object> map = new HashMap<>();
         map.put("commit", syncToCommit);
         map.put("date", new Date());
         map.put("count", syncCounter);
         final StrSubstitutor sub = new StrSubstitutor(map);
-        final String resolvedString = sub.replace(cleartoolConfig.getActivityName());
+        final String taskName = sub.replace(cleartoolConfig.getActivityName());
         try {
-            ctCommander.setActivity(resolvedString);
+            ctCommander.setActivity(taskName);
         } catch (ClearToolException.ActivityNotFound e) {
-            ctCommander.createActivity(resolvedString);
+            ctCommander.createActivity(taskName);
         }
         m.ok();
     }
