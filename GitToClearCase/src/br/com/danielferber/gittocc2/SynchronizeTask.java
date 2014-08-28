@@ -12,8 +12,10 @@ import java.util.concurrent.Callable;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
+import java.io.PrintStream;
 
 /**
  * Syncronizes the Git repository to the ClearCase VOB view directory.
@@ -81,10 +83,17 @@ class SynchronizeTask implements Callable<Void> {
             }
 
             if (!diff.hasStuff()) {
+                meter.getLogger().info("Nothing to synchronize.");
                 return null;
             }
+            
+            PrintStream ps = LoggerFactory.getInfoPrintStream(meter.getLogger());
+            ps.format("Directories: added: #%d; removed: #%d\n", diff.dirsAdded.size(), diff.dirsDeleted.size());
+            ps.format("Files: added: #%d; removed: #%d; modified: #%d\n", diff.filesAdded.size(), diff.filesDeleted.size(), diff.filesModified);
+            ps.format("       copied: #%d; moved: #%d", diff.filesCopiedFrom.size(), diff.filesMovedFrom.size());
+            ps.close();
 
-            new ClearCaseChangeTask(cleartoolConfig, gitConfig, ctCommander, diff, syncToCommit, syncCounter, meter).call();
+            new ApplyDiffTask(cleartoolConfig, gitConfig, ctCommander, diff, syncToCommit, syncCounter, meter).call();
 
             meter.ok();
 
