@@ -539,7 +539,7 @@ TRACE 08 17:20 ct.makeFile:     activity:sprint-12-atualizacao-58-8d55de78e115b5
      * Update the entire vob view directory.
      */
     void updateVobViewDir() {
-        final Meter m = taskMeter.sub("updateVobViewDir");
+        final Meter m = taskMeter.sub("updateVobViewDir").start();
         pb.reset("updateVob").command("update").argument("-force").create().waitFor();
         m.ok();
     }
