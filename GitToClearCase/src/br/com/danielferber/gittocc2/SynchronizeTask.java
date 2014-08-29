@@ -89,7 +89,7 @@ class SynchronizeTask implements Callable<Void> {
             
             PrintStream ps = LoggerFactory.getInfoPrintStream(meter.getLogger());
             ps.format("Directories: added: #%d; removed: #%d\n", diff.dirsAdded.size(), diff.dirsDeleted.size());
-            ps.format("Files: added: #%d; removed: #%d; modified: #%d\n", diff.filesAdded.size(), diff.filesDeleted.size(), diff.filesModified);
+            ps.format("Files: added: #%d; removed: #%d; modified: #%d\n", diff.filesAdded.size(), diff.filesDeleted.size(), diff.filesModified.size());
             ps.format("       copied: #%d; moved: #%d", diff.filesCopiedFrom.size(), diff.filesMovedFrom.size());
             ps.close();
 
