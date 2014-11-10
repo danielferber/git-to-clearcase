@@ -20,11 +20,11 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     public static final String PROP_ACTIVITY_NAME = "activity.name";
     public static final String PROP_USE_COMMIT_STAMP_FILE = "stamp.commit.use";
     public static final String PROP_USE_COUNTER_STAMP_FILE = "stamp.counter.use";
+    public static final String PROP_CHECK_CHECKOUT_FORGOTTEN = "check.checkout.forgotten";
     public static final String PROP_COMMIT_STAMP_FILE = "stamp.commit.file";
     public static final String PROP_COUNTER_STAMP_FILE = "stamp.counter.file";
     public static final String PROP_OVERRIDDEN_SYNC_COUNTER = "stamp.commit.override";
     public static final String PROP_OVERRIDDEN_SYNC_COMMIT = "stamp.counter.override";
-
     private final ConfigProperties properties;
 
     public ClearToolConfigProperties(final ClearToolConfigSource other) {
@@ -32,10 +32,10 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
         this.setClearToolExec(other.getClearToolExec());
         this.setVobViewDir(other.getVobViewDir());
         this.setUpdateVobRoot(other.getVobViewDirUpdate());
-        
+
         this.setUseActivity(other.getUseActivity());
         this.setActivityName(other.getActivityName());
-        
+
         this.setUseCommitStampFile(other.getUseCommitStampFile());
         this.setUseCounterStampFile(other.getUseCounterStampFile());
         this.setCommitStampFile(other.getCommitStampFile());
@@ -184,6 +184,17 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     @Override
     public ClearToolConfig setVobViewDir(final File dir) {
         properties.setFile(PROP_VOB_VIEW_DIR, dir);
+        return this;
+    }
+
+    @Override
+    public Boolean getCheckForgottenCheckout() {
+        return properties.getBoolean(PROP_CHECK_CHECKOUT_FORGOTTEN);
+    }
+
+    @Override
+    public ClearToolConfig setCheckForgottenCheckout(Boolean value) {
+        properties.setBoolean(PROP_CHECK_CHECKOUT_FORGOTTEN, value);
         return this;
     }
 

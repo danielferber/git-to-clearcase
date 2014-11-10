@@ -142,4 +142,14 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
         return null;
     }
 
+    @Override
+    public Boolean getCheckForgottenCheckout() {
+        for (ClearToolConfigSource config : sources) {
+            Boolean value = config.getCheckForgottenCheckout();
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

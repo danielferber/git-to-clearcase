@@ -84,16 +84,17 @@ class SynchronizeTask implements Callable<Void> {
 
             if (!diff.hasStuff()) {
                 meter.getLogger().info("Nothing to synchronize.");
-                return null;
-            }
-            
-            PrintStream ps = LoggerFactory.getInfoPrintStream(meter.getLogger());
-            ps.format("Directories: added: #%d; removed: #%d\n", diff.dirsAdded.size(), diff.dirsDeleted.size());
-            ps.format("Files: added: #%d; removed: #%d; modified: #%d\n", diff.filesAdded.size(), diff.filesDeleted.size(), diff.filesModified.size());
-            ps.format("       copied: #%d; moved: #%d", diff.filesCopiedFrom.size(), diff.filesMovedFrom.size());
-            ps.close();
+            } else {
+                PrintStream ps = LoggerFactory.getInfoPrintStream(meter.getLogger());
+                ps.format("Directories: added: #%d; removed: #%d\n", diff.dirsAdded.size(), diff.dirsDeleted.size());
+                ps.format("Files: added: #%d; removed: #%d; modified: #%d\n", diff.filesAdded.size(), diff.filesDeleted.size(), diff.filesModified.size());
+                ps.format("       copied: #%d; moved: #%d", diff.filesCopiedFrom.size(), diff.filesMovedFrom.size());
+                ps.close();
 
-            new ApplyDiffTask(cleartoolConfig, gitConfig, ctCommander, diff, syncToCommit, syncCounter, meter).call();
+                new ApplyDiffTask(cleartoolConfig, gitConfig, ctCommander, diff, syncToCommit, syncCounter, meter).call();
+            }
+
+            new CheckVobFinalSanityTask(cleartoolConfig, ctCommander, meter).call();
 
             meter.ok();
 

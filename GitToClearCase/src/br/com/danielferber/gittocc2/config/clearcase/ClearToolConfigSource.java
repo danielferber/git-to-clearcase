@@ -93,6 +93,11 @@ public interface ClearToolConfigSource {
      * @return If true, update the entire vob before synchronization.
      */
     Boolean getVobViewDirUpdate();
+    
+    /**
+     * @return if true, check for pending, forgotten checkouts
+     */
+    Boolean getCheckForgottenCheckout();
 
     final class Utils {
 
@@ -100,7 +105,9 @@ public interface ClearToolConfigSource {
             ps.println("Clear case properties:");
             ps.println(" * Executable file: " + config.getClearToolExec());
             ps.println(" * VOB view directory: " + config.getVobViewDir());
-            ps.println(" * Update vob view directory: " + config.getVobViewDirUpdate());
+            ps.println(" * Error prevention:");
+            ps.println("  - Update vob view directory: " + config.getVobViewDirUpdate());
+            ps.println("  - Find forgotten checkouts: " + config.getCheckForgottenCheckout());
             ps.println(" * Use activity: " + config.getUseActivity());
             if (config.getUseActivity() != null && config.getUseActivity()) {
                 ps.println("   activity name: " + config.getActivityName());

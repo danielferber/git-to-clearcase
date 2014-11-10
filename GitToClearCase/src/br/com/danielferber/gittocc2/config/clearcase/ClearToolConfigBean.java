@@ -21,6 +21,7 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
     public static final String USE_COUNTER_STAMP_FILE_PROPERTY = "cc.useCounterStampFile";
     public static final String OVERRIDDEN_SYNC_COUNTER = "cc.overriddenSyncCounter";
     public static final String OVERRIDDEN_SYNC_FROM_COMMIT = "cc.overridenSyncFromCommit";
+    public static final String CHECK_CHECKOUT_FORGOTTEN = "cc.checkCheckoutForgotten";
 
     public ClearToolConfigBean() {
         super();
@@ -179,6 +180,19 @@ public class ClearToolConfigBean extends ClearToolConfigSourceImpl implements Cl
         final File oldValue = wrapped.getVobViewDir();
         wrapped.setVobViewDir(dir);
         this.pcs.firePropertyChange(VOB_VIEW_DIR_PROPERTY, oldValue, dir);
+        return this;
+    }
+
+    @Override
+    public Boolean getCheckForgottenCheckout() {
+        return wrapped.getCheckForgottenCheckout();
+    }
+
+    @Override
+    public ClearToolConfig setCheckForgottenCheckout(Boolean value) {
+        final Boolean oldValue = wrapped.getCheckForgottenCheckout();
+        wrapped.setCheckForgottenCheckout(value);
+        this.pcs.firePropertyChange(CHECK_CHECKOUT_FORGOTTEN, oldValue, value);
         return this;
     }
 }

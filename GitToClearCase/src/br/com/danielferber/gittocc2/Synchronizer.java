@@ -112,6 +112,7 @@ public class Synchronizer {
         clearToolConfigDefault.setCounterStampFile(new File("sync-counter-stamp.txt"));
         clearToolConfigDefault.setUseActivity(false);
         clearToolConfigDefault.setUpdateVobRoot(false);
+        clearToolConfigDefault.setCheckForgottenCheckout(false);
         return clearToolConfigDefault;
     }
 }

@@ -21,4 +21,6 @@ public interface ClearToolConfig extends ClearToolConfigSource {
     ClearToolConfig setOverriddenSyncCounter(Long value);
     ClearToolConfig setOverriddenSyncFromCommit(String commit);
 
+    ClearToolConfig setCheckForgottenCheckout(Boolean value);
+
 }

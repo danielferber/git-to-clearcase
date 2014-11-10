@@ -7,7 +7,6 @@ package br.com.danielferber.gittocc2;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,6 +21,7 @@ import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Executes ClearTool.exe commands and keeps track of checkedout files.
@@ -357,19 +357,19 @@ public class ClearToolCommander {
     }
 
     /*
+    
      * TRACE 08 17:20 ct.makeFile: Created element "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" (type "file").
  
-TRACE 08 17:20 ct.makeFile: Created branch "JCONSUELO_UCM_DVL" from "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" version "\main\0".
+     TRACE 08 17:20 ct.makeFile: Created branch "JCONSUELO_UCM_DVL" from "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" version "\main\0".
  
-TRACE 08 17:20 ct.makeFile: Checked out "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" from version "\main\JCONSUELO_UCM_DVL\0".
+     TRACE 08 17:20 ct.makeFile: Checked out "Gerenciador\Client\ClienteRCP-Integracao-Jide\src\br\com\petrobras\jconsuelo\clientercp\integracao\jide\topologia\ReferenciaProdutoVirtual.java" from version "\main\JCONSUELO_UCM_DVL\0".
  
-TRACE 08 17:20 ct.makeFile:   Attached activity:
+     TRACE 08 17:20 ct.makeFile:   Attached activity:
  
-TRACE 08 17:20 ct.makeFile:     activity:sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a@\JCONSUELO_UCM  "sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a"
+     TRACE 08 17:20 ct.makeFile:     activity:sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a@\JCONSUELO_UCM  "sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a"
  
 
      */
-    
     /**
      * Helper method to create files and directories. Create parent directories
      * if necessary. Checks out parent directories if necessary.
@@ -624,5 +624,40 @@ TRACE 08 17:20 ct.makeFile:     activity:sprint-12-atualizacao-58-8d55de78e115b5
             throw new RuntimeException(exception);
         }
         m.ok();
+    }
+
+    /*
+     * FIND CHECKOUTs.
+     */
+    static final Pattern checkoutEntry = Pattern.compile("([^\\s]+)\\s+([^\\s]+)\\s+checkout version\\s+\"(.*)\"\\s+from\\s+(.*)");
+    public static class LsCheckoutItem {
+        String date;
+        String user;
+        File file;
+    }
+
+    /**
+     * Find ckecout out files and directories.
+     */
+    public Collection<LsCheckoutItem> listCheckouts(final File dir) {
+        final Meter m = taskMeter.sub("listCheckouts").start();
+        final Collection<LsCheckoutItem> list = new ArrayList<LsCheckoutItem>();
+        final CommandLineProcess process = pb.reset("listCheckouts").command("lscheckout").argument("-all").create();
+        process.addOutWriter(new LineSplittingWriter() {
+            @Override
+            protected void processLine(final String line) {
+                Matcher matcher = checkoutEntry.matcher(line);
+                if (matcher.find()) {
+                    LsCheckoutItem item = new LsCheckoutItem();
+                    item.date = matcher.group(1);
+                    item.user = matcher.group(2);
+                    item.file = new File(matcher.group(3));
+                    list.add(item);
+                }
+            }
+        });
+        process.waitFor();
+        m.ok();
+        return list;
     }
 }

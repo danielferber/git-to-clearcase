@@ -24,6 +24,7 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     private File counterStampFileName;
     private Long overriddenSyncCounter;
     private String overriddenSyncFromCommit;
+    private Boolean checkCheckoutForgotten;
 
     public ClearToolConfigPojo() {
         super();
@@ -166,6 +167,17 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     @Override
     public ClearToolConfigPojo setUseCounterStampFile(Boolean value) {
         this.useCounterStampFile = value;
+        return this;
+    }
+
+    @Override
+    public Boolean getCheckForgottenCheckout() {
+        return checkCheckoutForgotten;
+    }
+
+    @Override
+    public ClearToolConfig setCheckForgottenCheckout(Boolean value) {
+        this.checkCheckoutForgotten = value;
         return this;
     }
 
