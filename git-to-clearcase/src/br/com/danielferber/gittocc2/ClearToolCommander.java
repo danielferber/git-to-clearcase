@@ -14,9 +14,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.io.process.CommandLineProcess;
-import br.com.danielferber.gittocc2.io.process.CommandLineProcessBuilder;
-import br.com.danielferber.gittocc2.io.process.LineSplittingWriter;
+import br.com.danielferber.gittocc2.process.CommandLineProcess;
+import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
+import br.com.danielferber.gittocc2.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;

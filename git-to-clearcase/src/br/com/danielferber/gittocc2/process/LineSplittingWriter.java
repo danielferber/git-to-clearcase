@@ -1,4 +1,4 @@
-package br.com.danielferber.gittocc2.io.process;
+package br.com.danielferber.gittocc2.process;
 
 import java.io.IOException;
 import java.io.Writer;
