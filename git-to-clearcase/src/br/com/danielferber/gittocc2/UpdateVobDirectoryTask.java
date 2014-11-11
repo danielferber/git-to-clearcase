@@ -12,52 +12,44 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
  *
  * @author Daniel Felix Ferber
  */
-public class UpdateVobDirectoryTask implements Callable<Void> {
+public class UpdateVobDirectoryTask extends MeterCallable<Void> {
 
     private final ClearToolConfigSource cleartoolConfig;
     private final ClearToolCommander ctCommander;
-    private final Meter taskMeter;
 
     public UpdateVobDirectoryTask(final ClearToolConfigSource environmentConfig, final ClearToolCommander ctCommander, final Meter outerMeter) {
+        super(outerMeter, "UpdateVobDirectory", "Update vob view directory.");
         this.cleartoolConfig = environmentConfig;
         this.ctCommander = ctCommander;
-        this.taskMeter = outerMeter.sub("UpdateVob").m("Update vob view directory.");
     }
 
     @Override
-    public Void call() throws Exception {
-        taskMeter.start();
-        try {
-            if (cleartoolConfig.getVobViewDirUpdate()) {
-                updateFullVob();
-            } else {
-                updateCommitStampFile();
-                updateCounterStampFile();
-            }
-            taskMeter.ok();
-        } catch (final Exception e) {
-            taskMeter.fail(e);
-            throw e;
+    protected Void meteredCall() throws Exception {
+        if (cleartoolConfig.getVobViewDirUpdate()) {
+            updateFullVob();
+        } else {
+            updateCommitStampFile();
+            updateCounterStampFile();
         }
         return null;
     }
 
     private void updateCommitStampFile() {
         final File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
-        final Meter m = taskMeter.sub("commitFile").m("Update sync commit control file.").ctx("file", commitStampFile).start();
+        final Meter m = getMeter().sub("commitFile").m("Update sync commit control file.").ctx("file", commitStampFile).start();
         ctCommander.updateFiles(commitStampFile);
         m.ok();
     }
 
     private void updateCounterStampFile() {
         final File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
-        final Meter m = taskMeter.sub("counterFile").m("Update sync counter control file.").ctx("file", counterStampFile).start();
+        final Meter m = getMeter().sub("counterFile").m("Update sync counter control file.").ctx("file", counterStampFile).start();
         ctCommander.updateFiles(counterStampFile);
         m.ok();
     }
 
     private void updateFullVob() {
-        final Meter m = taskMeter.sub("vobDir").m("Update entire VOB directory.").ctx("dir", cleartoolConfig.getVobViewDir()).start();
+        final Meter m = getMeter().sub("vobDir").m("Update entire VOB directory.").ctx("dir", cleartoolConfig.getVobViewDir()).start();
         ctCommander.updateVobViewDir();
         m.ok();
     }
