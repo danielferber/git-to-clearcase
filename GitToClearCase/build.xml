@@ -70,7 +70,11 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="download-libs">
+        <ant antfile="../lib/lib-init.xml" target="lib-init"/>
+    </target>
     
+    <target name="-pre-compile" depends="download-libs" />
     <target name="-post-jar">
         <jar destfile="${dist.dir}/${ant.project.name}-all.jar">
             <zipgroupfileset dir="${dist.dir}/lib" includes="*.jar" />
