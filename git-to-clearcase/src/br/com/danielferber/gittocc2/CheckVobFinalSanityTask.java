@@ -15,37 +15,29 @@ import org.slf4j.Logger;
  *
  * @author Daniel Felix Ferber
  */
-public class CheckVobFinalSanityTask implements Callable<Void> {
+public class CheckVobFinalSanityTask extends MeterCallable<Void> {
 
     private final ClearToolConfigSource cleartoolConfig;
     private final ClearToolCommander ctCommander;
-    private final Meter taskMeter;
 
     public CheckVobFinalSanityTask(final ClearToolConfigSource environmentConfig, final ClearToolCommander ctCommander, final Meter outerMeter) {
+        super(outerMeter, "CheckVobFinalSanity", "Check VOB final sanity.");
         this.cleartoolConfig = environmentConfig;
         this.ctCommander = ctCommander;
-        this.taskMeter = outerMeter.sub("CheckVobFinalSanity").m("Check VOB final sanity.");
     }
 
     @Override
-    public Void call() throws Exception {
-        taskMeter.start();
-        try {
-            if (cleartoolConfig.getCheckForgottenCheckout()) {
-                findForgottenCheckout();
-            }
-            taskMeter.ok();
-        } catch (final Exception e) {
-            taskMeter.fail(e);
-            throw e;
+    protected Void meteredCall() throws Exception {
+        if (cleartoolConfig.getCheckForgottenCheckout()) {
+            findForgottenCheckout();
         }
         return null;
     }
 
     private void findForgottenCheckout() {
-        final Meter m = taskMeter.sub("findForgottenCheckout").m("Find forgotten checkouts.").start();
+        final Meter m = getMeter().sub("findForgottenCheckout").m("Find forgotten checkouts.").start();
         Collection<ClearToolCommander.LsCheckoutItem> list = ctCommander.listCheckouts(cleartoolConfig.getVobViewDir());
-        if (! list.isEmpty()) {
+        if (!list.isEmpty()) {
             Logger logger = m.getLogger();
             logger.warn("There are {} checkout out files!", list.size());
             PrintStream ps = LoggerFactory.getInfoPrintStream(logger);
@@ -56,7 +48,7 @@ public class CheckVobFinalSanityTask implements Callable<Void> {
                     return;
                 }
                 counter++;
-                ps.println(" - "+item.file.getPath()+" ("+item.user+")");
+                ps.println(" - " + item.file.getPath() + " (" + item.user + ")");
             }
             if (counter >= 10) {
                 ps.println("   and more...");

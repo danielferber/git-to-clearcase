@@ -77,7 +77,7 @@ class SynchronizeTask implements Callable<Void> {
 
             final TreeDiff diff;
             if (compareOnly) {
-                diff = (new CompareTreeDiffTask(gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), compareRoot)).call();
+                diff = (new CompareTreeDiffTask(meter, gitConfig.getRepositoryDir(), cleartoolConfig.getVobViewDir(), compareRoot)).call();
             } else {
                 diff = (new GitTreeDiffTask(gitCommander, syncFromCommit, syncToCommit)).call();
             }

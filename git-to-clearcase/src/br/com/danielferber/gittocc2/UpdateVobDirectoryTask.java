@@ -1,7 +1,6 @@
 package br.com.danielferber.gittocc2;
 
 import java.io.File;
-import java.util.concurrent.Callable;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;

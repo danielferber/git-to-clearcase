@@ -26,7 +26,7 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
  *
  * @author daniel
  */
-public class ApplyDiffTask implements Callable<Void> {
+public class ApplyDiffTask extends MeterCallable<Void> {
 
     private final ClearToolConfigSource cleartoolConfig;
     private final GitConfigSource gitConfig;
@@ -34,61 +34,52 @@ public class ApplyDiffTask implements Callable<Void> {
     private final TreeDiff gitTreeDiff;
     private final long syncCounter;
     private final String syncToCommit;
-    private final Meter taskMeter;
 
     ApplyDiffTask(final ClearToolConfigSource environmentConfig, final GitConfigSource gitConfig, final ClearToolCommander ctCommander,
             final TreeDiff gitTreeDiff, final String syncToCommit, final long syncCounter, final Meter outerMeter) {
+        super(outerMeter, "ApplyDiff");
         this.cleartoolConfig = environmentConfig;
         this.gitConfig = gitConfig;
         this.ctCommander = ctCommander;
         this.gitTreeDiff = gitTreeDiff;
         this.syncCounter = syncCounter;
-        this.taskMeter = MeterFactory.getMeter("Apply changes on ClearCase vob view").m(syncToCommit);
         this.syncToCommit = syncToCommit;
 
     }
 
     @Override
-    public Void call() throws Exception {
-        taskMeter.start();
-        try {
-            /* Create or reuse activity. */
-            if (cleartoolConfig.getUseActivity()) {
-                applyCommitAcitivity();
-            }
-
-            /* Always checkout stamp files to prevent concurrent executions of this task. */
-            if (cleartoolConfig.getUseCommitStampFile()) {
-                checkoutCommitStampFile();
-            }
-            if (cleartoolConfig.getUseCounterStampFile()) {
-                checkoutCounterStampFile();
-            }
-
-            /* Apply all changes enumerated by gitTreeDiff. */
-            applyChanges(gitTreeDiff, syncCounter);
-
-            /* Update stamp files, if requeired. */
-            if (cleartoolConfig.getUseCommitStampFile()) {
-                writeCommitStampFile(syncToCommit);
-            }
-            if (cleartoolConfig.getUseCounterStampFile()) {
-                writeSyncCounter(syncCounter);
-            }
-
-            /* Checkin all changes (also unlocks stamp files). */
-            chkeckinAllChanges();
-
-            taskMeter.ok();
-        } catch (final Exception e) {
-            taskMeter.fail(e);
-            throw e;
+    protected Void meteredCall() throws Exception {
+        /* Create or reuse activity. */
+        if (cleartoolConfig.getUseActivity()) {
+            applyCommitAcitivity();
         }
+
+        /* Always checkout stamp files to prevent concurrent executions of this task. */
+        if (cleartoolConfig.getUseCommitStampFile()) {
+            checkoutCommitStampFile();
+        }
+        if (cleartoolConfig.getUseCounterStampFile()) {
+            checkoutCounterStampFile();
+        }
+
+        /* Apply all changes enumerated by gitTreeDiff. */
+        applyChanges(gitTreeDiff, syncCounter);
+
+        /* Update stamp files, if requeired. */
+        if (cleartoolConfig.getUseCommitStampFile()) {
+            writeCommitStampFile(syncToCommit);
+        }
+        if (cleartoolConfig.getUseCounterStampFile()) {
+            writeSyncCounter(syncCounter);
+        }
+
+        /* Checkin all changes (also unlocks stamp files). */
+        chkeckinAllChanges();
         return null;
     }
 
     private void applyCommitAcitivity() {
-        final Meter m = taskMeter.sub("applyCommitAcitivity").m("Create or reuse activity.").start();
+        final Meter m = getMeter().sub("applyCommitAcitivity").m("Create or reuse activity.").start();
         final HashMap<String, Object> map = new HashMap<>();
         map.put("commit", syncToCommit);
         map.put("date", new Date());
@@ -105,12 +96,12 @@ public class ApplyDiffTask implements Callable<Void> {
 
     private void chkeckinAllChanges() {
         if (ctCommander.checkinDirsRequired()) {
-            final Meter m = taskMeter.sub("checkin.dirs").m("Checkin all directories.").iterations(ctCommander.checkinDirsCount()).start();
+            final Meter m = getMeter().sub("checkin.dirs").m("Checkin all directories.").iterations(ctCommander.checkinDirsCount()).start();
             ctCommander.checkinDirs();
             m.ok();
         }
         if (ctCommander.checkinFilesRequired()) {
-            final Meter m = taskMeter.sub("checkin.files").m("Checkin all files.").iterations(ctCommander.checkinFilesCount()).start();
+            final Meter m = getMeter().sub("checkin.files").m("Checkin all files.").iterations(ctCommander.checkinFilesCount()).start();
             ctCommander.checkinFiles();
             m.ok();
         }
@@ -118,7 +109,7 @@ public class ApplyDiffTask implements Callable<Void> {
 
     private void writeCommitStampFile(final String commit) throws SyncTaskException {
         final File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
-        final Meter m = taskMeter.sub("write.commitFile").m("Write sync commit control file.").ctx("file", commitStampFile).start();
+        final Meter m = getMeter().sub("write.commitFile").m("Write sync commit control file.").ctx("file", commitStampFile).start();
         try (FileWriter writer = new FileWriter(commitStampFile)) {
             writer.write(commit + "\n");
             m.ok();
@@ -130,14 +121,14 @@ public class ApplyDiffTask implements Callable<Void> {
 
     private void checkoutCommitStampFile() throws SyncTaskException {
         final File commitStampFile = cleartoolConfig.getCommitStampAbsoluteFile();
-        final Meter m = taskMeter.sub("checkout.commitFile").m("Checkout  sync commit control file.").ctx("file", commitStampFile).start();
+        final Meter m = getMeter().sub("checkout.commitFile").m("Checkout  sync commit control file.").ctx("file", commitStampFile).start();
         ctCommander.checkoutFile(commitStampFile);
         m.ok();
     }
 
     private void writeSyncCounter(final long counter) throws SyncTaskException {
         final File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
-        final Meter m = taskMeter.sub("write.commitFile").m("Write sync counter control file.").ctx("file", counterStampFile).start();
+        final Meter m = getMeter().sub("write.commitFile").m("Write sync counter control file.").ctx("file", counterStampFile).start();
         try (FileWriter writer = new FileWriter(counterStampFile)) {
             writer.write(Long.toString(counter) + "\n");
             m.ok();
@@ -149,13 +140,13 @@ public class ApplyDiffTask implements Callable<Void> {
 
     private void checkoutCounterStampFile() throws SyncTaskException {
         final File counterStampFile = cleartoolConfig.getCounterStampAbsoluteFile();
-        final Meter m = taskMeter.sub("checkout.counterFile").m("Checkout sync counter control file.").ctx("file", counterStampFile).start();
+        final Meter m = getMeter().sub("checkout.counterFile").m("Checkout sync counter control file.").ctx("file", counterStampFile).start();
         ctCommander.checkoutFile(counterStampFile);
         m.ok();
     }
 
     private void applyChanges(final TreeDiff diff, final long syncCounter) throws Exception {
-        final Meter m = taskMeter.sub("applyChanges").m("Apply changes.").start();
+        final Meter m = getMeter().sub("applyChanges").m("Apply changes.").start();
         Meter m2 = null;
 
         try {
@@ -329,7 +320,7 @@ public class ApplyDiffTask implements Callable<Void> {
             try {
                 Files.copy(gitSourceFile.toPath(), ccTargetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (final IOException e) {
-                taskMeter.getLogger().error("Failed to copy file.", e);
+                getMeter().getLogger().error("Failed to copy file.", e);
             }
         }
     }

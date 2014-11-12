@@ -17,6 +17,10 @@ public abstract class MeterCallable<T> implements Callable<T> {
 
     private final Meter meter;
 
+    public MeterCallable(final Meter outerMeter, String name) {
+        this.meter = outerMeter.sub(name);
+    }
+    
     public MeterCallable(final Meter outerMeter, String name, String message) {
         this.meter = outerMeter.sub(name).m(message);
     }
