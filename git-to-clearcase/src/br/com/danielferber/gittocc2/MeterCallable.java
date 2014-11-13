@@ -6,6 +6,7 @@
 package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 
@@ -17,10 +18,18 @@ public abstract class MeterCallable<T> implements Callable<T> {
 
     private final Meter meter;
 
+    public MeterCallable(String name) {
+        this.meter = MeterFactory.getMeter(name);
+    }
+
+    public MeterCallable(String name, String message) {
+        this.meter = MeterFactory.getMeter(name).m(message);
+    }
+
     public MeterCallable(final Meter outerMeter, String name) {
         this.meter = outerMeter.sub(name);
     }
-    
+
     public MeterCallable(final Meter outerMeter, String name, String message) {
         this.meter = outerMeter.sub(name).m(message);
     }
@@ -28,7 +37,7 @@ public abstract class MeterCallable<T> implements Callable<T> {
     protected Meter getMeter() {
         return meter;
     }
-    
+
     protected Logger getLogger() {
         return meter.getLogger();
     }

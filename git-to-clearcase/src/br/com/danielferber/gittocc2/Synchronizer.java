@@ -5,22 +5,13 @@
  */
 package br.com.danielferber.gittocc2;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-
-import joptsimple.OptionException;
-import joptsimple.ValueConversionException;
+import br.com.danielferber.gittocc2.config.CompareConfiguration;
 
 import org.slf4j.Logger;
 
 import br.com.danielferber.gittocc2.config.ConfigException;
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigValidated;
-import br.com.danielferber.gittocc2.config.git.GitConfigPojo;
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.gittocc2.config.git.GitConfigValidated;
+import br.com.danielferber.gittocc2.config.ConfigurationReaderTask;
+import br.com.danielferber.gittocc2.config.SynchronizerConfiguration;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 
 /**
@@ -32,87 +23,28 @@ public class Synchronizer {
     private static final Logger logger = LoggerFactory.getLogger("GitToClearCase");
 
     public static void main(final String[] argv) {
-        final ClearToolConfigSource nonValidatedClearToolConfig;
-        final GitConfigSource nonValidateGitConfig;
-        final boolean compareOnly;
-        final File compareRoot;
-       
+        final SynchronizerConfiguration configuration;
         try {
-            GitConfigPojo gitConfigDefault = createDefaultGitConfig();
-            ClearToolConfigPojo clearToolConfigDefault = createDefaultClearToolConfig();
-
-            final CommandLine cl = new CommandLine(argv, gitConfigDefault, clearToolConfigDefault);
-            nonValidatedClearToolConfig = cl.getClearToolConfig();
-            nonValidateGitConfig = cl.getGitConfig();
-            compareOnly = cl.isCompareOnly();
-            compareRoot = cl.getCompareRoot();
-        } catch (final ValueConversionException | OptionException e) {
-            logger.error("Incorrect command line arguments: {} ", e.getMessage());
+            configuration = new ConfigurationReaderTask(argv).call();
+        } catch (ConfigException e) {
+            logger.error(e.getMessage());  
+            return;
+        } catch (Exception e) {
+            logger.error("Failed to execute configuration reader task.", e);      
             return;
         }
         
-        if (nonValidateGitConfig == null || nonValidatedClearToolConfig == null) {
-            try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
-                CommandLine.printHelp(ps);
-            } catch (final IOException ex) {
-                logger.error("Failed to print command line help.", ex);
-            }
-            return;
-        }
-        
-        if (logger.isInfoEnabled()) {
-            try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
-                ps.println("Infer changes from: " + (compareOnly ? "file by file comparison" : "GIT history"));
-                if (compareOnly) {
-                    ps.println(" - Compare root: " + compareRoot);
-                }
-
-                ClearToolConfigSource.Utils.printConfig(ps, nonValidatedClearToolConfig);
-                GitConfigSource.Utils.printConfig(ps, nonValidateGitConfig);
-                ps.close();
-            }
-        }
-
-        final ClearToolConfigValidated cleartoolConfig;
-        final GitConfigValidated gitConfig;
-
-        try {
-            cleartoolConfig = new ClearToolConfigValidated(nonValidatedClearToolConfig);
-            cleartoolConfig.validateAll();
-            gitConfig = new GitConfigValidated(nonValidateGitConfig);
-            gitConfig.validateAll();
-        } catch (final ConfigException e) {
-            logger.error("Incorrent environment configuration: {}", e.getMessage());
-            return;
-        }
-
-        final SynchronizeTask task = new SynchronizeTask(cleartoolConfig, gitConfig, compareOnly, compareRoot);
+        final SynchronizeTask task = new SynchronizeTask(
+                configuration.getClearToolConfig(),
+                configuration.getGitConfig(), 
+                configuration instanceof CompareConfiguration,
+                configuration instanceof CompareConfiguration ? ((CompareConfiguration) configuration).getCompareRoot() : null);
         try {
             task.call();
         } catch (final Exception ex) {
-            logger.error("Failed to execute Sync Task.", ex);
+            logger.error("Failed to execute synchronization task.", ex);
         }
     }
 
-    private static GitConfigPojo createDefaultGitConfig() {
-        final GitConfigPojo gitConfigDefault = new GitConfigPojo();
-        gitConfigDefault.setApplyDefaultGitConfig(false);
-        gitConfigDefault.setCleanLocalGitRepository(false);
-        gitConfigDefault.setFastForwardLocalGitRepository(false);
-        gitConfigDefault.setFetchRemoteGitRepository(false);
-        gitConfigDefault.setResetLocalGitRepository(false);
-        return gitConfigDefault;
-    }
-
-    private static ClearToolConfigPojo createDefaultClearToolConfig() {
-        final ClearToolConfigPojo clearToolConfigDefault = new ClearToolConfigPojo();
-        clearToolConfigDefault.setUseCommitStampFile(false);
-        clearToolConfigDefault.setUseCounterStampFile(false);
-        clearToolConfigDefault.setCommitStampFile(new File("sync-commit-stamp.txt"));
-        clearToolConfigDefault.setCounterStampFile(new File("sync-counter-stamp.txt"));
-        clearToolConfigDefault.setUseActivity(false);
-        clearToolConfigDefault.setUpdateVobRoot(false);
-        clearToolConfigDefault.setCheckForgottenCheckout(false);
-        return clearToolConfigDefault;
-    }
+ 
 }

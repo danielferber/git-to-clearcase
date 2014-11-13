@@ -1,5 +1,6 @@
 package br.com.danielferber.gittocc2.config.clearcase;
 
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,12 +14,20 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
 
     private final List<ClearToolConfigSource> sources;
 
+    public ClearToolConfigChain(final List<ClearToolConfigSource> sources) {
+        this.sources = new ArrayList<>(sources);
+    }
+
     public ClearToolConfigChain(final ClearToolConfigSource... sources) {
         this.sources = new ArrayList<>(Arrays.asList(sources));
     }
 
-    public void add(ClearToolConfigSource source) {
-        this.add(source);
+    public void addHighPriority(ClearToolConfigSource source) {
+        this.sources.add(0, source);
+    }
+
+    public void addLowPriority(ClearToolConfigSource source) {
+        this.sources.add(source);
     }
 
     @Override

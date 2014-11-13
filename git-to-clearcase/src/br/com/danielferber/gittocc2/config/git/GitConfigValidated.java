@@ -18,7 +18,7 @@ public class GitConfigValidated implements GitConfigSource {
 
     @Override
     public Boolean getCleanLocalGitRepository() {
-         if (wrapped.getCleanLocalGitRepository() == null) {
+        if (wrapped.getCleanLocalGitRepository() == null) {
             throw new ConfigException("Clean local git repository: missing value.");
         }
         return wrapped.getCleanLocalGitRepository();
@@ -26,7 +26,7 @@ public class GitConfigValidated implements GitConfigSource {
 
     @Override
     public Boolean getFastForwardLocalGitRepository() {
-         if (wrapped.getFastForwardLocalGitRepository() == null) {
+        if (wrapped.getFastForwardLocalGitRepository() == null) {
             throw new ConfigException("Fast forward local git repository: missing value.");
         }
         return wrapped.getFastForwardLocalGitRepository();
@@ -34,7 +34,7 @@ public class GitConfigValidated implements GitConfigSource {
 
     @Override
     public Boolean getFetchRemoteGitRepository() {
-         if (wrapped.getFetchRemoteGitRepository() == null) {
+        if (wrapped.getFetchRemoteGitRepository() == null) {
             throw new ConfigException("Fetch remote git repository: missing value.");
         }
         return wrapped.getFetchRemoteGitRepository();
@@ -93,14 +93,13 @@ public class GitConfigValidated implements GitConfigSource {
         return wrapped.getApplyDefaultGitConfig();
     }
 
-	public void validateAll() {
-		getApplyDefaultGitConfig();
-		getCleanLocalGitRepository();
-		getFastForwardLocalGitRepository();
-		getFetchRemoteGitRepository();
-		getGitExec();
-		getRepositoryDir();
-		getResetLocalGitRepository();
-
-	}
+    public void validateAll() {
+        getApplyDefaultGitConfig();
+        getCleanLocalGitRepository();
+        getFastForwardLocalGitRepository();
+        getFetchRemoteGitRepository();
+        getGitExec();
+        getRepositoryDir();
+        getResetLocalGitRepository();
+    }
 }

@@ -13,14 +13,22 @@ public class GitConfigChain implements GitConfigSource {
 
     private final List<GitConfigSource> sources;
 
+    public GitConfigChain(List<GitConfigSource> sources) {
+        this.sources = new ArrayList<>(sources);
+    }
+    
     public GitConfigChain(final GitConfigSource... sources) {
         this.sources = new ArrayList<>(Arrays.asList(sources));
     }
 
-    public void add(GitConfigSource source) {
-        this.add(source);
+    public void addHighPriority(GitConfigSource source) {
+        this.sources.add(0, source);
     }
-    
+
+    public void addLowPriority(GitConfigSource source) {
+        this.sources.add(source);
+    }
+
     @Override
     public Boolean getCleanLocalGitRepository() {
         for (GitConfigSource config : sources) {
