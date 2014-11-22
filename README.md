@@ -3,7 +3,7 @@ git-to-clearcase
 
 A simple Java command line application that reproduces GIT commits on a Clearcase UCM view.
 
-# Usage
+## Usage
 
 git-to-clearcase is very simple to run. It suposes that you have
  - git command line executable installed somewhere
@@ -15,16 +15,16 @@ then just need two more pieces of information:
 
 Then, just call the script
 
-`java -jar git-to-clearcase-1.2 --git c:\cmd\git\git.exe --repo c:\git\proj-repository --ct c:\cmd\clearcase\bin\cleartool.exe --view c:\ccviews\project\source´
+`java -jar git-to-clearcase-1.2 --git c:\cmd\git\git.exe --repo c:\git\proj-repository --ct c:\cmd\clearcase\bin\cleartool.exe --view c:\ccviews\project\source`
 
-Sure, there are further command line arguments. Call `java -jar git-to-clearcase-1.2 --help´ to learn more.
+Sure, there are further command line arguments. Call `java -jar git-to-clearcase-1.2 --help` to learn more.
 
-# If everything fails
+## If everything fails
 
 Experience has shown that cleartool calls may fail arbitrarely. If repository and view get out of synch, just fix the affected directory by calling.
 
-`java -jar git-to-clearcase-1.2 --git c:\cmd\git\git.exe --repo c:\git\proj-repository --ct c:\cmd\clearcase\bin\cleartool.exe --view c:\ccviews\project\source --compare subdirectory´
+`java -jar git-to-clearcase-1.2 --git c:\cmd\git\git.exe --repo c:\git\proj-repository --ct c:\cmd\clearcase\bin\cleartool.exe --view c:\ccviews\project\source --compare subdirectory`
 
-# Notes
- - this requits does not support CCRC views
+## Notes
+ - CCRC are not supported 
 
