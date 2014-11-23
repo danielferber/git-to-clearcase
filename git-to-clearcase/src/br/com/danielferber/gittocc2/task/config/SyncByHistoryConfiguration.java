@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task.config;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.gittocc2.config.git.GitConfigSource;
@@ -13,14 +13,14 @@ import java.io.PrintStream;
  *
  * @author Daniel Felix Ferber
  */
-public class ReplayChangesConfiguration extends SynchronizerConfiguration {
-    public ReplayChangesConfiguration(GitConfigSource gitConfig, ClearToolConfigSource clearToolConfig) {
+public class SyncByHistoryConfiguration extends SyncStrategyConfiguration {
+    public SyncByHistoryConfiguration(GitConfigSource gitConfig, ClearToolConfigSource clearToolConfig) {
         super(gitConfig, clearToolConfig);
     }
 
     @Override
     protected void writeSpecificPropertiesToLog(PrintStream ps) {
-        ps.println("Infer changes from: GIT history");
+        ps.println("Synchronization strategy: GIT history");
     }
     
     

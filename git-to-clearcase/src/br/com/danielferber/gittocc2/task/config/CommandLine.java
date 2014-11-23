@@ -1,16 +1,17 @@
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.gittocc2.config.git.GitConfigPojo;
 import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 /**
  *
@@ -38,8 +39,12 @@ class CommandLine {
     final static OptionSpec<Long> ccOverriddenSyncCounterOpt = parser.accepts("counter", "Assume given counter and ignore counter stamp file.").withRequiredArg().ofType(Long.class);
     final static OptionSpec<String> ccOverriddenSyncFromCommitOpt = parser.accepts("commit", "Assume given commit and ignore commit stamp file.").withRequiredArg().ofType(String.class);
 
-    public static void printHelp(final PrintStream ps) throws IOException {
-        parser.printHelpOn(ps);
+    public static void printHelp(final PrintStream ps) {
+        try {
+            parser.printHelpOn(ps);
+        } catch (IOException ex) { 
+            Logger.getLogger(CommandLine.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     final OptionSet options;

@@ -14,7 +14,6 @@ public abstract class LineSplittingWriter extends Writer {
 
     private final List<Exception> parseExceptions = new ArrayList<>();
     private StringBuilder sb = new StringBuilder();
-    private int end = 0;
 
     public LineSplittingWriter() {
         super();

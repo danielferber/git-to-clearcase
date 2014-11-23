@@ -4,15 +4,6 @@
  */
 package br.com.danielferber.gittocc2;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.gittocc2.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
@@ -20,8 +11,16 @@ import br.com.danielferber.gittocc2.process.LineSplittingWriter;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Executes ClearTool.exe commands and keeps track of checkedout files.
@@ -538,7 +537,7 @@ public class ClearToolCommander {
     /**
      * Update the entire vob view directory.
      */
-    void updateVobViewDir() {
+    public void updateVobViewDir() {
         final Meter m = taskMeter.sub("updateVobViewDir").start();
         pb.reset("updateVob").command("update").argument("-force").create().waitFor();
         m.ok();

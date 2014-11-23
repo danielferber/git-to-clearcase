@@ -1,5 +1,8 @@
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,14 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang3.text.StrSubstitutor;
-
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  * Task that applies a set of changes on the ClearCase Vob view. The changes are
@@ -36,8 +32,8 @@ public class ApplyDiffTask extends MeterCallable<Void> {
     private final String syncToCommit;
 
     ApplyDiffTask(final ClearToolConfigSource environmentConfig, final GitConfigSource gitConfig, final ClearToolCommander ctCommander,
-            final TreeDiff gitTreeDiff, final String syncToCommit, final long syncCounter, final Meter outerMeter) {
-        super(outerMeter, "ApplyDiff");
+            final TreeDiff gitTreeDiff, final String syncToCommit, final long syncCounter) {
+        super("ApplyDiff");
         this.cleartoolConfig = environmentConfig;
         this.gitConfig = gitConfig;
         this.ctCommander = ctCommander;

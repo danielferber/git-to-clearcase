@@ -1,9 +1,10 @@
-package br.com.danielferber.gittocc2;
+package br.com.danielferber.gittocc2.task;
 
-import java.io.File;
-
+import br.com.danielferber.gittocc2.ClearToolCommander;
+import br.com.danielferber.gittocc2.MeterCallable;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import java.io.File;
 
 /**
  * Updates the ClearCase VOB view directory. Depending on the ClearTool
@@ -16,8 +17,8 @@ public class UpdateVobDirectoryTask extends MeterCallable<Void> {
     private final ClearToolConfigSource cleartoolConfig;
     private final ClearToolCommander ctCommander;
 
-    public UpdateVobDirectoryTask(final ClearToolConfigSource environmentConfig, final ClearToolCommander ctCommander, final Meter outerMeter) {
-        super(outerMeter, "UpdateVobDirectory", "Update vob view directory.");
+    public UpdateVobDirectoryTask(final ClearToolConfigSource environmentConfig, final ClearToolCommander ctCommander) {
+        super("UpdateVobDirectory", "Update vob view directory.");
         this.cleartoolConfig = environmentConfig;
         this.ctCommander = ctCommander;
     }

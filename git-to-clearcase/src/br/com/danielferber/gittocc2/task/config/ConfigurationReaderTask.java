@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task.config;
 
 import br.com.danielferber.gittocc2.MeterCallable;
+import br.com.danielferber.gittocc2.config.ConfigException;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigChain;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigProperties;
@@ -27,7 +28,7 @@ import joptsimple.ValueConversionException;
  *
  * @author Daniel Felix Ferber
  */
-public class ConfigurationReaderTask extends MeterCallable<SynchronizerConfiguration> {
+public class ConfigurationReaderTask extends MeterCallable<SyncStrategyConfiguration> {
 
     private final String[] arguments;
 
@@ -37,7 +38,7 @@ public class ConfigurationReaderTask extends MeterCallable<SynchronizerConfigura
     }
 
     @Override
-    protected SynchronizerConfiguration meteredCall() throws Exception {
+    protected SyncStrategyConfiguration meteredCall() throws ConfigException {
         final CommandLine commandLine;
         try {
             commandLine = new CommandLine(arguments);
@@ -74,32 +75,32 @@ public class ConfigurationReaderTask extends MeterCallable<SynchronizerConfigura
         ClearToolConfigValidated clearToolConfigValidated = new ClearToolConfigValidated(clearToolConfig);
         
         if (commandLine.isCompareOnly()) {
-            return new CompareConfiguration(gitConfigValidated, clearToolConfigValidated, commandLine.getCompareRoot());
+            return new SyncByCompareConfiguration(gitConfigValidated, clearToolConfigValidated, commandLine.getCompareRoot());
         } else {
-            return new ReplayChangesConfiguration(gitConfigValidated, clearToolConfigValidated);
+            return new SyncByHistoryConfiguration(gitConfigValidated, clearToolConfigValidated);
 
         }
     }
 
     private static GitConfigPojo createDefaultGitConfig() {
         final GitConfigPojo gitConfigDefault = new GitConfigPojo();
-        gitConfigDefault.setApplyDefaultGitConfig(false);
-        gitConfigDefault.setCleanLocalGitRepository(false);
-        gitConfigDefault.setFastForwardLocalGitRepository(false);
-        gitConfigDefault.setFetchRemoteGitRepository(false);
-        gitConfigDefault.setResetLocalGitRepository(false);
+        gitConfigDefault.setApplyDefaultGitConfig(Boolean.FALSE);
+        gitConfigDefault.setCleanLocalGitRepository(Boolean.FALSE);
+        gitConfigDefault.setFastForwardLocalGitRepository(Boolean.FALSE);
+        gitConfigDefault.setFetchRemoteGitRepository(Boolean.FALSE);
+        gitConfigDefault.setResetLocalGitRepository(Boolean.FALSE);
         return gitConfigDefault;
     }
 
     private static ClearToolConfigPojo createDefaultClearToolConfig() {
         final ClearToolConfigPojo clearToolConfigDefault = new ClearToolConfigPojo();
-        clearToolConfigDefault.setUseCommitStampFile(false);
-        clearToolConfigDefault.setUseCounterStampFile(false);
+        clearToolConfigDefault.setUseCommitStampFile(Boolean.FALSE);
+        clearToolConfigDefault.setUseCounterStampFile(Boolean.FALSE);
         clearToolConfigDefault.setCommitStampFile(new File("sync-commit-stamp.txt"));
         clearToolConfigDefault.setCounterStampFile(new File("sync-counter-stamp.txt"));
-        clearToolConfigDefault.setUseActivity(false);
-        clearToolConfigDefault.setUpdateVobRoot(false);
-        clearToolConfigDefault.setCheckForgottenCheckout(false);
+        clearToolConfigDefault.setUseActivity(Boolean.FALSE);
+        clearToolConfigDefault.setUpdateVobRoot(Boolean.FALSE);
+        clearToolConfigDefault.setCheckForgottenCheckout(Boolean.FALSE);
         return clearToolConfigDefault;
     }
 

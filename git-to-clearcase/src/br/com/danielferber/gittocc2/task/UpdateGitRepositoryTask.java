@@ -1,10 +1,9 @@
-package br.com.danielferber.gittocc2;
+package br.com.danielferber.gittocc2.task;
 
-import java.util.concurrent.Callable;
-
+import br.com.danielferber.gittocc2.GitCommander;
+import br.com.danielferber.gittocc2.MeterCallable;
 import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  * Updates the GIT repository directory. The Git configuration may require
@@ -13,13 +12,13 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
  *
  * @author Daniel Felix Ferber
  */
-class UpdateGitRepositoryTask extends MeterCallable<Void> {
+public class UpdateGitRepositoryTask extends MeterCallable<Void> {
 
     private final GitConfigSource gitConfig;
     private final GitCommander gitCommander;
 
-    UpdateGitRepositoryTask(final GitConfigSource environmentConfig, final GitCommander ctCommander, final Meter outerMeter) {
-        super(outerMeter, "UpdateGitRepositoryTask", "Update Git Repository.");
+    public UpdateGitRepositoryTask(final GitConfigSource environmentConfig, final GitCommander ctCommander) {
+        super("UpdateGitRepositoryTask", "Update Git Repository.");
         this.gitConfig = environmentConfig;
         this.gitCommander = ctCommander;
     }

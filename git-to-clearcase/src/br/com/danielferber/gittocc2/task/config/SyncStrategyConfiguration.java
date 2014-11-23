@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task.config;
 
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigValidated;
@@ -14,15 +14,16 @@ import java.io.PrintStream;
 import org.slf4j.Logger;
 
 /**
+ * Abstract class with configuration shared by all synchronize strategies.
  *
  * @author Daniel Felix Ferber
  */
-public abstract class SynchronizerConfiguration {
+public abstract class SyncStrategyConfiguration {
 
     final GitConfigSource gitConfig;
     final ClearToolConfigSource clearToolConfig;
 
-    public SynchronizerConfiguration(GitConfigSource gitConfig, ClearToolConfigSource clearToolConfig) {
+    public SyncStrategyConfiguration(GitConfigSource gitConfig, ClearToolConfigSource clearToolConfig) {
         this.gitConfig = gitConfig;
         this.clearToolConfig = clearToolConfig;
     }

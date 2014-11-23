@@ -4,6 +4,13 @@
  */
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import br.com.danielferber.gittocc2.process.CommandLineProcess;
+import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
+import br.com.danielferber.gittocc2.process.LineSplittingWriter;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -12,19 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.gittocc2.process.CommandLineProcess;
-import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
-import br.com.danielferber.gittocc2.process.LineSplittingWriter;
-import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
-
 /**
  *
  * @author X7WS
  */
-class GitCommander {
+public class GitCommander {
 
     final CommandLineProcessBuilder pb;
     final Meter meter = MeterFactory.getMeter("GitCommander");

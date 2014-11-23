@@ -1,8 +1,5 @@
 package br.com.danielferber.gittocc2;
 
-import java.io.File;
-import java.util.concurrent.Callable;
-
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
@@ -20,8 +17,8 @@ public class CheckVobFinalSanityTask extends MeterCallable<Void> {
     private final ClearToolConfigSource cleartoolConfig;
     private final ClearToolCommander ctCommander;
 
-    public CheckVobFinalSanityTask(final ClearToolConfigSource environmentConfig, final ClearToolCommander ctCommander, final Meter outerMeter) {
-        super(outerMeter, "CheckVobFinalSanity", "Check VOB final sanity.");
+    public CheckVobFinalSanityTask(final ClearToolConfigSource environmentConfig, final ClearToolCommander ctCommander) {
+        super("CheckVobFinalSanity", "Check VOB final sanity.");
         this.cleartoolConfig = environmentConfig;
         this.ctCommander = ctCommander;
     }

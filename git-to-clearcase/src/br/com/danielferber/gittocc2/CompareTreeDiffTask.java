@@ -15,10 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
 
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  *
@@ -30,8 +28,8 @@ class CompareTreeDiffTask extends MeterCallable<TreeDiff> {
     private final File clearCaseRootDir;
     private final File compareRoot;
 
-    CompareTreeDiffTask(Meter outerMeter, final File gitRootDir, final File clearCaseRootDir, final File compareRoot) {
-        super(outerMeter, "GitTreeDiffTask", "Calculate differences from file by file comparison.");
+    CompareTreeDiffTask(final File gitRootDir, final File clearCaseRootDir, final File compareRoot) {
+        super( "GitTreeDiffTask", "Calculate differences from file by file comparison.");
         this.gitRootDir = gitRootDir;
         this.clearCaseRootDir = clearCaseRootDir;
         this.compareRoot = compareRoot;
