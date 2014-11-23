@@ -1,1 +1,8 @@
 *.jar
+/commons-lang
+/jansi
+/jopt-simple
+/junit
+/logback
+/slf4j
+/slf4j-toys
