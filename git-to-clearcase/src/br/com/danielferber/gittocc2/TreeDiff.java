@@ -4,9 +4,12 @@
  */
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
 
 /**
  * Container for file system changes that are supposed to synchronize to
@@ -54,5 +57,58 @@ class TreeDiff {
                 && filesCopiedFrom.isEmpty()
                 && filesCopiedTo.isEmpty()
                 && filesCopiedModified.isEmpty());
+    }
+
+    public void log(Logger logger) {
+        PrintStream ps = LoggerFactory.getInfoPrintStream(logger);
+        ps.println("Dirs to add:");
+        for (File f : dirsAdded) {
+            ps.println(" - " + f.getPath());
+        }
+        ps.close();
+        ps = LoggerFactory.getInfoPrintStream(logger);
+        ps.println("Files to add:");
+        for (File f : filesAdded) {
+            ps.println(" - " + f.getPath());
+        }
+        ps.close();
+        ps = LoggerFactory.getInfoPrintStream(logger);
+        ps.println("Dirs to delete:");
+        for (File f : dirsDeleted) {
+            ps.println(" - " + f.getPath());
+        }
+        ps.close();
+        ps = LoggerFactory.getInfoPrintStream(logger);
+        ps.println("Files to delete:");
+        for (File f : filesDeleted) {
+            ps.println(" - " + f.getPath());
+        }
+        ps.close();
+        ps = LoggerFactory.getInfoPrintStream(logger);
+        ps.println("Files to modified:");
+        for (File f : filesModified) {
+            ps.println(" - " + f.getPath());
+        }
+        ps.close();
+        ps = LoggerFactory.getInfoPrintStream(logger);
+        ps.println("Files moved:");
+        for (int i = 0; i < filesMovedFrom.size(); i++) {
+            ps.println(" - " + filesMovedFrom.get(i).getPath()+" -> "+filesMovedTo.get(i).getPath());
+        }
+        ps.println("Files moved and modified:");
+        for (File f : filesMovedModified) {
+            ps.println(" - " + f.getPath());
+        }
+        ps.close();
+        ps = LoggerFactory.getInfoPrintStream(logger);
+        ps.println("Files copied:");
+        for (int i = 0; i < filesCopiedFrom.size(); i++) {
+            ps.println(" - " + filesCopiedFrom.get(i).getPath()+" -> "+filesCopiedTo.get(i).getPath());
+        }
+        ps.println("Files copied and modified:");
+        for (File f : filesCopiedModified) {
+            ps.println(" - " + f.getPath());
+        }
+        ps.close();
     }
 }

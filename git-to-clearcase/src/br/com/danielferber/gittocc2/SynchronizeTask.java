@@ -90,6 +90,8 @@ class SynchronizeTask implements Callable<Void> {
                 ps.format("Files: added: #%d; removed: #%d; modified: #%d\n", diff.filesAdded.size(), diff.filesDeleted.size(), diff.filesModified.size());
                 ps.format("       copied: #%d; moved: #%d", diff.filesCopiedFrom.size(), diff.filesMovedFrom.size());
                 ps.close();
+                
+                diff.log(meter.getLogger());
 
                 new ApplyDiffTask(cleartoolConfig, gitConfig, ctCommander, diff, syncToCommit, syncCounter, meter).call();
             }

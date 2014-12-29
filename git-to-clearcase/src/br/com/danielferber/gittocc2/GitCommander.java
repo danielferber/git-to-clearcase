@@ -140,6 +140,11 @@ class GitCommander {
                         dirsDeleted.add(f1);
                     } else if (status == 'A') {
                         dirsAdded.add(f1);
+                    } else if (status == 'R') {
+                        dirsDeleted.add(f1);
+                        dirsAdded.add(f2);
+                    } else if (status == 'C') {
+                        dirsAdded.add(f2);
                     }
                 } else if (isFile) {
                     if (status == 'D') {

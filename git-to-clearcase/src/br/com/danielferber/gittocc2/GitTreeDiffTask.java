@@ -27,7 +27,7 @@ class GitTreeDiffTask implements Callable<TreeDiff> {
     public TreeDiff call() throws Exception {
         meter.start();
 
-        Meter m2 = null;
+        Meter m2;
         try {
             m2 = meter.sub("treeDif").m("Execute tree-diff.").ctx("fromCommit", syncFromCommit).ctx("toCommit", syncToCommit).start();
             final TreeDiff diff = gitCommander.treeDif(syncFromCommit, syncToCommit);

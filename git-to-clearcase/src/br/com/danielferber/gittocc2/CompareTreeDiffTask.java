@@ -1,5 +1,7 @@
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,9 +19,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
-
 /**
  *
  * @author daniel
@@ -35,7 +34,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
         this.gitRootDir = gitRootDir;
         this.clearCaseRootDir = clearCaseRootDir;
         this.compareRoot = compareRoot;
-        this.meter = MeterFactory.getMeter("GitTreeDiffTask").m("Calculate differences from file by file comparison.");
+        this.meter = MeterFactory.getMeter("CompareTreeDiffTask").m("Calculate differences from file by file comparison.");
     }
 
     @Override
@@ -148,6 +147,7 @@ class CompareTreeDiffTask implements Callable<TreeDiff> {
                     new ArrayList<>(filesCopiedTo),
                     new ArrayList<>(filesCopiedModified));
 
+            meter.ok();
         } catch (final Exception e) {
             meter.fail(e);
             throw e;
