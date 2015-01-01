@@ -75,6 +75,7 @@
     </target>
     
     <target name="-pre-compile" depends="download-libs" />
+    
     <target name="-post-jar">
         <basename property="dist.jar.base" file="${dist.jar}" suffix=".jar" />
         <dirname property="dist.jar.dir" file="${dist.jar}" />
