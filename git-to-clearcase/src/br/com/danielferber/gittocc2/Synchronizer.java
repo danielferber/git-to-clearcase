@@ -5,16 +5,17 @@
  */
 package br.com.danielferber.gittocc2;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-
-import joptsimple.OptionException;
-import joptsimple.ValueConversionException;
-
-import org.slf4j.Logger;
-
+import br.com.danielferber.gittocc2.config.ClearCaseActivityConfig;
+import br.com.danielferber.gittocc2.config.ClearCaseFinalizeConfig;
+import br.com.danielferber.gittocc2.config.ClearCasePrepareConfig;
+import br.com.danielferber.gittocc2.config.ClearCaseVobConfig;
+import br.com.danielferber.gittocc2.config.ClearToolConfig;
 import br.com.danielferber.gittocc2.config.ConfigException;
+import br.com.danielferber.gittocc2.config.GitConfig;
+import br.com.danielferber.gittocc2.config.GitFinishConfig;
+import br.com.danielferber.gittocc2.config.GitPrepareConfig;
+import br.com.danielferber.gittocc2.config.GitRepositoryConfig;
+import br.com.danielferber.gittocc2.config.SynchronizationConfig;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigValidated;
@@ -22,6 +23,12 @@ import br.com.danielferber.gittocc2.config.git.GitConfigPojo;
 import br.com.danielferber.gittocc2.config.git.GitConfigSource;
 import br.com.danielferber.gittocc2.config.git.GitConfigValidated;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import joptsimple.OptionException;
+import joptsimple.ValueConversionException;
+import org.slf4j.Logger;
 
 /**
  *
@@ -67,8 +74,16 @@ public class Synchronizer {
                     ps.println(" - Compare root: " + compareRoot);
                 }
 
-                ClearToolConfigSource.Utils.printConfig(ps, nonValidatedClearToolConfig);
-                GitConfigSource.Utils.printConfig(ps, nonValidateGitConfig);
+                ClearToolConfig.printConfig(ps, (ClearToolConfig) nonValidatedClearToolConfig);
+                ClearCaseVobConfig.printConfig(ps, (ClearCaseVobConfig) nonValidatedClearToolConfig);
+                ClearCasePrepareConfig.printConfig(ps, (ClearCasePrepareConfig) nonValidatedClearToolConfig);
+                ClearCaseFinalizeConfig.printConfig(ps, (ClearCaseFinalizeConfig) nonValidatedClearToolConfig);
+                ClearCaseActivityConfig.printConfig(ps, (ClearCaseActivityConfig) nonValidatedClearToolConfig);
+                SynchronizationConfig.printConfig(ps, (SynchronizationConfig) nonValidatedClearToolConfig);
+                GitConfig.printConfig(ps, (GitConfig) nonValidateGitConfig);
+                GitRepositoryConfig.printConfig(ps, (GitRepositoryConfig) nonValidateGitConfig);
+                GitPrepareConfig.printConfig(ps, (GitPrepareConfig) nonValidateGitConfig);
+                GitFinishConfig.printConfig(ps, (GitFinishConfig) nonValidateGitConfig);
                 ps.close();
             }
         }

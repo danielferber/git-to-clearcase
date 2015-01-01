@@ -31,7 +31,7 @@ public class CheckVobFinalSanityTask implements Callable<Void> {
     public Void call() throws Exception {
         taskMeter.start();
         try {
-            if (cleartoolConfig.getCheckForgottenCheckout()) {
+            if (cleartoolConfig.getValidateExistingCheckout()) {
                 findForgottenCheckout();
             }
             taskMeter.ok();

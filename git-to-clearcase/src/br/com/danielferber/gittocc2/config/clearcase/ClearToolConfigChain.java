@@ -143,9 +143,9 @@ public class ClearToolConfigChain extends ClearToolConfigSourceImpl implements C
     }
 
     @Override
-    public Boolean getCheckForgottenCheckout() {
+    public Boolean getValidateExistingCheckout() {
         for (ClearToolConfigSource config : sources) {
-            Boolean value = config.getCheckForgottenCheckout();
+            Boolean value = config.getValidateExistingCheckout();
             if (value != null) {
                 return value;
             }

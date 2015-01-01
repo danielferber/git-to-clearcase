@@ -13,7 +13,8 @@ import java.util.Properties;
  * @author Daniel Felix Ferber
  */
 public class ConfigProperties extends Properties {
-	private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 1L;
 
     public ConfigProperties() {
         super();

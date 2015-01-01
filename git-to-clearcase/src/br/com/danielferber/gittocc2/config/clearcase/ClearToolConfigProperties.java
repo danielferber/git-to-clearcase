@@ -188,7 +188,7 @@ public class ClearToolConfigProperties extends ClearToolConfigSourceImpl impleme
     }
 
     @Override
-    public Boolean getCheckForgottenCheckout() {
+    public Boolean getValidateExistingCheckout() {
         return properties.getBoolean(PROP_CHECK_CHECKOUT_FORGOTTEN);
     }
 

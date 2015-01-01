@@ -116,11 +116,11 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
     }
 
     @Override
-    public Boolean getCheckForgottenCheckout() {
-        if (wrapped.getCheckForgottenCheckout() == null) {
+    public Boolean getValidateExistingCheckout() {
+        if (wrapped.getValidateExistingCheckout() == null) {
             throw new ConfigException("Check forgotten checkouts: missing value.");
         }
-        return wrapped.getCheckForgottenCheckout();
+        return wrapped.getValidateExistingCheckout();
     }
 
     public void validateAll() {
@@ -132,6 +132,6 @@ public class ClearToolConfigValidated extends ClearToolConfigSourceImpl implemen
         getVobViewDirUpdate();
         getCommitStampAbsoluteFile();
         getCounterStampAbsoluteFile();
-        getCheckForgottenCheckout();
+        getValidateExistingCheckout();
     }
 }

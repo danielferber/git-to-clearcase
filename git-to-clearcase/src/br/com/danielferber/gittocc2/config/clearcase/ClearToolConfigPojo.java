@@ -171,7 +171,7 @@ public class ClearToolConfigPojo extends ClearToolConfigSourceImpl implements Cl
     }
 
     @Override
-    public Boolean getCheckForgottenCheckout() {
+    public Boolean getValidateExistingCheckout() {
         return checkCheckoutForgotten;
     }
 
