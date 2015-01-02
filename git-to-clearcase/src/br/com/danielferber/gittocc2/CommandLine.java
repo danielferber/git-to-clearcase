@@ -1,17 +1,6 @@
 package br.com.danielferber.gittocc2;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Properties;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
-import joptsimple.ValueConversionException;
+import br.com.danielferber.gittocc2.config.PropertiesConfigSource;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigChain;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigPojo;
 import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigProperties;
@@ -20,6 +9,17 @@ import br.com.danielferber.gittocc2.config.git.GitConfigChain;
 import br.com.danielferber.gittocc2.config.git.GitConfigPojo;
 import br.com.danielferber.gittocc2.config.git.GitConfigProperties;
 import br.com.danielferber.gittocc2.config.git.GitConfigSource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Properties;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import joptsimple.ValueConversionException;
 
 /**
  *
@@ -27,38 +27,35 @@ import br.com.danielferber.gittocc2.config.git.GitConfigSource;
  */
 class CommandLine {
 
-    final static OptionParser parser = new OptionParser();
-    final static OptionSpec<Void> helpOpt = parser.accepts("help", "Dislay command line instructions.");
-    final static OptionSpec<File> propertyFileOpt = parser.accepts("properties", "Properties file.").withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> compareOpt = parser.accepts("compare", "Compare file by file and ignore git history (slower but safer).").withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> gitExecOpt = parser.accepts("git", "Git executable file.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> gitRepositoryDirOpt = parser.accepts("repo", "Git repository directory.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<Void> gitFastForwardLocalGitRepositoryOpt = parser.accepts("forward", "Before synchronizing, fast forward logal git repository.");
-    final static OptionSpec<Void> gitFetchRemoteGitRepositoryOpt = parser.accepts("fetch", "Before synchronizing, fetch remote commits from default remote git repository.");
-    final static OptionSpec<Void> gitResetLocalGitRepositoryOpt = parser.accepts("reset", "Before synchronizing, reset (hard) local git repository.");
-    final static OptionSpec<Void> gitCleanLocalGitRepositoryOpt = parser.accepts("clean", "Before synchronizing, clean completely local git repository.");
-    final static OptionSpec<Void> gitApplyDefaultGitConfigOpt = parser.accepts("configure", "Before synchronizing, apply default git configuration to repository.");
-    final static OptionSpec<File> ccClearToolExecOpt = parser.accepts("ct", "CleartTool executable file.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<Void> ccVobRootUpdateOpt = parser.accepts("update", "Before synchronizing, update ClearCase VOB view directory.");
-    final static OptionSpec<String> ccActivityOpt = parser.accepts("activity", "Create or resuse ClearCase activity for all synchronized files.").withRequiredArg().ofType(String.class);
-    final static OptionSpec<File> ccCommitStampFileOpt = parser.accepts("commitstamp", "Last synchronization commit stamp file relative to vob directory.").withOptionalArg().ofType(File.class);
-    final static OptionSpec<File> ccCounterStampFileOpt = parser.accepts("counterstamp", "Synchronization counter stamp file relative to vob directory.").withOptionalArg().ofType(File.class);
-    final static OptionSpec<Long> ccOverriddenSyncCounterOpt = parser.accepts("counter", "Assume given counter and ignore counter stamp file.").withRequiredArg().ofType(Long.class);
-    final static OptionSpec<String> ccOverriddenSyncFromCommitOpt = parser.accepts("commit", "Assume given commit and ignore commit stamp file.").withRequiredArg().ofType(String.class);
+    final OptionParser parser = new OptionParser();
+    final OptionSpec<Void> helpOpt = parser.accepts("help", "Dislay command line instructions.");
+    final OptionSpec<File> propertyFileOpt = parser.accepts("properties", "Properties file.").withRequiredArg().ofType(File.class);
+    final OptionSpec<File> compareOpt = parser.accepts("compare", "Compare file by file and ignore git history (slower but safer).").withRequiredArg().ofType(File.class);
+    final OptionSpec<File> gitExecOpt = parser.accepts("git", "Git executable file.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
+    final OptionSpec<File> gitRepositoryDirOpt = parser.accepts("repo", "Git repository directory.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
+    final OptionSpec<Void> gitFastForwardLocalGitRepositoryOpt = parser.accepts("forward", "Before synchronizing, fast forward logal git repository.");
+    final OptionSpec<Void> gitFetchRemoteGitRepositoryOpt = parser.accepts("fetch", "Before synchronizing, fetch remote commits from default remote git repository.");
+    final OptionSpec<Void> gitResetLocalGitRepositoryOpt = parser.accepts("reset", "Before synchronizing, reset (hard) local git repository.");
+    final OptionSpec<Void> gitCleanLocalGitRepositoryOpt = parser.accepts("clean", "Before synchronizing, clean completely local git repository.");
+    final OptionSpec<Void> gitApplyDefaultGitConfigOpt = parser.accepts("configure", "Before synchronizing, apply default git configuration to repository.");
+    final OptionSpec<File> ccClearToolExecOpt = parser.accepts("ct", "CleartTool executable file.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
+    final OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").requiredUnless(propertyFileOpt, helpOpt).withRequiredArg().ofType(File.class);
+    final OptionSpec<Void> ccVobRootUpdateOpt = parser.accepts("update", "Before synchronizing, update ClearCase VOB view directory.");
+    final OptionSpec<String> ccActivityOpt = parser.accepts("activity", "Create or resuse ClearCase activity for all synchronized files.").withRequiredArg().ofType(String.class);
+    final OptionSpec<File> ccCommitStampFileOpt = parser.accepts("commitstamp", "Last synchronization commit stamp file relative to vob directory.").withOptionalArg().ofType(File.class);
+    final OptionSpec<File> ccCounterStampFileOpt = parser.accepts("counterstamp", "Synchronization counter stamp file relative to vob directory.").withOptionalArg().ofType(File.class);
+    final OptionSpec<Long> ccOverriddenSyncCounterOpt = parser.accepts("counter", "Assume given counter and ignore counter stamp file.").withRequiredArg().ofType(Long.class);
+    final OptionSpec<String> ccOverriddenSyncFromCommitOpt = parser.accepts("commit", "Assume given commit and ignore commit stamp file.").withRequiredArg().ofType(String.class);
 
-    static void printHelp(final PrintStream ps) throws IOException {
+    public void printHelp(final PrintStream ps) throws IOException {
         parser.printHelpOn(ps);
     }
-    final OptionSet options;
-    final Properties properties;
-    final GitConfigSource gitConfigDefault;
-    final ClearToolConfigSource clearToolConfigDefault;
 
-    CommandLine(final String[] argv, GitConfigSource gitConfigDefault, ClearToolConfigSource clearToolConfigDefault) {
-        options = parser.parse(argv);
-        this.gitConfigDefault = gitConfigDefault;
-        this.clearToolConfigDefault = clearToolConfigDefault;
+    public Properties parse(final String[] argv) {
+        final OptionSet options = parser.parse(argv);
+        final Properties properties = new Properties();
+        final PropertiesConfigSource config = new PropertiesConfigSource(properties);
+
         final File propertyFile = propertyFileOpt.value(options);
 
         if (propertyFile != null) {
