@@ -14,12 +14,6 @@ import java.io.PrintStream;
  */
 public interface ClearCaseVobConfig {
 
-    public static void printConfig(PrintStream ps, ClearCaseVobConfig config) {
-        ps.println(" * VOB view directory: " + config.getVobViewDir());
-        ps.println("   - commit stamp file " + config.getCommitStampFile());
-        ps.println("   - counter stamp file " + config.getCounterStampFile());
-    }
-
     /**
      * @return Path to the vob view directory.
      */
@@ -52,4 +46,28 @@ public interface ClearCaseVobConfig {
      */
     File getCounterStampAbsoluteFile();
 
+    public static void printConfig(PrintStream ps, ClearCaseVobConfig config) {
+        ps.println(" * VOB view directory: " + config.getVobViewDir());
+        ps.println("   - commit stamp file " + config.getCommitStampFile());
+        ps.println("   - counter stamp file " + config.getCounterStampFile());
+    }
+
+    static void validate(final ClearCaseVobConfig wrapped) {
+        final File dir = wrapped.getVobViewDir();
+        if (dir == null) {
+            throw new ConfigException("Vob view directory: missing property.");
+        }
+        if (!dir.exists()) {
+            throw new ConfigException("Vob view directory: does not exist.");
+        }
+        if (!dir.isDirectory()) {
+            throw new ConfigException("Vob view directory: not a directory.");
+        }
+        if (wrapped.getCommitStampFile() == null) {
+            throw new ConfigException("Commit stamp file name: missing value.");
+        }
+        if (wrapped.getCounterStampFile() == null) {
+            throw new ConfigException("counter stamp file name: missing value.");
+        }
+    }
 }

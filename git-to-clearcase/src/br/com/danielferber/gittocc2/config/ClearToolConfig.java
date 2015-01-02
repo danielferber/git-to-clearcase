@@ -14,10 +14,6 @@ import java.io.PrintStream;
  */
 public interface ClearToolConfig {
 
-    public static void printConfig(PrintStream ps, ClearToolConfig config) {
-        ps.println(" * Executable file: " + config.getClearToolExec());
-    }
-
     /**
      * @return Path to the cleartool executable.
      */
@@ -28,4 +24,24 @@ public interface ClearToolConfig {
      */
     File getClearToolAbsoluteExec();
 
+    public static void printConfig(PrintStream ps, ClearToolConfig config) {
+        ps.println(" * Executable file: " + config.getClearToolExec());
+    }
+
+    static void validate(final ClearToolConfig wrapped) {
+        final File exec = wrapped.getClearToolExec();
+        if (exec == null) {
+            throw new ConfigException("ClearTool executable: missing property.");
+        }
+        if (!exec.exists()) {
+            throw new ConfigException("ClearTool executable: does not exist.");
+        }
+        if (!exec.isFile()) {
+            throw new ConfigException("ClearTool executable: not a file.");
+        }
+        if (!exec.canExecute()) {
+            throw new ConfigException("ClearTool executable: not executable.");
+        }
+
+    }
 }

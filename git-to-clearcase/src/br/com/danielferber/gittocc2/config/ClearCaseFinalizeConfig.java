@@ -13,12 +13,19 @@ import java.io.PrintStream;
  */
 public interface ClearCaseFinalizeConfig {
 
-    public static void printConfig(PrintStream ps, ClearCaseFinalizeConfig config) {
-        ps.println(" * Find forgotten checkouts: " + config.getValidateExistingCheckout());
-    }
-
     /**
      * @return if true, check for pending, forgotten checkouts
      */
     Boolean getValidateExistingCheckout();
+
+    public static void printConfig(PrintStream ps, ClearCaseFinalizeConfig config) {
+        ps.println(" * Find forgotten checkouts: " + config.getValidateExistingCheckout());
+    }
+
+    static void validate(final ClearCaseFinalizeConfig wrapped) {
+        if (wrapped.getValidateExistingCheckout() == null) {
+            throw new ConfigException("Check forgotten checkouts: missing value.");
+        }
+
+    }
 }

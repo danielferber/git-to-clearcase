@@ -13,6 +13,28 @@ import java.io.PrintStream;
  */
 public interface SynchronizationConfig {
 
+    /**
+     * @return If true, read and write the last commit hash from/to a file.
+     */
+    Boolean getUseCommitStampFile();
+
+    /**
+     * @return If true, read and write the last sync counter from/to a file.
+     */
+    Boolean getUseCounterStampFile();
+
+    /**
+     * @return If set, the counter to use instead of value read from counter
+     * stamp file.
+     */
+    Long getOverriddenSyncCounter();
+
+    /**
+     * @return If set, the commit to use instead of value read from commit stamp
+     * file.
+     */
+    String getOverriddenSyncFromCommit();
+
     public static void printConfig(PrintStream ps, SynchronizationConfig config) {
         ps.println("* Synchronization tracking (current state of vob view directory):");
         ps.println("  - Commit hash of last synchronization:");
@@ -41,25 +63,8 @@ public interface SynchronizationConfig {
         }
     }
 
-    /**
-     * @return If true, read and write the last commit hash from/to a file.
-     */
-    Boolean getUseCommitStampFile();
+    static void validate(final SynchronizationConfig wrapped) {
 
-    /**
-     * @return If true, read and write the last sync counter from/to a file.
-     */
-    Boolean getUseCounterStampFile();
+    }
 
-    /**
-     * @return If set, the counter to use instead of value read from counter
-     * stamp file.
-     */
-    Long getOverriddenSyncCounter();
-
-    /**
-     * @return If set, the commit to use instead of value read from commit stamp
-     * file.
-     */
-    String getOverriddenSyncFromCommit();
 }

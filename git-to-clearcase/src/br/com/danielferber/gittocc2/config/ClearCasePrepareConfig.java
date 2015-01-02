@@ -13,12 +13,19 @@ import java.io.PrintStream;
  */
 public interface ClearCasePrepareConfig {
 
-    public static void printConfig(PrintStream ps, ClearCasePrepareConfig config) {
-        ps.println(" * Update vob view directory: " + config.getVobViewDirUpdate());
-    }
-
     /**
      * @return If true, update the entire vob before synchronization.
      */
     Boolean getVobViewDirUpdate();
+
+    public static void printConfig(PrintStream ps, ClearCasePrepareConfig config) {
+        ps.println(" * Update vob view directory: " + config.getVobViewDirUpdate());
+    }
+
+    static void validate(final ClearCasePrepareConfig wrapped) {
+        if (wrapped.getVobViewDirUpdate() == null) {
+            throw new ConfigException("Update VOB view directory: missing value.");
+        }
+
+    }
 }

@@ -13,12 +13,6 @@ import java.io.PrintStream;
  */
 public interface ClearCaseActivityConfig {
 
-    public static void printConfig(PrintStream ps, ClearCaseActivityConfig config) {
-        ps.println(" * Use activity: " + config.getUseActivity());
-        if (config.getUseActivity() != null && config.getUseActivity()) {
-            ps.println("   activity name: " + config.getActivityName());
-        }
-    }
     /**
      * @return If true, reuse or create an activity for file synchronization .
      * If false, reuse the current activity.
@@ -26,8 +20,24 @@ public interface ClearCaseActivityConfig {
     Boolean getUseActivity();
 
     /**
-     * @return If {@link #getUseActivity()} is true, the expected name for
-     * the file synchronization activity.
+     * @return If {@link #getUseActivity()} is true, the expected name for the
+     * file synchronization activity.
      */
     String getActivityName();
+
+    public static void printConfig(PrintStream ps, ClearCaseActivityConfig config) {
+        ps.println(" * Use activity: " + config.getUseActivity());
+        if (config.getUseActivity() != null && config.getUseActivity()) {
+            ps.println("   activity name: " + config.getActivityName());
+        }
+    }
+
+    static void validate(final ClearCaseActivityConfig wrapped) {
+        if (wrapped.getUseActivity() && wrapped.getActivityName() == null) {
+            throw new ConfigException("Sync activity name: missing value.");
+        }
+        if (wrapped.getUseActivity() == null) {
+            throw new ConfigException("Use sync activity: missing value.");
+        }
+    }
 }

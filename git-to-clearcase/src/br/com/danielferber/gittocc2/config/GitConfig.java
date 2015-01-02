@@ -14,10 +14,6 @@ import java.io.PrintStream;
  */
 public interface GitConfig {
 
-    static void printConfig(PrintStream ps, GitConfig config) {
-        ps.println(" * Executable file: " + config.getGitExec());
-    }
-
     /**
      * @return Path to the Git executable.
      */
@@ -27,5 +23,24 @@ public interface GitConfig {
      * @return Calculated absolute path of the Git executable.
      */
 //    File getGitAbsoluteExec();
+    static void printConfig(PrintStream ps, GitConfig config) {
+        ps.println(" * Executable file: " + config.getGitExec());
+    }
+
+    static void validate(final GitConfig config) {
+        final File exec = config.getGitExec();
+        if (exec == null) {
+            throw new ConfigException("Git executable: missing value.");
+        }
+        if (!exec.exists()) {
+            throw new ConfigException("Git executable: does not exist.");
+        }
+        if (!exec.isFile()) {
+            throw new ConfigException("Git executable: not a file.");
+        }
+        if (!exec.canExecute()) {
+            throw new ConfigException("Git executable: not executable.");
+        }
+    }
 
 }

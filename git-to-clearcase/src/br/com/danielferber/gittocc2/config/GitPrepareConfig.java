@@ -13,15 +13,6 @@ import java.io.PrintStream;
  */
 public interface GitPrepareConfig {
 
-    static void printConfig(PrintStream ps, GitPrepareConfig config) {
-        ps.println(" * Git preparation:");
-        ps.println("    - apply default git configuration: " + config.getApplyDefaultGitConfig());
-        ps.println("    - clean repository: " + config.getCleanLocalGitRepository());
-        ps.println("    - reset repository: " + config.getResetLocalGitRepository());
-        ps.println("    - fetch from remote repository: " + config.getFetchRemoteGitRepository());
-        ps.println("    - fast forward repository: " + config.getFastForwardLocalGitRepository());
-    }
-
     Boolean getCleanLocalGitRepository();
 
     Boolean getFastForwardLocalGitRepository();
@@ -32,4 +23,30 @@ public interface GitPrepareConfig {
 
     Boolean getApplyDefaultGitConfig();
 
+    static void printConfig(PrintStream ps, GitPrepareConfig config) {
+        ps.println(" * Git preparation:");
+        ps.println("    - apply default git configuration: " + config.getApplyDefaultGitConfig());
+        ps.println("    - clean repository: " + config.getCleanLocalGitRepository());
+        ps.println("    - reset repository: " + config.getResetLocalGitRepository());
+        ps.println("    - fetch from remote repository: " + config.getFetchRemoteGitRepository());
+        ps.println("    - fast forward repository: " + config.getFastForwardLocalGitRepository());
+    }
+
+    static void validate(final GitPrepareConfig config) {
+        if (config.getCleanLocalGitRepository() == null) {
+            throw new ConfigException("Clean local git repository: missing value.");
+        }
+        if (config.getFastForwardLocalGitRepository() == null) {
+            throw new ConfigException("Fast forward local git repository: missing value.");
+        }
+        if (config.getFetchRemoteGitRepository() == null) {
+            throw new ConfigException("Fetch remote git repository: missing value.");
+        }
+        if (config.getResetLocalGitRepository() == null) {
+            throw new ConfigException("Reset local git repository: missing value.");
+        }
+        if (config.getApplyDefaultGitConfig() == null) {
+            throw new ConfigException("Apply default git config: missing value.");
+        }
+    }
 }

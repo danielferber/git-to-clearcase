@@ -16,5 +16,9 @@ public interface GitFinishConfig {
     static void printConfig(PrintStream ps, GitFinishConfig config) {
         // void
     }
-    
+
+    static void validate(final GitFinishConfig config) {
+        // void
+    }
+
 }
