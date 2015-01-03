@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
 import java.io.PrintStream;
 
@@ -27,7 +28,7 @@ public interface GitConfig {
         ps.println(" * Executable file: " + config.getGitExec());
     }
 
-    static void validate(final GitConfig config) {
+    static void validate(final GitConfig config) throws ConfigException {
         final File exec = config.getGitExec();
         if (exec == null) {
             throw new ConfigException("Git executable: missing value.");

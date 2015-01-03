@@ -8,10 +8,10 @@
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>git-to-clearcase-1.2.1</name>
             <source-roots>
-                <root id="src.dir"/>
+                <root id="src.src.dir" name="Código conte"/>
             </source-roots>
             <test-roots>
-                <root id="test.src.dir"/>
+                <root id="test.src.dir" name="Testes"/>
             </test-roots>
         </data>
         <libraries xmlns="http://www.netbeans.org/ns/ant-project-libraries/1">

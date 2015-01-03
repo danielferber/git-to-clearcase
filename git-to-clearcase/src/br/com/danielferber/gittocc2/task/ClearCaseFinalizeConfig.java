@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.PrintStream;
 
 /**
@@ -19,12 +20,13 @@ public interface ClearCaseFinalizeConfig {
     Boolean getValidateExistingCheckout();
 
     public static void printConfig(PrintStream ps, ClearCaseFinalizeConfig config) {
-        ps.println(" * Find forgotten checkouts: " + config.getValidateExistingCheckout());
+        ps.println(" * ClearCase finalization configuration:");
+        ps.println("   - validate existing checkouts: " + config.getValidateExistingCheckout());
     }
 
-    static void validate(final ClearCaseFinalizeConfig wrapped) {
+    static void validate(final ClearCaseFinalizeConfig wrapped) throws ConfigException {
         if (wrapped.getValidateExistingCheckout() == null) {
-            throw new ConfigException("Check forgotten checkouts: missing value.");
+            throw new ConfigException("Validate existing checkouts: missing value.");
         }
 
     }

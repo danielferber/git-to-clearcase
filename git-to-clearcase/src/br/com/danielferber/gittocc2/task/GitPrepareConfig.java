@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.PrintStream;
 
 /**
@@ -24,7 +25,7 @@ public interface GitPrepareConfig {
     Boolean getApplyDefaultGitConfig();
 
     static void printConfig(PrintStream ps, GitPrepareConfig config) {
-        ps.println(" * Git preparation:");
+        ps.println(" * Git preparation configuration:");
         ps.println("    - apply default git configuration: " + config.getApplyDefaultGitConfig());
         ps.println("    - clean repository: " + config.getCleanLocalGitRepository());
         ps.println("    - reset repository: " + config.getResetLocalGitRepository());
@@ -32,7 +33,7 @@ public interface GitPrepareConfig {
         ps.println("    - fast forward repository: " + config.getFastForwardLocalGitRepository());
     }
 
-    static void validate(final GitPrepareConfig config) {
+    static void validate(final GitPrepareConfig config) throws ConfigException {
         if (config.getCleanLocalGitRepository() == null) {
             throw new ConfigException("Clean local git repository: missing value.");
         }

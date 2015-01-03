@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
 import java.io.PrintStream;
 
@@ -46,13 +47,26 @@ public interface ClearCaseVobConfig {
      */
     File getCounterStampAbsoluteFile();
 
+    /**
+     * @return If true, update commit hash file.
+     */
+    Boolean getUpdateCommitStampFile();
+
+    /**
+     * @return If true, update sync counter file.
+     */
+    Boolean getUpdateCounterStampFile();
+
     public static void printConfig(PrintStream ps, ClearCaseVobConfig config) {
-        ps.println(" * VOB view directory: " + config.getVobViewDir());
+        ps.println(" * ClearCase VOB configuration:");
+        ps.println("   - directory: " + config.getVobViewDir());
         ps.println("   - commit stamp file " + config.getCommitStampFile());
         ps.println("   - counter stamp file " + config.getCounterStampFile());
+        ps.println("   - update commit stamp file " + config.getUpdateCommitStampFile());
+        ps.println("   - update counter stamp file " + config.getUpdateCounterStampFile());
     }
 
-    static void validate(final ClearCaseVobConfig wrapped) {
+    static void validate(final ClearCaseVobConfig wrapped) throws ConfigException {
         final File dir = wrapped.getVobViewDir();
         if (dir == null) {
             throw new ConfigException("Vob view directory: missing property.");
@@ -67,7 +81,13 @@ public interface ClearCaseVobConfig {
             throw new ConfigException("Commit stamp file name: missing value.");
         }
         if (wrapped.getCounterStampFile() == null) {
-            throw new ConfigException("counter stamp file name: missing value.");
+            throw new ConfigException("Commit counter stamp file name: missing value.");
+        }
+         if (wrapped.getUpdateCommitStampFile() == null) {
+            throw new ConfigException("Update stamp file name: missing value.");
+        }
+        if (wrapped.getUpdateCounterStampFile() == null) {
+            throw new ConfigException("Update counter  stamp file name: missing value.");
         }
     }
 }

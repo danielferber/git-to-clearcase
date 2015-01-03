@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
 import java.io.PrintStream;
 
@@ -25,21 +26,23 @@ public interface ClearToolConfig {
     File getClearToolAbsoluteExec();
 
     public static void printConfig(PrintStream ps, ClearToolConfig config) {
-        ps.println(" * Executable file: " + config.getClearToolExec());
+        ps.println(" * ClearTool configuration:");
+        ps.println("   - executable file: " + config.getClearToolExec());
     }
 
-    static void validate(final ClearToolConfig wrapped) {
+    static void validate(final ClearToolConfig wrapped) throws ConfigException {
         final File exec = wrapped.getClearToolExec();
         if (exec == null) {
             throw new ConfigException("ClearTool executable: missing property.");
         }
-        if (!exec.exists()) {
+        final File absoluteExec = wrapped.getClearToolAbsoluteExec();
+        if (!absoluteExec.exists()) {
             throw new ConfigException("ClearTool executable: does not exist.");
         }
-        if (!exec.isFile()) {
+        if (!absoluteExec.isFile()) {
             throw new ConfigException("ClearTool executable: not a file.");
         }
-        if (!exec.canExecute()) {
+        if (!absoluteExec.canExecute()) {
             throw new ConfigException("ClearTool executable: not executable.");
         }
 

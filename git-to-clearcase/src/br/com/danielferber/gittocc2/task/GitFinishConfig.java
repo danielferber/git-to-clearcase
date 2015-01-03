@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.config;
+package br.com.danielferber.gittocc2.task;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.PrintStream;
 
 /**
@@ -17,7 +18,7 @@ public interface GitFinishConfig {
         // void
     }
 
-    static void validate(final GitFinishConfig config) {
+    static void validate(final GitFinishConfig config) throws ConfigException {
         // void
     }
 
