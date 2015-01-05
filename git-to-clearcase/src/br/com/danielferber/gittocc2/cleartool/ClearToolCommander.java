@@ -2,9 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2;
+package br.com.danielferber.gittocc2.cleartool;
 
+import br.com.danielferber.gittocc2.process.CommandLineProcess;
+import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
+import br.com.danielferber.gittocc2.process.LineSplittingWriter;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -12,16 +20,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.process.CommandLineProcess;
-import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
-import br.com.danielferber.gittocc2.process.LineSplittingWriter;
-import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Executes ClearTool.exe commands and keeps track of checkedout files.
@@ -631,9 +629,9 @@ public class ClearToolCommander {
      */
     static final Pattern checkoutEntry = Pattern.compile("([^\\s]+)\\s+([^\\s]+)\\s+checkout version\\s+\"(.*)\"\\s+from\\s+(.*)");
     public static class LsCheckoutItem {
-        String date;
-        String user;
-        File file;
+        public String date;
+        public String user;
+        public File file;
     }
 
     /**

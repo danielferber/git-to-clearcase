@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import joptsimple.OptionException;
 import joptsimple.ValueConversionException;
+import org.fusesource.jansi.AnsiConsole;
 import org.slf4j.Logger;
 
 /**
@@ -25,6 +26,7 @@ public class GitToCC {
     public static final Logger logger = LoggerFactory.getLogger("GitToCC");
 
     public static void main(final String[] argv) {
+        AnsiConsole.systemInstall();
         final ConfigContainer container;
         try {
             container = ConfigFactory.parse(argv);

@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2;
+package br.com.danielferber.gittocc2.task;
 
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 
@@ -17,14 +18,30 @@ public abstract class MeterCallable<T> implements Callable<T> {
 
     private final Meter meter;
 
-    public MeterCallable(final Meter outerMeter, String name, String message) {
-        this.meter = outerMeter.sub(name).m(message);
+    public MeterCallable(String message) {
+        this.meter = MeterFactory.getMeter(extractMeterName()).m(message);
+    }
+
+    public MeterCallable(final Meter outerMeter, String message) {
+        this.meter = outerMeter.sub(extractMeterName()).m(message);
+    }
+
+    public MeterCallable(final Meter outerMeter, String meterName, String message) {
+        this.meter = outerMeter.sub(meterName).m(message);
+    }
+
+    private String extractMeterName() {
+        final String name = this.getClass().getSimpleName();
+        if (name.endsWith("Task")) {
+            return name.substring(1, name.length() - 4);
+        }
+        return name;
     }
 
     protected Meter getMeter() {
         return meter;
     }
-    
+
     protected Logger getLogger() {
         return meter.getLogger();
     }
