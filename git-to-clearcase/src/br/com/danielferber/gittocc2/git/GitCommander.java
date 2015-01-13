@@ -2,8 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2;
+package br.com.danielferber.gittocc2.git;
 
+import br.com.danielferber.gittocc2.process.CommandLineProcess;
+import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
+import br.com.danielferber.gittocc2.process.LineSplittingWriter;
+import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,14 +17,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.gittocc2.process.CommandLineProcess;
-import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
-import br.com.danielferber.gittocc2.process.LineSplittingWriter;
-import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
  *
@@ -29,7 +27,7 @@ class GitCommander {
     final CommandLineProcessBuilder pb;
     final Meter meter = MeterFactory.getMeter("GitCommander");
 
-    public GitCommander(final GitConfigSource config) {
+    public GitCommander(final GitConfig config) {
         this.pb = new CommandLineProcessBuilder(config.getRepositoryDir(), config.getGitExec(), LoggerFactory.getLogger("git"));
     }
 

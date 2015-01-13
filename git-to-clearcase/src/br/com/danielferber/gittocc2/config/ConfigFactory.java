@@ -46,7 +46,7 @@ public class ConfigFactory {
     public static void printHelp(PrintStream ps) throws IOException {
         parser.printHelpOn(ps);
     }
-    
+
     public static ConfigContainer parse(final String[] argv) {
 
         final OptionSet options = parser.parse(argv);
@@ -88,22 +88,22 @@ public class ConfigFactory {
         }
 
         if (options.hasArgument(ccCommitStampFileOpt)) {
-            config.getClearCaseVobBean().setCommitStampFile(options.valueOf(ccCommitStampFileOpt));
+            config.getClearCaseStampFileBean().setCommitStampFile(options.valueOf(ccCommitStampFileOpt));
         }
         if (options.hasArgument(ccCounterStampFileOpt)) {
-            config.getClearCaseVobBean().setCounterStampFile(options.valueOf(ccCounterStampFileOpt));
+            config.getClearCaseStampFileBean().setCounterStampFile(options.valueOf(ccCounterStampFileOpt));
         }
         if (options.hasArgument(ccVobViewDirOpt)) {
-            config.getClearCaseVobBean().setVobViewDir(options.valueOf(ccVobViewDirOpt));
+            config.getClearToolBean().setVobViewDir(options.valueOf(ccVobViewDirOpt));
         }
         if (options.hasArgument(ccVobViewDirOpt)) {
-            config.getClearCaseVobBean().setVobViewDir(options.valueOf(ccVobViewDirOpt));
+            config.getClearToolBean().setVobViewDir(options.valueOf(ccVobViewDirOpt));
         }
         if (options.hasArgument(ccNoUpdateCommitStampFileOpt)) {
-            config.getClearCaseVobBean().setUpdateCommitStampFile(Boolean.FALSE);
+            config.getClearCaseStampFileBean().setUpdateCommitStampFile(Boolean.FALSE);
         }
         if (options.hasArgument(ccNoUpdateCounterStampFileOpt)) {
-            config.getClearCaseVobBean().setUpdateCounterStampFile(Boolean.FALSE);
+            config.getClearCaseStampFileBean().setUpdateCounterStampFile(Boolean.FALSE);
         }
 
         if (options.hasArgument(ccClearToolExecOpt)) {
@@ -131,7 +131,20 @@ public class ConfigFactory {
         }
 
         if (options.hasArgument(gitRepositoryDirOpt)) {
-            config.getGitRepositoryBean().setRepositoryDir(options.valueOf(gitRepositoryDirOpt));
+            config.getGitBean().setRepositoryDir(options.valueOf(gitRepositoryDirOpt));
+        }
+
+        if (options.hasArgument(syncOverriddenCounterOpt)) {
+            config.getClearCaseStampFileBean().setOverriddenCounterStamp(options.valueOf(syncOverriddenCounterOpt));
+            config.getClearCaseStampFileBean().setUseOverriddenCounterStamp(Boolean.TRUE);
+        } else {
+            config.getClearCaseStampFileBean().setUseOverriddenCounterStamp(Boolean.FALSE);
+        }
+        if (options.hasArgument(syncOverriddenCommitOpt)) {
+            config.getClearCaseStampFileBean().setOverriddenCommitStamp(options.valueOf(syncOverriddenCommitOpt));
+            config.getClearCaseStampFileBean().setUseOverriddenCommitStamp(Boolean.TRUE);
+        } else {
+            config.getClearCaseStampFileBean().setUseOverriddenCommitStamp(Boolean.FALSE);
         }
 
         if (options.hasArgument(compareOpt)) {
@@ -141,18 +154,7 @@ public class ConfigFactory {
         }
 
         SynchronizationConfigContainer containter = new SynchronizationConfigContainer(properties);
-        if (options.hasArgument(syncOverriddenCounterOpt)) {
-            containter.getSynchronizationBean().setOverriddenCounterStamp(options.valueOf(syncOverriddenCounterOpt));
-            containter.getSynchronizationBean().setUseOverriddenCounterStamp(Boolean.TRUE);
-        } else {
-            containter.getSynchronizationBean().setUseOverriddenCounterStamp(Boolean.FALSE);
-        }
-        if (options.hasArgument(syncOverriddenCommitOpt)) {
-            containter.getSynchronizationBean().setOverriddenCommitStamp(options.valueOf(syncOverriddenCommitOpt));
-            containter.getSynchronizationBean().setUseOverriddenCommitStamp(Boolean.TRUE);
-        } else {
-            containter.getSynchronizationBean().setUseOverriddenCommitStamp(Boolean.FALSE);
-        }
+
         return containter;
     }
 
@@ -164,8 +166,8 @@ public class ConfigFactory {
         config.getGitPrepareBean().setFastForwardLocalGitRepository(Boolean.FALSE);
         config.getGitPrepareBean().setFetchRemoteGitRepository(Boolean.FALSE);
         config.getGitPrepareBean().setResetLocalGitRepository(Boolean.FALSE);
-        config.getClearCaseVobBean().setCommitStampFile(new File("sync-commit-stamp.txt"));
-        config.getClearCaseVobBean().setCounterStampFile(new File("sync-counter-stamp.txt"));
+        config.getClearCaseStampFileBean().setCommitStampFile(new File("sync-commit-stamp.txt"));
+        config.getClearCaseStampFileBean().setCounterStampFile(new File("sync-counter-stamp.txt"));
         config.getClearCaseActivityBean().setCreateActivity(Boolean.FALSE);
         config.getClearCasePrepareBean().setUpdateVobViewDir(Boolean.FALSE);
         config.getClearCaseFinalizeBean().setValidateExistingCheckout(Boolean.FALSE);

@@ -21,11 +21,12 @@ import org.slf4j.Logger;
  *
  * @author Daniel Felix Ferber
  */
-public class GitToCC {
+public class Sync implements Runnable {
 
-    public static final Logger logger = LoggerFactory.getLogger("GitToCC");
+    public static final Logger logger = LoggerFactory.getLogger(Sync.class.getSimpleName());
 
     public static void main(final String[] argv) {
+        
         AnsiConsole.systemInstall();
         final ConfigContainer container;
         try {
@@ -41,7 +42,6 @@ public class GitToCC {
             }
             return;
         }
-
         if (logger.isInfoEnabled()) {
             try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
                 container.printConfig(ps);
@@ -54,5 +54,10 @@ public class GitToCC {
             logger.error("Incorrect configuration: {}", e.getMessage());
             return;
         }
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -25,7 +25,7 @@ public interface ClearCaseActivityConfig {
      * file synchronization activity.
      */
     String getActivityNamePattern();
-
+    
     public static void printConfig(PrintStream ps, ClearCaseActivityConfig config) {
         ps.println(" * ClearCase Activity configuration:");
         final Boolean createActivity = config.getCreateActivity();
