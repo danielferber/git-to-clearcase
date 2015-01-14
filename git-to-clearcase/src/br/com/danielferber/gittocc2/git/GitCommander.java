@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * Commander that executs Git commands by calling the git executable. For convenience, it uses the Git repository dir as
+ * working directory.
  *
- * @author X7WS
+ * @author Daniel Felix Ferber
  */
 class GitCommander {
 

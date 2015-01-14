@@ -8,13 +8,20 @@ package br.com.danielferber.gittocc2.git;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
+ * Batch of Git related tasks executed after synchronization.
  *
  * @author Daniel Felix Ferber
  */
 public class GitFinishTask implements Runnable {
 
+    /**
+     * Config that controlls the task.
+     */
     private final GitFinishConfig config;
-    private final GitCommander gitCommander;
+    /**
+     * Commander that executes git commands.
+     */
+   private final GitCommander gitCommander;
 
     public GitFinishTask(GitFinishConfig config, GitCommander gitCommander) {
         this.config = config;

@@ -12,8 +12,7 @@ import java.util.List;
 import org.slf4j.Logger;
 
 /**
- * Container for file system changes that are supposed to synchronize to
- * ClearCase VOB directory.
+ * Container for file system changes that are supposed to synchronize to ClearCase VOB directory.
  *
  * @author Daniel Felix Ferber
  */
@@ -93,7 +92,7 @@ public class TreeDiff {
         ps = LoggerFactory.getInfoPrintStream(logger);
         ps.println("Files moved:");
         for (int i = 0; i < filesMovedFrom.size(); i++) {
-            ps.println(" - " + filesMovedFrom.get(i).getPath()+" -> "+filesMovedTo.get(i).getPath());
+            ps.println(" - " + filesMovedFrom.get(i).getPath() + " -> " + filesMovedTo.get(i).getPath());
         }
         ps.println("Files moved and modified:");
         for (File f : filesMovedModified) {
@@ -103,7 +102,7 @@ public class TreeDiff {
         ps = LoggerFactory.getInfoPrintStream(logger);
         ps.println("Files copied:");
         for (int i = 0; i < filesCopiedFrom.size(); i++) {
-            ps.println(" - " + filesCopiedFrom.get(i).getPath()+" -> "+filesCopiedTo.get(i).getPath());
+            ps.println(" - " + filesCopiedFrom.get(i).getPath() + " -> " + filesCopiedTo.get(i).getPath());
         }
         ps.println("Files copied and modified:");
         for (File f : filesCopiedModified) {

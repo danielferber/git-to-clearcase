@@ -5,14 +5,14 @@
  */
 package br.com.danielferber.gittocc2.config;
 
-import br.com.danielferber.gittocc2.cleartool.ClearToolConfig;
-import br.com.danielferber.gittocc2.git.GitConfig;
-import br.com.danielferber.gittocc2.task.ClearCaseActivityConfig;
 import br.com.danielferber.gittocc2.cleartool.ClearCaseFinalizeConfig;
 import br.com.danielferber.gittocc2.cleartool.ClearCasePrepareConfig;
-import br.com.danielferber.gittocc2.task.ClearCaseStampFileConfig;
+import br.com.danielferber.gittocc2.cleartool.ClearToolConfig;
+import br.com.danielferber.gittocc2.git.GitConfig;
 import br.com.danielferber.gittocc2.git.GitFinishConfig;
 import br.com.danielferber.gittocc2.git.GitPrepareConfig;
+import br.com.danielferber.gittocc2.task.ClearCaseActivityConfig;
+import br.com.danielferber.gittocc2.task.ClearCaseStampFileConfig;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Properties;
@@ -302,6 +302,12 @@ public class ConfigContainer {
         }
 
         @Override
+        public File getGitAbsoluteExec() {
+            final File exec = this.getGitExec();
+            return exec == null ? null : exec.getAbsoluteFile();
+        }
+        
+        @Override
         public File getRepositoryDir() {
             return properties.getFile(PROP_REPOSITORY_DIR);
         }
@@ -310,6 +316,14 @@ public class ConfigContainer {
             properties.setFile(PROP_REPOSITORY_DIR, dir);
             return this;
         }
+
+        @Override
+        public File getRepositoryAbsoluteDir() {
+            final File dir = this.getRepositoryDir();
+            return dir == null ? null : dir.getAbsoluteFile();
+        }
+        
+        
     }
 
     public class GitFinishBean implements GitFinishConfig {

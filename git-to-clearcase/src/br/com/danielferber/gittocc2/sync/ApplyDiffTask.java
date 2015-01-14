@@ -1,5 +1,10 @@
-package br.com.danielferber.gittocc2;
+package br.com.danielferber.gittocc2.sync;
 
+import br.com.danielferber.gittocc2.cleartool.ClearToolCommander;
+import br.com.danielferber.gittocc2.task.ClearCaseActivityConfig;
+import br.com.danielferber.gittocc2.task.ClearCaseStampFileConfig;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,54 +16,38 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang3.text.StrSubstitutor;
 
-import br.com.danielferber.gittocc2.config.clearcase.ClearToolConfigSource;
-import br.com.danielferber.gittocc2.config.git.GitConfigSource;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
-import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
-
 /**
- * Task that applies a set of changes on the ClearCase Vob view. The changes are
- * given by the TreeDiff object.
+ * Task that applies a set of changes on the ClearCase Vob view. The changes are given by the TreeDiff object.
  *
  * @author daniel
  */
-public class ApplyDiffTask implements Callable<Void> {
+public class ApplyDiffTask implements Runnable {
 
-    private final ClearToolConfigSource cleartoolConfig;
-    private final GitConfigSource gitConfig;
     private final ClearToolCommander ctCommander;
-    private final TreeDiff gitTreeDiff;
-    private final long syncCounter;
-    private final String syncToCommit;
-    private final Meter taskMeter;
+    private final ClearCaseActivityConfig clearCaseActivityConfig;
+    private final ClearCaseStampFileConfig clearCaseStampFileConfig;
+    private final File sourceDir;
 
-    ApplyDiffTask(final ClearToolConfigSource environmentConfig, final GitConfigSource gitConfig, final ClearToolCommander ctCommander,
-            final TreeDiff gitTreeDiff, final String syncToCommit, final long syncCounter, final Meter outerMeter) {
-        this.cleartoolConfig = environmentConfig;
-        this.gitConfig = gitConfig;
+    public ApplyDiffTask(ClearToolCommander ctCommander, ClearCaseActivityConfig clearCaseActivityConfig, ClearCaseStampFileConfig clearCaseStampFileConfig, File sourceDir) {
         this.ctCommander = ctCommander;
-        this.gitTreeDiff = gitTreeDiff;
-        this.syncCounter = syncCounter;
-        this.taskMeter = MeterFactory.getMeter("Apply changes on ClearCase vob view").m(syncToCommit);
-        this.syncToCommit = syncToCommit;
-
+        this.clearCaseActivityConfig = clearCaseActivityConfig;
+        this.clearCaseStampFileConfig = clearCaseStampFileConfig;
+        this.sourceDir = sourceDir;
     }
 
     @Override
-    public Void call() throws Exception {
-        taskMeter.start();
-        try {
+    public void run() {
+        final Meter m = MeterFactory.getMeter("GitPrepare");
+        m.run(() -> {;
             /* Create or reuse activity. */
-            if (cleartoolConfig.getUseActivity()) {
+            if (clearCaseActivityConfig.getCreateActivity()) {
                 applyCommitAcitivity();
             }
 
             /* Always checkout stamp files to prevent concurrent executions of this task. */
-            if (cleartoolConfig.getUseCommitStampFile()) {
+            if (clearCaseStampFileConfig.getUseCommitStampFile()) {
                 checkoutCommitStampFile();
             }
             if (cleartoolConfig.getUseCounterStampFile()) {

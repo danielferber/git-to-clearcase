@@ -9,12 +9,19 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 
 /**
+ * Batch of Git related tasks executed before synchronization.
  *
  * @author Daniel Felix Ferber
  */
 public class GitPrepareTask implements Runnable {
 
+    /**
+     * Config that controlls the task.
+     */
     private final GitPrepareConfig config;
+    /**
+     * Commander that executes git commands.
+     */
     private final GitCommander gitCommander;
 
     public GitPrepareTask(GitPrepareConfig config, GitCommander gitCommander) {
