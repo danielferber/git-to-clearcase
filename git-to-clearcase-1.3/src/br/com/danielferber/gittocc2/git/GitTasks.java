@@ -11,13 +11,16 @@ package br.com.danielferber.gittocc2.git;
  */
 public class GitTasks {
 
-    private final GitCommander commander;
+    private final GitConfig config;
 
-    public GitTasks(GitCommander commander) {
-        this.commander = commander;
+    public GitTasks(GitConfig config) {
+        this.config = config;
+
     }
 
     public class SetUpRepository implements Runnable {
+
+        private final GitCommander commander = new GitCommander(config);
 
         @Override
         public void run() {
@@ -28,6 +31,8 @@ public class GitTasks {
 
     public class Reset implements Runnable {
 
+        private final GitCommander commander = new GitCommander(config);
+
         @Override
         public void run() {
             commander.reset(GitCommander.ResetMode.Hard);
@@ -36,13 +41,28 @@ public class GitTasks {
 
     public class Clean implements Runnable {
 
+        private final GitCommander commander = new GitCommander(config);
+
         @Override
         public void run() {
             commander.clean(true, true);
         }
     }
 
+    public class Pull implements Runnable {
+
+        private final GitCommander commander = new GitCommander(config);
+
+        @Override
+        public void run() {
+            commander.fetch();
+            commander.fastForward();
+        }
+    }
+
     public class Fetch implements Runnable {
+
+        private final GitCommander commander = new GitCommander(config);
 
         @Override
         public void run() {
@@ -51,6 +71,9 @@ public class GitTasks {
     }
 
     public class FastForward implements Runnable {
+
+        private final GitCommander commander = new GitCommander(config);
+
         @Override
         public void run() {
             commander.fastForward();

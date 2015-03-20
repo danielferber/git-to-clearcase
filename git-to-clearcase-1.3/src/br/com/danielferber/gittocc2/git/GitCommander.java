@@ -4,6 +4,7 @@
  */
 package br.com.danielferber.gittocc2.git;
 
+import br.com.danielferber.gittocc2.change.ChangeSet;
 import br.com.danielferber.gittocc2.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.process.LineSplittingWriter;
@@ -133,26 +134,30 @@ public class GitCommander {
         return sb.toString();
     }
 
-    public TreeDiff treeDif(final String fromCommit, final String toCommit) {
+        public ChangeSet treeDif(final String fromCommit, final String toCommit) {
         final CommandLineProcess p = pb.reset("treeDiff").command("diff-tree")
-            .parameter("find-copies", "30%").parameter("find-copies-harder")
-            .parameter("find-renames", "30%").shortParameter("r")
-            .shortParameter("t").parameter("raw").argument(fromCommit).argument(toCommit).create();
+                .parameter("find-copies", "30%").parameter("find-copies-harder")
+                .parameter("find-renames", "30%").shortParameter("r")
+                .shortParameter("t").parameter("raw").argument(fromCommit).argument(toCommit).create();
 
         final List<File> dirsAdded = new ArrayList<>();
         final List<File> dirsDeleted = new ArrayList<>();
 
         final List<File> filesAdded = new ArrayList<>();
         final List<File> filesDeleted = new ArrayList<>();
+        
         final List<File> filesModified = new ArrayList<>();
+        final List<File> filesModifiedSource = new ArrayList<>();
 
         final List<File> filesMovedFrom = new ArrayList<>();
         final List<File> filesMovedTo = new ArrayList<>();
         final List<File> filesMovedModified = new ArrayList<>();
+        final List<File> filesMovedSource = new ArrayList<>();
 
         final List<File> filesCopiedFrom = new ArrayList<>();
         final List<File> filesCopiedTo = new ArrayList<>();
         final List<File> filesCopiedModified = new ArrayList<>();
+        final List<File> filesCopiedSource = new ArrayList<>();
 
         p.addOutWriter(new LineSplittingWriter() {
             @Override
@@ -170,33 +175,43 @@ public class GitCommander {
 
                 if (isDir) {
                     if (status == 'D') {
+                        /* Directory was recustively deleted. */
                         dirsDeleted.add(f1);
                     } else if (status == 'A') {
+                        /* Directory was added. */
                         dirsAdded.add(f1);
                     } else if (status == 'R') {
+                        /* Renamed directory. It is handled as a deleted and added one. Could be enhanced in future. */
                         dirsDeleted.add(f1);
                         dirsAdded.add(f2);
                     } else if (status == 'C') {
+                        /* Copied directory. It is handled as a new one. I am not aware that Clearcase supports copying. */
                         dirsAdded.add(f2);
                     }
                 } else if (isFile) {
                     if (status == 'D') {
+                        /* File was deleted. */
                         filesDeleted.add(f1);
                     } else if (status == 'A') {
+                        /* File was added. */
                         filesAdded.add(f1);
                     } else if (status == 'M') {
+                        /* File was modified. */
                         filesModified.add(f1);
+                        filesModifiedSource.add(f1.getAbsoluteFile());
                     } else if (status == 'R') {
                         filesMovedFrom.add(f1);
                         filesMovedTo.add(f2);
                         if (modified) {
                             filesMovedModified.add(f2);
+                            filesMovedSource.add(f2.getAbsoluteFile());
                         }
                     } else if (status == 'C') {
                         filesCopiedFrom.add(f1);
                         filesCopiedTo.add(f2);
                         if (modified) {
                             filesCopiedModified.add(f2);
+                            filesCopiedSource.add(f2.getAbsoluteFile());
                         }
                     }
                 }
@@ -205,6 +220,6 @@ public class GitCommander {
         p.start();
         p.waitFor();
 
-        return new TreeDiff(dirsAdded, dirsDeleted, filesAdded, filesDeleted, filesModified, filesMovedFrom, filesMovedTo, filesMovedModified, filesCopiedFrom, filesCopiedTo, filesCopiedModified);
+        return new ChangeSet(dirsAdded, dirsDeleted, filesAdded, filesDeleted, filesModified, filesModifiedSource, filesMovedFrom, filesMovedTo, filesMovedModified, filesMovedSource, filesCopiedFrom, filesCopiedTo, filesCopiedModified, filesCopiedSource);
     }
 }

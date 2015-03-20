@@ -1,7 +1,11 @@
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.gittocc2.change.ApplyTask;
+import br.com.danielferber.gittocc2.cc.CCTasks;
+import br.com.danielferber.gittocc2.cc.ClearToolConfigProperties;
+import br.com.danielferber.gittocc2.change.ChangeContext;
+import br.com.danielferber.gittocc2.change.CompareTask;
 import br.com.danielferber.gittocc2.config.ConfigException;
-import br.com.danielferber.gittocc2.git.GitCommander;
 import br.com.danielferber.gittocc2.git.GitConfigProperties;
 import br.com.danielferber.gittocc2.git.GitTasks;
 import java.io.File;
@@ -32,10 +36,17 @@ class CommandLine {
     private final static OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
     private final static OptionSpec<Void> setupCmdOpt = parser.accepts("setup", "Set up git repository properties.");
     private final static OptionSpec<Void> resetCmdOpt = parser.accepts("reset", "Reset git repository (hard).");
-    private final static OptionSpec<Void> cleanOpt = parser.accepts("clean", "Clean git repository (directories and ignored files).");
-    private final static OptionSpec<Void> fetchOpt = parser.accepts("fetch", "Fetch remote branch.");
-    private final static OptionSpec<Void> fastForwardOpt = parser.accepts("ff", "Fast forward on branch.");
-    private final static OptionSpec<Void> pullOpt = parser.accepts("pull", "Pull remote branch (fetch and fast foward, no merge).");
+    private final static OptionSpec<Void> cleanCmdOpt = parser.accepts("clean", "Clean git repository (directories and ignored files).");
+    private final static OptionSpec<Void> fetchCmdOpt = parser.accepts("fetch", "Fetch remote branch.");
+    private final static OptionSpec<Void> fastForwardCmdOpt = parser.accepts("ff", "Fast forward on branch.");
+    private final static OptionSpec<Void> pullCmdOpt = parser.accepts("pull", "Pull remote branch (fetch and fast foward, no merge).");
+    private final static OptionSpec<Void> treeDiffOpt = parser.accepts("treediff", "Load tree diff from vob view commit to repository current commit.");
+    private final static OptionSpec<Void> findCheckoutCmdOpt = parser.accepts("findcheckout", "Find files and directoties with checkout.");
+    private final static OptionSpec<Void> addViewPrivateCmdOpt = parser.accepts("addprivate", "Find view private files and directories.");
+    private final static OptionSpec<Void> checkinAllCheckoutsCmdOpt = parser.accepts("checkin", "Checkin all known checkouts.");
+    private final static OptionSpec<Void> updateVobCmdOpt = parser.accepts("update", "Update VOB.");
+    private final static OptionSpec<File> compareCmdOpt = parser.accepts("compare", "Create change set by comparing VOB view with Git repository.").withRequiredArg().ofType(File.class);
+    private final static OptionSpec<File> applyCmdOpt = parser.accepts("apply", "Apply change set on VOB view directory.").withRequiredArg().ofType(File.class);
 
     private final OptionSet options;
 
@@ -99,21 +110,40 @@ class CommandLine {
 
     private static void fillTasks(OptionSet options, Properties properties, TaskQueue taskQueue) {
         int priorityCounter = 0;
+
         GitConfigProperties gitConfig = new GitConfigProperties(properties);
         gitConfig.validate();
-        GitCommander gitCommander = new GitCommander(gitConfig);
-        GitTasks gitTasks = new GitTasks(gitCommander);
+        GitTasks gitTasks = new GitTasks(gitConfig);
+
+        ClearToolConfigProperties ccConfig = new ClearToolConfigProperties(properties);
+        ccConfig.validate();
+        CCTasks cCTasks = new CCTasks(ccConfig);
+        
+        ChangeContext changeContext = new ChangeContext();
+
         for (OptionSpec<?> spec : options.specs()) {
             if (spec == resetCmdOpt) {
                 taskQueue.add(priorityCounter++, gitTasks.new Reset());
-            } else if (spec == cleanOpt) {
+            } else if (spec == cleanCmdOpt) {
                 taskQueue.add(priorityCounter++, gitTasks.new Clean());
-            } else if (spec == fastForwardOpt) {
+            } else if (spec == fastForwardCmdOpt) {
                 taskQueue.add(priorityCounter++, gitTasks.new FastForward());
-            } else if (spec == fetchOpt) {
+            } else if (spec == fetchCmdOpt) {
                 taskQueue.add(priorityCounter++, gitTasks.new Fetch());
             } else if (spec == setupCmdOpt) {
                 taskQueue.add(priorityCounter++, gitTasks.new SetUpRepository());
+            } else if (spec == pullCmdOpt) {
+                taskQueue.add(priorityCounter++, gitTasks.new Pull());
+            } else if (spec == findCheckoutCmdOpt) {
+                taskQueue.add(priorityCounter++, cCTasks.new FindCheckouts());
+            } else if (spec == checkinAllCheckoutsCmdOpt) {
+                taskQueue.add(priorityCounter++, cCTasks.new CheckinAll());
+            } else if (spec == updateVobCmdOpt) {
+                taskQueue.add(priorityCounter++, cCTasks.new UpdateVob());
+            } else if (spec == compareCmdOpt) {
+                taskQueue.add(priorityCounter++, new CompareTask(changeContext, gitConfig.getRepositoryAbsoluteDir().toPath(), ccConfig.getVobViewAbsoluteDir().toPath(), options.valueOf(compareCmdOpt).toPath()));
+            } else if (spec == applyCmdOpt) {
+                taskQueue.add(priorityCounter++, new ApplyTask(changeContext, ccConfig, options.valueOf(compareCmdOpt).toPath()));
             }
         }
     }
