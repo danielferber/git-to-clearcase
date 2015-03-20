@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <timestamp key="monthId" datePattern="yyyy-MM"/>
+    
+    <conversionRule conversionWord="highlight" 
+                    converterClass="br.com.danielferber.gittocc2.logback.HighlightingCompositeConverter" />
+
+    
+    <appender name="FILE-METER" class="ch.qos.logback.core.FileAppender">
+        <!-- Arquivo com os tempos de execução de cada operação. -->
+        
+        <append>true</append>
+        <file>meter-${HOSTNAME}-${monthId}.txt</file>
+        
+        <!-- Aceita somente mensagens com dados do término do Meter. -->
+        <filter class="br.com.danielferber.gittocc2.logback.MarkerFilter">
+            <marker>METER_DATA_OK</marker>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="br.com.danielferber.gittocc2.logback.MarkerFilter">
+            <marker>METER_DATA_SLOW_OK</marker>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        <filter class="br.com.danielferber.gittocc2.logback.MarkerFilter">
+            <marker>METER_DATA_FAIL</marker>
+            <onMatch>ACCEPT</onMatch>
+        </filter>
+        
+        <!-- Rejeita qualquer outra mensagem. -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>error</level>
+        </filter>
+        
+        <encoder>
+            <!-- Mostra apenas a mensagem. A data/hora estão codificados na mensagem. -->
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+            <pattern>%message%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <!-- Arquivo com todas as mensagens. -->
+        
+        <append>true</append>
+        <file>log-${monthId}.txt</file>
+        <encoder>
+            <!-- Mostra apenas o dia e a hora/minuto. O ano, mês e host já estão no nome do arquivo. -->
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+            <pattern>%5level %date{dd HH:mm} %logger{30}: %message %mdc%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Usa cores em terminais com suporte ansi -->
+        <withJansi>true</withJansi>
+        <!-- Informa somente tarefas concluídas e informações. -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <!-- Não informa progresso dos processos individuais. -->
+        <filter class="br.com.danielferber.gittocc2.logback.LoggerNameFilter">
+            <loggerName>git</loggerName>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="br.com.danielferber.gittocc2.logback.LoggerNameFilter">
+            <loggerName>ct</loggerName>
+            <onMatch>DENY</onMatch>
+        </filter>
+
+        <encoder>
+            <!-- Mostra apenas a mensagem colorida. Informações detalhadas estão no log. -->
+            <pattern> %highlight(%msg) %n</pattern>-->        
+        </encoder>
+    </appender>
+
+    <root level="all">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE-METER" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

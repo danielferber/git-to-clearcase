@@ -7,25 +7,19 @@ package br.com.danielferber.gittocc2.process;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 
 /**
- * A skeleton of a builder that creates a processes for a specific constant
- * command line executable on a specific constant execution directory. The
- * extending class shall offer friendly API for the command line executable
- * domain and hide the complexity of generating the command line arguments for
- * the executable.
- * <br> The command line arguments itself are queried from buildCommandLine to
- * be overridden. This method shall translate the operation described by the
- * current factory state into command line arguments understood by the
+ * A skeleton of a builder that creates a processes for a specific constant command line executable on a specific
+ * constant execution directory. The extending class shall offer friendly API for the command line executable domain and
+ * hide the complexity of generating the command line arguments for the executable.
+ * <br> The command line arguments itself are queried from buildCommandLine to be overridden. This method shall
+ * translate the operation described by the current factory state into command line arguments understood by the
  * executable.
- * <br> All processes created by this builder call the same command line
- * executable within the same working directory. Only command line arguments
- * vary according to the builder stated.
+ * <br> All processes created by this builder call the same command line executable within the same working directory.
+ * Only command line arguments vary according to the builder stated.
  * <br> Call reset to start building a new command.
- * <br> Call create to build a process based on the current factory
- * configuration.
+ * <br> Call create to build a process based on the current factory configuration.
  *
  * @author Daniel Felix Ferber
  */
@@ -36,13 +30,11 @@ public class CommandLineProcessBuilder {
      */
     protected final File executionDirectory;
     /**
-     * The command line executable of the CommandLineProcess created by this
-     * builder.
+     * The command line executable of the CommandLineProcess created by this builder.
      */
     protected final File executableFile;
     /**
-     * The logger that tracks start/finish of the CommandLineProcess created by
-     * this builder.
+     * The logger that tracks start/finish of the CommandLineProcess created by this builder.
      */
     protected final Logger logger;
     /**
@@ -96,6 +88,14 @@ public class CommandLineProcessBuilder {
     public CommandLineProcessBuilder shortParameter(final String parameter) {
         parameters.add("-" + parameter);
         return this;
+    }
+
+    public CommandLineProcessBuilder shortParameter(boolean condition, final String parameter) {
+          return condition ? shortParameter(parameter) : this;
+  }
+
+    public CommandLineProcessBuilder parameter(boolean condition, final String parameter) {
+        return condition ? parameter(parameter) : this;
     }
 
     public CommandLineProcessBuilder parameter(final String parameter) {

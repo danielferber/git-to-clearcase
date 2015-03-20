@@ -6,6 +6,7 @@ package br.com.danielferber.gittocc2.process;
 
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -20,10 +21,9 @@ import org.slf4j.MarkerFactory;
 
 /**
  * A processes running a command line executable.
- * <br> The process is not started until {@link #start()} is called. Meanwhile,
- * the process name, command line and working directory are kept as attributes.
- * <br> Process stdout and stderr may be read by {@link #createErrReader()} and
- * {@link #createOutReader()}.
+ * <br> The process is not started until {@link #start()} is called. Meanwhile, the process name, command line and
+ * working directory are kept as attributes.
+ * <br> Process stdout and stderr may be read by {@link #createErrReader()} and {@link #createOutReader()}.
  * <br> Process stdout and stderr may be parsed by {@link #createErrScanner() }
  * and {@link #createOutScanner() }.
  * <br> Process stdout and stderr may be redirected by {@link #addErrWriter(java.io.Writer)
@@ -31,7 +31,7 @@ import org.slf4j.MarkerFactory;
  *
  * @author Daniel Felix Ferber
  */
-public class CommandLineProcess {
+public class CommandLineProcess implements Runnable {
 
     /**
      * Name for the wrapped process.
@@ -58,8 +58,8 @@ public class CommandLineProcess {
      */
     private final ProcessWaiter processWaiter = new ProcessWaiter();
     /**
-     * The wrapped process created upon the object immutable state. If null, the
-     * process has not been created (actually, started) yet.
+     * The wrapped process created upon the object immutable state. If null, the process has not been created (actually,
+     * started) yet.
      */
     private Process process;
     private final Meter meter;
@@ -67,8 +67,7 @@ public class CommandLineProcess {
     public static final Marker stderrMarker = MarkerFactory.getMarker("stderr");
 
     /**
-     * Constructor that receives all mandatory data required to create the
-     * wrapped processs.
+     * Constructor that receives all mandatory data required to create the wrapped processs.
      *
      * @param name Pretty name for the process.
      * @param commandLine Command line that starts the wrapped process.
@@ -131,8 +130,8 @@ public class CommandLineProcess {
     }
 
     /**
-     * Creates a Scanner that parses the process stdout stream. An arbitrary
-     * number of Scanners may be created for this stream.
+     * Creates a Scanner that parses the process stdout stream. An arbitrary number of Scanners may be created for this
+     * stream.
      *
      * @return a Scanner that parses the process stdout stream.
      */
@@ -145,8 +144,8 @@ public class CommandLineProcess {
     }
 
     /**
-     * Creates a Scanner that parses the process stderr stream. An arbitrary
-     * number of Scanners may be created for this stream.
+     * Creates a Scanner that parses the process stderr stream. An arbitrary number of Scanners may be created for this
+     * stream.
      *
      * @return a Scanner that parses the process stderr stream.
      */
@@ -159,8 +158,7 @@ public class CommandLineProcess {
     }
 
     /**
-     * Creates a Reader for the process stdout stream. An arbitrary number of
-     * Readers may be created for this stream.
+     * Creates a Reader for the process stdout stream. An arbitrary number of Readers may be created for this stream.
      *
      * @return a Reader for the process stdout stream.
      */
@@ -173,8 +171,7 @@ public class CommandLineProcess {
     }
 
     /**
-     * Creates a Reader for the process stderr stream. An arbitrary number of
-     * Readers may be created for this stream.
+     * Creates a Reader for the process stderr stream. An arbitrary number of Readers may be created for this stream.
      *
      * @return a Reader for the process stderr stream.
      */
@@ -187,8 +184,25 @@ public class CommandLineProcess {
     }
 
     /**
-     * Forwards the stdout stream to the given Writer. This stream may be
-     * forwarded to an arbitrary number of Writers.
+     * Shortcut to <code>new BufferedReader(createOutReader())</code>
+     *
+     * @return a BufferedReader for the process stdout stream.
+     */
+    public final BufferedReader createBufferedOutReader() {
+        return new BufferedReader(createOutReader());
+    }
+
+    /**
+     * Shortcut to <code>new BufferedReader(createErrReader())</code>
+     *
+     * @return a Reader for the process stderr stream.
+     */
+    public final BufferedReader createBufferedErrReader() {
+        return new BufferedReader(createErrReader());
+    }
+
+    /**
+     * Forwards the stdout stream to the given Writer. This stream may be forwarded to an arbitrary number of Writers.
      *
      * @param w the writer forwarded to
      * @return itself
@@ -199,8 +213,7 @@ public class CommandLineProcess {
     }
 
     /**
-     * Forwards the stderr stream to the given Writer. This stream may be
-     * forwarded to an arbitrary number of Writers.
+     * Forwards the stderr stream to the given Writer. This stream may be forwarded to an arbitrary number of Writers.
      *
      * @param w the writer forwarded to
      * @return itself
@@ -232,8 +245,7 @@ public class CommandLineProcess {
     }
 
     /**
-     * Block until the command line executable finishes. Starts the command line
-     * executable if not already running
+     * Block until the command line executable finishes. Starts the command line executable if not already running
      */
     public final void waitFor() {
         start();
@@ -246,8 +258,7 @@ public class CommandLineProcess {
     }
 
     /**
-     * Provides a pretty representation of the command that launches the
-     * process. Override to customize.
+     * Provides a pretty representation of the command that launches the process. Override to customize.
      */
     private String formatCommandLine(final List<String> commands) {
         final String executable = new File(commands.get(0)).getName();
@@ -260,4 +271,10 @@ public class CommandLineProcess {
         }
         return sb.toString();
     }
+
+    @Override
+    public void run() {
+        this.waitFor();
+    }
+
 }
