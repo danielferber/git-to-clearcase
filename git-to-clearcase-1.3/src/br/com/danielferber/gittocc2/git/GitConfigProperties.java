@@ -9,7 +9,7 @@ import java.util.Properties;
  *
  * @author Daniel Felix Ferber
  */
-public class GitConfigProperties implements GitConfig {
+public class GitConfigProperties extends GitConfigImpl {
     public static final String PROP_GIT_EXEC = "git.exec";
     public static final String PROP_REPOSITORY_DIR = "repository.dir";
 

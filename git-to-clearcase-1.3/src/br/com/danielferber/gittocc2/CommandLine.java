@@ -21,37 +21,41 @@ import joptsimple.ValueConversionException;
  *
  * @author Daniel Felix Ferber
  */
-class CommandCmdLine {
+class CommandLine {
 
-    final static OptionParser parser = new OptionParser();
-    final static OptionSpec<Void> helpCmdOpt = parser.accepts("help", "Dislay command line instructions.");
-    final static OptionSpec<File> propertyFileOpt = parser.accepts("properties", "Properties file.").withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> gitExecOpt = parser.accepts("git", "Git executable file.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> gitRepositoryDirOpt = parser.accepts("repo", "Git repository directory.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> ccClearToolExecOpt = parser.accepts("ct", "CleartTool executable file.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
-    final static OptionSpec<Void> setupCmdOpt = parser.accepts("setup", "Set up git repository properties.");
-    final static OptionSpec<Void> resetCmdOpt = parser.accepts("reset", "Reset git repository (hard).");
-    final static OptionSpec<Void> cleanOpt = parser.accepts("clean", "Clean git repository (directories and ignored files).");
-    final static OptionSpec<Void> fetchOpt = parser.accepts("fetch", "Fetch remote branch.");
-    final static OptionSpec<Void> fastForwardOpt = parser.accepts("ff", "Fast forward on branch.");
-    final static OptionSpec<Void> pullOpt = parser.accepts("pull", "Pull remote branch (fetch and fast foward, no merge).");
+    private final static OptionParser parser = new OptionParser();
+    private final static OptionSpec<Void> helpCmdOpt = parser.accepts("help", "Dislay command line instructions.");
+    private final static OptionSpec<File> propertyFileOpt = parser.accepts("properties", "Properties file.").withRequiredArg().ofType(File.class);
+    private final static OptionSpec<File> gitExecOpt = parser.accepts("git", "Git executable file.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
+    private final static OptionSpec<File> gitRepositoryDirOpt = parser.accepts("repo", "Git repository directory.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
+    private final static OptionSpec<File> ccClearToolExecOpt = parser.accepts("ct", "CleartTool executable file.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
+    private final static OptionSpec<File> ccVobViewDirOpt = parser.accepts("view", "Snapshot vob view directory.").requiredUnless(propertyFileOpt, helpCmdOpt).withRequiredArg().ofType(File.class);
+    private final static OptionSpec<Void> setupCmdOpt = parser.accepts("setup", "Set up git repository properties.");
+    private final static OptionSpec<Void> resetCmdOpt = parser.accepts("reset", "Reset git repository (hard).");
+    private final static OptionSpec<Void> cleanOpt = parser.accepts("clean", "Clean git repository (directories and ignored files).");
+    private final static OptionSpec<Void> fetchOpt = parser.accepts("fetch", "Fetch remote branch.");
+    private final static OptionSpec<Void> fastForwardOpt = parser.accepts("ff", "Fast forward on branch.");
+    private final static OptionSpec<Void> pullOpt = parser.accepts("pull", "Pull remote branch (fetch and fast foward, no merge).");
+
+    private final OptionSet options;
 
     public static void printHelp(final PrintStream ps) {
         try {
             parser.printHelpOn(ps);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
-    public static TaskQueue transform(final String[] argv) {
-        final OptionSet options;
+    public CommandLine(final String[] argv) {
         try {
-            options = parser.parse(argv);
+            this.options = parser.parse(argv);
         } catch (final ValueConversionException | OptionException e) {
             throw new ConfigException("Incorrect command line arguments: " + e.getMessage(), e);
         }
+    }
+
+    public TaskQueue createTaskQueue() {
         TaskQueue taskQueue = new TaskQueue();
         if (options.has(helpCmdOpt)) {
             taskQueue.add(0, "help", () -> {
@@ -108,7 +112,7 @@ class CommandCmdLine {
                 taskQueue.add(priorityCounter++, gitTasks.new FastForward());
             } else if (spec == fetchOpt) {
                 taskQueue.add(priorityCounter++, gitTasks.new Fetch());
-            } else if (spec ==setupCmdOpt ) {
+            } else if (spec == setupCmdOpt) {
                 taskQueue.add(priorityCounter++, gitTasks.new SetUpRepository());
             }
         }

@@ -13,7 +13,7 @@ import org.slf4j.Logger;
  */
 public class TaskQueue implements Runnable {
 
-    public final Logger logger = LoggerFactory.getLogger("TaskQueues");
+    public final Logger logger = LoggerFactory.getLogger("queue");
     private final Meter meter = MeterFactory.getMeter(logger);
 
     private static class TaskEntry implements Comparable<TaskEntry> {
@@ -41,7 +41,14 @@ public class TaskQueue implements Runnable {
     }
 
     public void add(int priority, Runnable runnable) {
-        taskQueue.add(new TaskEntry(priority, runnable.getClass().getSimpleName(), runnable));
+        final String name = runnable.getClass().getName();
+        int pos = name.lastIndexOf('.');
+        if (pos < 0) {
+            pos = 0;
+        } else {
+            pos++;
+        }
+        taskQueue.add(new TaskEntry(priority, name.substring(pos).toLowerCase(), runnable));
     }
 
     @Override

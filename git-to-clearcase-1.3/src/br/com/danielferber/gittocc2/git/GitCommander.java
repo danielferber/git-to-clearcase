@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
 public class GitCommander {
 
     final CommandLineProcessBuilder pb;
-    final Meter meter = MeterFactory.getMeter("GitCommander");
+    final Meter meter = MeterFactory.getMeter("commander.git");
 
     public GitCommander(final GitConfig config) {
         this.pb = new CommandLineProcessBuilder(config.getRepositoryDir(), config.getGitExec(), LoggerFactory.getLogger("git"));

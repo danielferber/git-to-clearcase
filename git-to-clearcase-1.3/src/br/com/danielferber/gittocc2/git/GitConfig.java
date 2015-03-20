@@ -12,6 +12,10 @@ public interface GitConfig {
     File getGitExec();
 
     File getRepositoryDir();
+    
+    File getGitAbsoluteExec();
+
+    File getRepositoryAbsoluteDir();
 
     static void printConfig(PrintStream ps, GitConfig config) {
         ps.println("Git properties:");
