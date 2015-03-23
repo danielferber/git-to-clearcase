@@ -20,11 +20,13 @@ public class TaskQueue implements Runnable {
 
         final int priority;
         final String name;
+        final String message;
         final Runnable runnable;
 
-        public TaskEntry(int priority, String name, Runnable runnable) {
+        public TaskEntry(int priority, String name, String message, Runnable runnable) {
             this.priority = priority;
             this.name = name;
+            this.message = message;
             this.runnable = runnable;
         }
 
@@ -36,11 +38,11 @@ public class TaskQueue implements Runnable {
 
     private final Set<TaskEntry> taskQueue = new TreeSet<>();
 
-    public void add(int priority, String name, Runnable runnable) {
-        taskQueue.add(new TaskEntry(priority, name, runnable));
+    public void add(int priority, String name, String message, Runnable runnable) {
+        taskQueue.add(new TaskEntry(priority, name, message, runnable));
     }
 
-    public void add(int priority, Runnable runnable) {
+    public void add(int priority, String message, Runnable runnable) {
         final String name = runnable.getClass().getName();
         int pos = name.lastIndexOf('.');
         if (pos < 0) {
@@ -48,13 +50,13 @@ public class TaskQueue implements Runnable {
         } else {
             pos++;
         }
-        taskQueue.add(new TaskEntry(priority, name.substring(pos).toLowerCase(), runnable));
+        taskQueue.add(new TaskEntry(priority, name.substring(pos).toLowerCase(), message, runnable));
     }
 
     @Override
     public void run() {
         for (TaskEntry task : taskQueue) {
-            meter.sub(task.name).run(task.runnable);
+            meter.sub(task.name).m(task.message).run(task.runnable);
         }
     }
 }

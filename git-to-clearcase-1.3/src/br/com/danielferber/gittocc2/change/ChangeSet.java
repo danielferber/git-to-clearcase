@@ -104,6 +104,11 @@ public class ChangeSet {
                 && filesCopiedModified.isEmpty());
     }
 
+    @Override
+    public String toString() {
+        return "ChangeSet{" + "dir.add=#" + dirsAdded.size() + ", dir.del=#" + dirsDeleted.size() + ", file.add=#" + filesAdded.size() + ", file.del=#" + filesDeleted.size() + ", file.mod=#" + filesModified.size() + ", file.mov=#" + filesMovedFrom.size() + ", file.cop=#" + filesCopiedFrom.size() + '}';
+    }
+    
     public void log(Logger logger) {
         PrintStream ps = LoggerFactory.getInfoPrintStream(logger);
         ps.println("Dirs to add:");

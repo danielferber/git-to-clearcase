@@ -5,9 +5,8 @@
  */
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
-import joptsimple.OptionException;
-import joptsimple.ValueConversionException;
 import org.slf4j.Logger;
 
 /**
@@ -25,8 +24,8 @@ public class Main {
             try {
                 final CommandLine commandLine = new CommandLine(argv);
                 taskQueue = commandLine.createTaskQueue();
-            } catch (final ValueConversionException | OptionException e) {
-                logger.error("Incorrect command line arguments: {} ", e.getMessage());
+            } catch (final ConfigException e) {
+                logger.error(e.getMessage());
                 return;
             }
             taskQueue.run();

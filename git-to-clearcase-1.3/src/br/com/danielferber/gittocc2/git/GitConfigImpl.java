@@ -11,12 +11,12 @@ public abstract class GitConfigImpl implements GitConfig {
 
     @Override
     public File getGitAbsoluteExec() {
-        return getGitExec().getAbsoluteFile();
+        return getGitExec() == null ? null : getGitExec().getAbsoluteFile();
     }
 
     @Override
     public File getRepositoryAbsoluteDir() {
-        return getRepositoryDir().getAbsoluteFile();
+        return getRepositoryDir()==null ? null : getRepositoryDir().getAbsoluteFile();
     }
 
 }

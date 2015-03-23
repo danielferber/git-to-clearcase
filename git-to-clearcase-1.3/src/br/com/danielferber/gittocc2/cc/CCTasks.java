@@ -5,6 +5,8 @@
  */
 package br.com.danielferber.gittocc2.cc;
 
+import br.com.danielferber.gittocc2.config.ConfigException;
+
 /**
  *
  * @author Daniel Felix Ferber
@@ -12,13 +14,22 @@ package br.com.danielferber.gittocc2.cc;
 public class CCTasks {
 
     private final ClearToolConfig config;
+    private ClearToolCommander commander;
+
+    private ClearToolCommander extractClearToolCommander() throws ConfigException {
+        if (commander == null) {
+            commander = new ClearToolCommander(config);
+        }
+        return commander;
+    }
 
     public CCTasks(ClearToolConfig config) {
         this.config = config;
     }
 
     public class FindCheckouts implements Runnable {
-        final ClearToolCommander commander = new ClearToolCommander(config);
+
+        final ClearToolCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {
@@ -27,7 +38,8 @@ public class CCTasks {
     }
 
     public class UpdateVob implements Runnable {
-        final ClearToolCommander commander = new ClearToolCommander(config);
+
+        final ClearToolCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {
@@ -36,7 +48,8 @@ public class CCTasks {
     }
 
     public class CheckinAll implements Runnable {
-        final ClearToolCommander commander = new ClearToolCommander(config);
+
+        final ClearToolCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {
@@ -45,5 +58,4 @@ public class CCTasks {
             }
         }
     }
-
 }

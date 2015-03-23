@@ -5,7 +5,6 @@
  */
 package br.com.danielferber.gittocc2.cc;
 
-import br.com.danielferber.gittocc2.config.ConfigException;
 import br.com.danielferber.gittocc2.config.ConfigProperties;
 import java.io.File;
 import java.util.Map;
@@ -61,33 +60,6 @@ public final class ClearToolConfigProperties extends ClearToolConfigImpl {
         return this;
     }
 
-    public void validate() throws ConfigException {
-        final File clearToolExec = getClearToolExec();
-        if (clearToolExec == null) {
-            throw new ConfigException("ClearTool executable: missing property.");
-        }
-        if (!clearToolExec.exists()) {
-            throw new ConfigException("ClearTool executable: does not exist.");
-        }
-        if (!clearToolExec.isFile()) {
-            throw new ConfigException("ClearTool executable: not a file.");
-        }
-        if (!clearToolExec.canExecute()) {
-            throw new ConfigException("ClearTool executable: not executable.");
-        }
-
-        final File vobViewDir = getVobViewDir();
-        if (vobViewDir == null) {
-            throw new ConfigException("Vob view directory: missing property.");
-        }
-        if (!vobViewDir.exists()) {
-            throw new ConfigException("Vob view directory: does not exist.");
-        }
-        if (!vobViewDir.isDirectory()) {
-            throw new ConfigException("Vob view directory: not a directory.");
-        }
-    }
-    
     @Override
     public String toString() {
         return properties.toString();

@@ -247,7 +247,7 @@ public class CommandLineProcess implements Runnable {
     /**
      * Block until the command line executable finishes. Starts the command line executable if not already running
      */
-    public final void waitFor() {
+    public final CommandLineProcess waitFor() {
         start();
 
         try {
@@ -255,6 +255,7 @@ public class CommandLineProcess implements Runnable {
         } catch (final InterruptedException ex) {
             // ignore
         }
+        return this;
     }
 
     /**
