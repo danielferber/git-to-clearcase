@@ -1,12 +1,20 @@
 package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.gittocc2.cc.CCTasks;
+import br.com.danielferber.gittocc2.cc.ClearToolConfig;
 import br.com.danielferber.gittocc2.cc.ClearToolConfigProperties;
+import br.com.danielferber.gittocc2.cc.ClearToolConfigValidated;
 import br.com.danielferber.gittocc2.change.ApplyTask;
+import br.com.danielferber.gittocc2.change.ChangeConfig;
+import br.com.danielferber.gittocc2.change.ChangeConfigProperties;
 import br.com.danielferber.gittocc2.change.ChangeContext;
+import br.com.danielferber.gittocc2.change.ChangeTasks;
 import br.com.danielferber.gittocc2.change.CompareTask;
+import br.com.danielferber.gittocc2.change.DiffTreeTask;
 import br.com.danielferber.gittocc2.config.ConfigException;
+import br.com.danielferber.gittocc2.git.GitConfig;
 import br.com.danielferber.gittocc2.git.GitConfigProperties;
+import br.com.danielferber.gittocc2.git.GitConfigValidated;
 import br.com.danielferber.gittocc2.git.GitTasks;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,13 +41,16 @@ class CommandLine {
     private static final String fetchCmdStr = "Fetch remote branch.";
     private static final String fastForwardCmdStr = "Fast forward on branch.";
     private static final String pullCmdStr = "Pull remote branch (fetch and fast foward, no merge).";
-    private static final String difftreeCmdStr = "Load tree diff from vob view commit to repository current commit.";
+    private static final String diffTreeCmdStr = "Load tree diff from vob view commit to repository current commit.";
     private static final String findCheckoutCmdStr = "Find files and directoties with checkout.";
     private static final String addViewPrivateCmdStr = "Find view private files and directories.";
-    private static final String checkinAllCheckoutsCmdStr = "Checkin all known checkouts.";
-    private static final String updateVobCmdStr = "Update VOB.";
-    private static final String compareCmdStr = "Create change set by comparing VOB view with Git repository.";
-    private static final String applyCmdStr = "Apply change set on VOB view directory.";
+    private static final String checkinAllCmdStr = "Checkin all known checkouts.";
+    private static final String updateVobCmdStr = "Update vob.";
+    private static final String compareCmdStr = "Create change set by comparing vob view with Git repository.";
+    private static final String applyCmdStr = "Apply change set on vob view directory.";
+    private static final String lockCmdStr = "Checkout or create stamp files to lock vob view directory.";
+    private static final String readStampCmdStr = "Read stamp files on vob view directory.";
+    private static final String updateStampCmdStr = "Update stamp files on vob view directory.";
 
     private final static OptionParser parser = new OptionParser();
     private final static OptionSpec<Void> helpCmdOpt = parser.accepts("help", "Dislay command line instructions.");
@@ -54,13 +65,19 @@ class CommandLine {
     private final static OptionSpec<Void> fetchCmdOpt = parser.accepts("fetch", fetchCmdStr);
     private final static OptionSpec<Void> fastForwardCmdOpt = parser.accepts("ff", fastForwardCmdStr);
     private final static OptionSpec<Void> pullCmdOpt = parser.accepts("pull", pullCmdStr);
-    private final static OptionSpec<Void> difftreeOpt = parser.accepts("diff-tree", difftreeCmdStr);
+    private final static OptionSpec<Void> diffTreeOpt = parser.accepts("diff-tree", diffTreeCmdStr);
     private final static OptionSpec<Void> findCheckoutCmdOpt = parser.accepts("find-checkout", findCheckoutCmdStr);
     private final static OptionSpec<Void> addViewPrivateCmdOpt = parser.accepts("add-private", addViewPrivateCmdStr);
-    private final static OptionSpec<Void> checkinAllCheckoutsCmdOpt = parser.accepts("checkin", checkinAllCheckoutsCmdStr);
+    private final static OptionSpec<Void> checkinAllCmdOpt = parser.accepts("checkin", checkinAllCmdStr);
     private final static OptionSpec<Void> updateVobCmdOpt = parser.accepts("update", updateVobCmdStr);
     private final static OptionSpec<File> compareCmdOpt = parser.accepts("compare", compareCmdStr).withRequiredArg().ofType(File.class);
-    private final static OptionSpec<File> applyCmdOpt = parser.accepts("apply", applyCmdStr).withRequiredArg().ofType(File.class);
+    private final static OptionSpec<Void> applyCmdOpt = parser.accepts("apply", applyCmdStr);
+    private final static OptionSpec<Void> lockCmdOpt = parser.accepts("lock", lockCmdStr);
+
+    private final static OptionSpec<File> counterStampFileOpt = parser.accepts("counter-stamp", "Counter stamp file within vob view directory.").withRequiredArg().ofType(File.class);
+    private final static OptionSpec<File> commitStampFileOpt = parser.accepts("commit-stamp", "Commit stamp file within vob view directory.").withRequiredArg().ofType(File.class);
+    private final static OptionSpec<Long> counterStampOverrideOpt = parser.accepts("counter", "Assume counter for vob view directory state.").withRequiredArg().ofType(Long.class);
+    private final static OptionSpec<String> commitStampOverrideOpt = parser.accepts("counter", "Assume commit for vob view directory state.").withRequiredArg().ofType(String.class);
 
     private final OptionSet options;
 
@@ -89,7 +106,6 @@ class CommandLine {
             return taskQueue;
         }
         Properties properties = readProperties(options);
-        fillProperties(options, properties);
         fillTasks(options, properties, taskQueue);
         return taskQueue;
     }
@@ -111,8 +127,7 @@ class CommandLine {
         }
     }
 
-//     return propertyFileOpt.value(options);
-    private static void fillProperties(OptionSet options, Properties properties) {
+    private static GitConfigProperties extractGitConfig(OptionSet options, Properties properties) {
         final GitConfigProperties config = new GitConfigProperties(properties);
         if (options.has(gitExecOpt)) {
             config.setGitExec(gitExecOpt.value(options));
@@ -120,7 +135,10 @@ class CommandLine {
         if (options.has(gitRepositoryDirOpt)) {
             config.setRepositoryDir(gitRepositoryDirOpt.value(options));
         }
+        return config;
+    }
 
+    private static ClearToolConfigProperties extractClearToolConfig(OptionSet options, Properties properties) {
         final ClearToolConfigProperties ccConfig = new ClearToolConfigProperties(properties);
         if (options.has(ccClearToolExecOpt)) {
             ccConfig.setClearToolExec(ccClearToolExecOpt.value(options));
@@ -128,16 +146,45 @@ class CommandLine {
         if (options.has(ccVobViewDirOpt)) {
             ccConfig.setVobViewDir(ccVobViewDirOpt.value(options));
         }
+        return ccConfig;
+    }
+
+    private static ChangeConfig extractChangeConfig(ChangeConfig current, ClearToolConfig clearToolConfig, OptionSet options, Properties properties) {
+        if (current != null) {
+            return current;
+        }
+        final ChangeConfigProperties changeConfig = new ChangeConfigProperties(clearToolConfig.getVobViewAbsoluteDir().toPath(), properties);
+        if (options.has(counterStampFileOpt)) {
+            changeConfig.setCommitStampFile(counterStampFileOpt.value(options));
+        }
+        if (options.has(commitStampFileOpt)) {
+            changeConfig.setCommitStampFile(commitStampFileOpt.value(options));
+        }
+        if (options.has(counterStampOverrideOpt)) {
+            changeConfig.setSyncCounterOverride(counterStampOverrideOpt.value(options));
+        }
+        if (options.has(commitStampOverrideOpt)) {
+            changeConfig.setCommitStampOverride(commitStampOverrideOpt.value(options));
+        }
+        return changeConfig;
+    }
+
+    private static ChangeTasks extractChangeTasks(ChangeTasks current, ChangeContext context, ChangeConfig config, ClearToolConfig ctConfig) {
+        if (current != null) {
+            return current;
+        }
+        return new ChangeTasks(context, config, ctConfig);
     }
 
     private static void fillTasks(OptionSet options, Properties properties, TaskQueue taskQueue) {
         int priorityCounter = 0;
 
-        GitConfigProperties gitConfig = new GitConfigProperties(properties);
+        GitConfig gitConfig = new GitConfigValidated(extractGitConfig(options, properties));
         GitTasks gitTasks = new GitTasks(gitConfig);
-
-        ClearToolConfigProperties ccConfig = new ClearToolConfigProperties(properties);
+        ClearToolConfig ccConfig = new ClearToolConfigValidated(extractClearToolConfig(options, properties));
         CCTasks cCTasks = new CCTasks(ccConfig);
+        ChangeConfig changeConfig = null;
+        ChangeTasks changeTasks = null;
 
         ChangeContext changeContext = new ChangeContext();
 
@@ -156,14 +203,22 @@ class CommandLine {
                 taskQueue.add(priorityCounter++, pullCmdStr, gitTasks.new Pull());
             } else if (spec == findCheckoutCmdOpt) {
                 taskQueue.add(priorityCounter++, findCheckoutCmdStr, cCTasks.new FindCheckouts());
-            } else if (spec == checkinAllCheckoutsCmdOpt) {
-                taskQueue.add(priorityCounter++, checkinAllCheckoutsCmdStr, cCTasks.new CheckinAll());
+            } else if (spec == checkinAllCmdOpt) {
+                taskQueue.add(priorityCounter++, checkinAllCmdStr, cCTasks.new CheckinAll());
             } else if (spec == updateVobCmdOpt) {
                 taskQueue.add(priorityCounter++, updateVobCmdStr, cCTasks.new UpdateVob());
+            } else if (spec == lockCmdOpt) {
+                changeTasks = extractChangeTasks(changeTasks, changeContext, extractChangeConfig(changeConfig, ccConfig, options, properties), ccConfig);
+                taskQueue.add(priorityCounter++, lockCmdStr, changeTasks.new LockStampTask());
             } else if (spec == compareCmdOpt) {
                 taskQueue.add(priorityCounter++, compareCmdStr, new CompareTask(changeContext, gitConfig.getRepositoryAbsoluteDir().toPath(), ccConfig.getVobViewAbsoluteDir().toPath(), options.valueOf(compareCmdOpt).toPath()));
+            } else if (spec == diffTreeOpt) {
+                taskQueue.add(priorityCounter++, readStampCmdStr, changeTasks.new ReadStampTask());
+                changeConfig = extractChangeConfig(changeConfig, ccConfig, options, properties);
+                taskQueue.add(priorityCounter++, diffTreeCmdStr, new DiffTreeTask(changeContext, gitConfig, changeConfig));
             } else if (spec == applyCmdOpt) {
-                taskQueue.add(priorityCounter++, applyCmdStr, new ApplyTask(changeContext, ccConfig, options.valueOf(compareCmdOpt).toPath()));
+                taskQueue.add(priorityCounter++, applyCmdStr, new ApplyTask(changeContext, ccConfig));
+                taskQueue.add(priorityCounter++, updateStampCmdStr, changeTasks.new UpdateStampTask());
             }
         }
     }

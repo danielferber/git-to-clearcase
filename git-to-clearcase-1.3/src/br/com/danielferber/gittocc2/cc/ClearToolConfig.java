@@ -1,6 +1,5 @@
 package br.com.danielferber.gittocc2.cc;
 
-import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
 import java.io.PrintStream;
 
@@ -41,38 +40,5 @@ public interface ClearToolConfig {
         }
     }
 
-    static void validate(ClearToolConfig config) throws ConfigException {
-        final File clearToolExec = config.getClearToolExec();
-        if (clearToolExec == null) {
-            throw new ConfigException("ClearTool executable: missing property.");
-        }
-        final File clearToolAbsoluteExec = config.getClearToolAbsoluteExec();
-        if (clearToolAbsoluteExec == null) {
-            throw new ConfigException("ClearTool absolute executable: missing property.");
-        }
-        if (!clearToolAbsoluteExec.exists()) {
-            throw new ConfigException("ClearTool executable: does not exist.");
-        }
-        if (!clearToolAbsoluteExec.isFile()) {
-            throw new ConfigException("ClearTool executable: not a file.");
-        }
-        if (!clearToolAbsoluteExec.canExecute()) {
-            throw new ConfigException("ClearTool executable: not executable.");
-        }
-
-        final File vobViewDir = config.getVobViewDir();
-        if (vobViewDir == null) {
-            throw new ConfigException("Vob view directory: missing property.");
-        }
-        final File vobViewAbsoluteDir = config.getVobViewDir();
-        if (vobViewAbsoluteDir == null) {
-            throw new ConfigException("Vob view absolute directory: missing property.");
-        }
-        if (!vobViewAbsoluteDir.exists()) {
-            throw new ConfigException("Vob view directory: does not exist.");
-        }
-        if (!vobViewAbsoluteDir.isDirectory()) {
-            throw new ConfigException("Vob view directory: not a directory.");
-        }
-    }
+   
 }

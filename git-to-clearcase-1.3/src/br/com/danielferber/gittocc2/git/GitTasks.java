@@ -20,7 +20,7 @@ public class GitTasks {
         this.config = config;
     }
 
-    private GitCommander extractGitCommander() throws ConfigException {
+    public GitCommander extractGitCommander() throws ConfigException {
         if (commander == null) {
             commander = new GitCommander(config);
         }
@@ -88,4 +88,5 @@ public class GitTasks {
             commander.fastForward();
         }
     }
+
 }

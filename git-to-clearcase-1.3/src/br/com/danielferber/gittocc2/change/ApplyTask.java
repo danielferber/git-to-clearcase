@@ -5,8 +5,7 @@
  */
 package br.com.danielferber.gittocc2.change;
 
-import br.com.danielferber.gittocc2.cc.ClearToolConfigProperties;
-import java.nio.file.Path;
+import br.com.danielferber.gittocc2.cc.ClearToolConfig;
 
 /**
  *
@@ -14,7 +13,7 @@ import java.nio.file.Path;
  */
 public class ApplyTask implements Runnable {
 
-    public ApplyTask(ChangeContext changeContext, ClearToolConfigProperties ccConfig, Path toPath) {
+    public ApplyTask(ChangeContext changeContext, ClearToolConfig ccConfig) {
     }
 
     @Override

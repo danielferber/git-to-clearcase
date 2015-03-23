@@ -13,9 +13,47 @@ import java.util.List;
  * @author x7ws
  */
 public class ChangeContext {
+
     private List<ChangeSet> changeSetCollection = new ArrayList<>();
-    
+    private String sourceCommit = null;
+    private String targetCommit = null;
+    private Long sourceCounter = null;
+    private Long targetCounter = null;
+
     public void addChangeSet(ChangeSet changeSet) {
         this.changeSetCollection.add(changeSet);
+    }
+
+    public String getSourceCommit() {
+        return sourceCommit;
+    }
+
+    public void setSourceCommit(String sourceCommit) {
+        this.sourceCommit = sourceCommit;
+    }
+
+    public String getTargetCommit() {
+        return targetCommit;
+    }
+
+    public void setTargetCommit(String targetCommit) {
+        this.targetCommit = targetCommit;
+    }
+
+    public Long getSourceCounter() {
+        return sourceCounter;
+    }
+
+    public void setSourceCounter(Long sourceCounter) {
+        this.sourceCounter = sourceCounter;
+        this.targetCounter = sourceCounter + 1;
+    }
+
+    public Long getTargetCounter() {
+        return targetCounter;
+    }
+
+    public void setTargetCounter(Long targetCounter) {
+        this.targetCounter = targetCounter;
     }
 }
