@@ -7,13 +7,18 @@ package br.com.danielferber.gittocc2.change;
 
 import br.com.danielferber.gittocc2.cc.ClearToolCommander;
 import br.com.danielferber.gittocc2.cc.ClearToolConfig;
+import br.com.danielferber.gittocc2.cc.ClearToolException;
 import br.com.danielferber.gittocc2.config.ConfigException;
+import java.util.Date;
+import java.util.HashMap;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 /**
  *
  * @author Daniel Felix Ferber
  */
 public class ChangeTasks {
+
     private final ChangeContext context;
 
     private final ChangeConfig config;
@@ -83,8 +88,33 @@ public class ChangeTasks {
             commander.checkoutFile(config.getCounterStampAbsoluteFile());
             config.writeCommitStampFromFile(context.getTargetCommit());
             long counter = config.readCounterStampFromFile();
-            counter ++;
+            counter++;
             config.writeCounterStampFromFile(counter);
+        }
+    }
+
+    public class DefineActivityStampTask implements Runnable {
+
+        final ClearToolCommander commander = extractClearToolCommander();
+        private final String activityName;
+
+        public DefineActivityStampTask(String activityName) {
+            this.activityName = activityName;
+        }
+
+        @Override
+        public void run() {
+            final HashMap<String, Object> map = new HashMap<>();
+            map.put("commit", context.getTargetCommit());
+            map.put("date", new Date());
+            map.put("count", context.getCounter());
+            final StrSubstitutor sub = new StrSubstitutor(map);
+            final String taskName = sub.replace(activityName);
+            try {
+                ctCommander.setActivity(taskName);
+            } catch (ClearToolException.ActivityNotFound e) {
+                ctCommander.createActivity(taskName);
+            }
         }
     }
 }

@@ -15,26 +15,16 @@ import java.util.Queue;
 public class ChangeContext {
 
     private Queue<ChangeSet> changeSetCollection = new LinkedList<>();
-//    private String sourceCommit = null;
     private String targetCommit = null;
-//    private Long sourceCounter = null;
-//    private Long targetCounter = null;
+    private Long counter;
 
     public void addChangeSet(ChangeSet changeSet) {
         this.changeSetCollection.add(changeSet);
     }
-    
+
     public ChangeSet nextChangeSet() {
         return this.changeSetCollection.poll();
     }
-
-//    public String getSourceCommit() {
-//        return sourceCommit;
-//    }
-//
-//    public void setSourceCommit(String sourceCommit) {
-//        this.sourceCommit = sourceCommit;
-//    }
 
     public String getTargetCommit() {
         return targetCommit;
@@ -44,20 +34,11 @@ public class ChangeContext {
         this.targetCommit = targetCommit;
     }
 
-//    public Long getSourceCounter() {
-//        return sourceCounter;
-//    }
-//
-//    public void setSourceCounter(Long sourceCounter) {
-//        this.sourceCounter = sourceCounter;
-//        this.targetCounter = sourceCounter + 1;
-//    }
-//
-//    public Long getTargetCounter() {
-//        return targetCounter;
-//    }
-//
-//    public void setTargetCounter(Long targetCounter) {
-//        this.targetCounter = targetCounter;
-//    }
+    public void setCounter(Long counter) {
+        this.counter = counter;
+    }
+
+    public Long getCounter() {
+        return counter;
+    }
 }

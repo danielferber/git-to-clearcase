@@ -99,7 +99,7 @@ public class ApplyTask implements Runnable {
         if (diff == null) {
             return;
         }
-
+        
         if (!diff.dirsAdded.isEmpty()) {
             m.sub("dir.add.checkout.parent").m("Add new directories: checkout parent directories.").run(() -> {
                 final Collection<File> dirs = parentDirs(roots(diff.dirsAdded));

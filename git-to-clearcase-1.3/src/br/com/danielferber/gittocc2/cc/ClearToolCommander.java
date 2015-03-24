@@ -515,6 +515,7 @@ public class ClearToolCommander {
 
     /**
      * Update multiple files or directories.
+     *
      * @param elements Files or directories to update.
      */
     public void update(final File... elements) {
@@ -524,6 +525,7 @@ public class ClearToolCommander {
     /* Update: "Done loading "\JCONSUELO\Fontes\atualizacao-contador.txt" (1 objects, copied 0 KB)." */
     /**
      * Update multiple files or directories.
+     *
      * @param elements Files or directories to update.
      */
     public void update(final Collection<File> elements) {
@@ -574,48 +576,29 @@ public class ClearToolCommander {
      * Set activity "sprint-12-atualizacao-58-8d55de78e115b5e53867fd69c826ec49e45afd4a" in view "X7WS_JCONSUELO_DVL_X7WS_MI00308113".
      */
     public void createActivity(final String name) {
-        final Meter m = taskMeter.sub("activity.create").start();
-        pb.reset("mkactivity").command("mkactivity").arguments("-force", name).create().addOutWriter(new LineSplittingWriter() {
-            @Override
-            protected void processLine(java.lang.String line) throws IOException {
-                System.out.println(line);
-            }
-        }).addErrWriter(new LineSplittingWriter() {
-            @Override
-            protected void processLine(java.lang.String line) throws IOException {
-                System.out.println(line);
-            }
-        }).waitFor();
-        m.ok();
+        taskMeter.sub("activity.create").run(() -> {
+            pb.reset("mkactivity").command("mkactivity").arguments("-force", name).create().waitFor();
+        });
     }
     static final Pattern setActivityNotFoundPattern = Pattern.compile("cleartool: Error: Unable to find activity \"(.*)\"\\.");
 
-    public void setActivity(final String name, boolean allowCreate) {
-        final Meter m = taskMeter.sub("activity.set").start();
-        final CommandLineProcess process = pb.reset("setactivity").command("setactivity").arguments(name).create();
-        process.addOutWriter(new LineSplittingWriter() {
-            @Override
-            protected void processLine(java.lang.String line) throws IOException {
-                // ignore
-            }
-        }).addErrWriter(new LineSplittingWriter() {
-            @Override
-            protected void processLine(java.lang.String line) throws IOException {
-                Matcher matcher = setActivityNotFoundPattern.matcher(line);
-                if (matcher.find()) {
-                    throw new ClearToolException.ActivityNotFound();
+    public void setActivity(final String name) {
+        taskMeter.sub("activity.set").run(() -> {
+            final CommandLineProcess process = pb.reset("setactivity").command("setactivity").arguments(name).create();
+            process.addErrWriter(new LineSplittingWriter() {
+                @Override
+                protected void processLine(java.lang.String line) throws IOException {
+                    Matcher matcher = setActivityNotFoundPattern.matcher(line);
+                    if (matcher.find()) {
+                        throw new ClearToolException.ActivityNotFound();
+                    }
                 }
+            }).waitFor();
+            Exception exception = process.getException();
+            if (exception instanceof ClearToolException) {
+                throw (ClearToolException) exception;
             }
-        }).waitFor();
-        Exception exception = process.getException();
-        if (exception instanceof ClearToolException) {
-            m.fail(exception);
-            throw (ClearToolException) exception;
-        } else if (exception != null) {
-            m.fail(exception);
-            throw new RuntimeException(exception);
-        }
-        m.ok();
+        });
     }
 
     public void unsetActivity() {
@@ -623,7 +606,7 @@ public class ClearToolCommander {
             pb.reset("setactivity").command("setactivity").arguments("-none").create().waitFor();
         });
     }
-    
+
     /*
      * FIND CHECKOUTs.
      */

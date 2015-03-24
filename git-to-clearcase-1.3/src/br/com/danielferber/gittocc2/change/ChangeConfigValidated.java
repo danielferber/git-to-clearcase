@@ -36,16 +36,6 @@ public class ChangeConfigValidated implements ChangeConfig {
     }
 
     @Override
-    public Boolean getUseCommitStampFile() {
-        return config.getUseCommitStampFile();
-    }
-
-    @Override
-    public Boolean getUseCounterStampFile() {
-        return config.getUseCounterStampFile();
-    }
-
-    @Override
     public String getCommitStampOverride() {
         return config.getCommitStampOverride();
     }

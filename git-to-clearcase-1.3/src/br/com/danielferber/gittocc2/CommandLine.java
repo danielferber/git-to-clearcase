@@ -48,6 +48,8 @@ class CommandLine {
     private static final String updateVobCmdStr = "Update vob.";
     private static final String compareCmdStr = "Create change set by comparing vob view with Git repository.";
     private static final String applyCmdStr = "Apply change set on vob view directory.";
+    private static final String unsetActivityCmdStr = "Unset activity on vob view directory.";
+    private static final String defineActivityCmdStr = "Set activity on vob view directory.";
     private static final String checkoutCmdStr = "Checkout or create stamp files to lock vob view directory.";
     private static final String writeStampCmdStr = "Write stamp files on vob view directory.";
     private static final String updateStampCmdStr = "Update stamp files on vob view directory.";
@@ -72,12 +74,13 @@ class CommandLine {
     private final static OptionSpec<Void> updateVobCmdOpt = parser.accepts("update", updateVobCmdStr);
     private final static OptionSpec<File> compareCmdOpt = parser.accepts("compare", compareCmdStr).withRequiredArg().ofType(File.class);
     private final static OptionSpec<Void> applyCmdOpt = parser.accepts("apply", applyCmdStr);
-//    private final static OptionSpec<Void> lockCmdOpt = parser.accepts("lock", lockCmdStr);
+    private final static OptionSpec<Void> unsetActivityCmdOpt = parser.accepts("unset-activity", unsetActivityCmdStr);
+    private final static OptionSpec<String> defineActivityCmdOpt = parser.accepts("activity", defineActivityCmdStr).withOptionalArg().ofType(String.class);
 
     private final static OptionSpec<File> counterStampFileOpt = parser.accepts("counter-stamp", "Counter stamp file within vob view directory.").withRequiredArg().ofType(File.class);
     private final static OptionSpec<File> commitStampFileOpt = parser.accepts("commit-stamp", "Commit stamp file within vob view directory.").withRequiredArg().ofType(File.class);
     private final static OptionSpec<Long> counterStampOverrideOpt = parser.accepts("counter", "Assume counter for vob view directory state.").withRequiredArg().ofType(Long.class);
-    private final static OptionSpec<String> commitStampOverrideOpt = parser.accepts("counter", "Assume commit for vob view directory state.").withRequiredArg().ofType(String.class);
+    private final static OptionSpec<String> commitStampOverrideOpt = parser.accepts("commit", "Assume commit for vob view directory state.").withRequiredArg().ofType(String.class);
 
     private final OptionSet options;
 
@@ -136,11 +139,17 @@ class CommandLine {
                 taskQueue.add(priorityCounter++, findCheckoutCmdStr, cCTasks.new FindCheckouts());
             } else if (spec == checkinAllCmdOpt) {
                 taskQueue.add(priorityCounter++, checkinAllCmdStr, cCTasks.new CheckinAll());
+            } else if (spec == unsetActivityCmdOpt) {
+                taskQueue.add(priorityCounter++, unsetActivityCmdStr, cCTasks.new UnsetActivity());
+            } else if (spec == defineActivityCmdOpt) {
+                if (options.hasArgument(defineActivityCmdOpt)) {
+                    taskQueue.add(priorityCounter++, defineActivityCmdStr, changeTasks.new DefineActivityStampTask(options.valueOf(defineActivityCmdOpt)));
+                } else {
+                    changeConfig = extractChangeConfig(changeConfig, ccConfig, options, properties);
+//                    taskQueue.add(priorityCounter++, defineActivityCmdStr, changeTasks.new DefineActivityStampTask(changeConfig.getActivityName()));
+                }
             } else if (spec == updateVobCmdOpt) {
                 taskQueue.add(priorityCounter++, updateVobCmdStr, cCTasks.new UpdateVob());
-//            } else if (spec == lockCmdOpt) {
-//                changeTasks = extractChangeTasks(changeTasks, changeContext, extractChangeConfig(changeConfig, ccConfig, options, properties), ccConfig);
-//                taskQueue.add(priorityCounter++, lockCmdStr, changeTasks.new CheckoutStampTask());
             } else if (spec == compareCmdOpt) {
                 taskQueue.add(priorityCounter++, compareCmdStr, new CompareTask(changeContext, gitConfig.getRepositoryAbsoluteDir().toPath(), ccConfig.getVobViewAbsoluteDir().toPath(), options.valueOf(compareCmdOpt).toPath()));
             } else if (spec == diffTreeOpt) {

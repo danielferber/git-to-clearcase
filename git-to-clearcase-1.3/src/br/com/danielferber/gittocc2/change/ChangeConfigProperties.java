@@ -12,8 +12,6 @@ import java.util.Properties;
 
 public class ChangeConfigProperties extends ChangeConfigImpl {
 
-    public static final String PROP_USE_COMMIT_STAMP_FILE = "stamp.commit.use";
-    public static final String PROP_USE_COUNTER_STAMP_FILE = "stamp.counter.use";
     public static final String PROP_COMMIT_STAMP_FILE = "stamp.commit.file";
     public static final String PROP_COUNTER_STAMP_FILE = "stamp.counter.file";
     public static final String PROP_COMMIT_STAMP_OVERRIDE = "stamp.commit.override";
@@ -43,16 +41,6 @@ public class ChangeConfigProperties extends ChangeConfigImpl {
     }
 
     @Override
-    public Boolean getUseCommitStampFile() {
-        return properties.getBoolean(prefix + PROP_USE_COMMIT_STAMP_FILE);
-    }
-
-    @Override
-    public Boolean getUseCounterStampFile() {
-        return properties.getBoolean(prefix + PROP_USE_COUNTER_STAMP_FILE);
-    }
-
-    @Override
     public String getCommitStampOverride() {
         return properties.getString(prefix + PROP_COMMIT_STAMP_OVERRIDE);
     }
@@ -69,16 +57,6 @@ public class ChangeConfigProperties extends ChangeConfigImpl {
 
     public ChangeConfigProperties setCounterStampFile(final File file) {
         properties.setFile(prefix + PROP_COUNTER_STAMP_FILE, file);
-        return this;
-    }
-
-    public ChangeConfigProperties setUseCommitStampFile(final Boolean value) {
-        properties.setBoolean(prefix + PROP_COMMIT_STAMP_FILE, value);
-        return this;
-    }
-
-    public ChangeConfigProperties setUseCounterStampFile(final Boolean value) {
-        properties.setBoolean(prefix + PROP_COUNTER_STAMP_FILE, value);
         return this;
     }
 

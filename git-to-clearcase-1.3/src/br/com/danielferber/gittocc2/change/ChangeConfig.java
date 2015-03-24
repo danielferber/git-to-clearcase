@@ -16,10 +16,9 @@ public interface ChangeConfig {
     File getCounterStampFile();
     File getCommitStampAbsoluteFile();
     File getCounterStampAbsoluteFile();
-    Boolean getUseCommitStampFile();
-    Boolean getUseCounterStampFile();
     String getCommitStampOverride();
     Long getCounterStampOverride();
+
     String readCommitStampFromFile();
     long readCounterStampFromFile();
     void writeCommitStampFromFile(String commit);
