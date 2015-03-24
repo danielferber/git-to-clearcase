@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
@@ -33,6 +32,7 @@ public class ChangeSet {
      * List of view private files to add to clearcase.
      */
     public final List<File> filesAdded;
+    public final List<File> filesAddedSource;
     /**
      * List of view version files to remove from clearcase.
      */
@@ -48,15 +48,25 @@ public class ChangeSet {
     public final List<File> filesCopiedModified;
     public final List<File> filesCopiedSource;
 
-    public static ChangeSet createFileChangeSet(final Collection<Path> dirsAdded, final Collection<Path> dirsDeleted, final Collection<Path> filesAdded, final Collection<Path> filesDeleted, final Collection<Path> filesModified, final Collection<Path> filesModifiedSource, final Collection<Path> filesMovedFrom, final Collection<Path> filesMovedTo, final Collection<Path> filesMovedModified, final Collection<Path> filesMovedSource, final Collection<Path> filesCopiedFrom, final Collection<Path> filesCopiedTo, final Collection<Path> filesCopiedModified, final Collection<Path> filesCopiedSource) {
-        return new ChangeSet(pathToFile(dirsAdded), pathToFile(dirsDeleted),
-                pathToFile(filesAdded), pathToFile(filesDeleted),
-                pathToFile(filesModified), pathToFile(filesModifiedSource),
-                pathToFile(filesMovedFrom), pathToFile(filesMovedTo), pathToFile(filesMovedModified), pathToFile(filesMovedSource),
-                pathToFile(filesCopiedFrom), pathToFile(filesCopiedTo), pathToFile(filesCopiedModified), pathToFile(filesCopiedSource));
+    public static ChangeSet createFileChangeSet(
+        final List<Path> dirsAdded,
+        final List<Path> dirsDeleted,
+        final List<Path> filesAdded, final List<Path> filesAddedSource,
+        final List<Path> filesDeleted,
+        final List<Path> filesModified, final List<Path> filesModifiedSource,
+        final List<Path> filesMovedFrom, final List<Path> filesMovedTo, final List<Path> filesMovedModified, final List<Path> filesMovedSource,
+        final List<Path> filesCopiedFrom, final List<Path> filesCopiedTo, final List<Path> filesCopiedModified, final List<Path> filesCopiedSource) {
+        return new ChangeSet(
+            pathToFile(dirsAdded),
+            pathToFile(dirsDeleted),
+            pathToFile(filesAdded), pathToFile(filesAddedSource),
+            pathToFile(filesDeleted),
+            pathToFile(filesModified), pathToFile(filesModifiedSource),
+            pathToFile(filesMovedFrom), pathToFile(filesMovedTo), pathToFile(filesMovedModified), pathToFile(filesMovedSource),
+            pathToFile(filesCopiedFrom), pathToFile(filesCopiedTo), pathToFile(filesCopiedModified), pathToFile(filesCopiedSource));
     }
 
-    private static List<File> pathToFile(Collection<Path> paths) {
+    private static List<File> pathToFile(List<Path> paths) {
         List<File> result = new ArrayList<>(paths.size());
         for (Path path : paths) {
             result.add(path.toFile());
@@ -64,10 +74,18 @@ public class ChangeSet {
         return result;
     }
 
-    public ChangeSet(final List<File> dirsAdded, final List<File> dirsDeleted, final List<File> filesAdded, final List<File> filesDeleted, final List<File> filesModified, final List<File> filesModifiedSource, final List<File> filesMovedFrom, final List<File> filesMovedTo, final List<File> filesMovedModified, final List<File> filesMovedSource, final List<File> filesCopiedFrom, final List<File> filesCopiedTo, final List<File> filesCopiedModified, final List<File> filesCopiedSource) {
+    public ChangeSet(
+        final List<File> dirsAdded,
+        final List<File> dirsDeleted,
+        final List<File> filesAdded, final List<File> filesAddedSource,
+        final List<File> filesDeleted,
+        final List<File> filesModified, final List<File> filesModifiedSource,
+        final List<File> filesMovedFrom, final List<File> filesMovedTo, final List<File> filesMovedModified, final List<File> filesMovedSource,
+        final List<File> filesCopiedFrom, final List<File> filesCopiedTo, final List<File> filesCopiedModified, final List<File> filesCopiedSource) {
         this.dirsAdded = Collections.unmodifiableList(dirsAdded);
         this.dirsDeleted = Collections.unmodifiableList(dirsDeleted);
         this.filesAdded = Collections.unmodifiableList(filesAdded);
+        this.filesAddedSource = Collections.unmodifiableList(filesAddedSource);
         this.filesDeleted = Collections.unmodifiableList(filesDeleted);
         this.filesModified = Collections.unmodifiableList(filesModified);
         this.filesModifiedSource = Collections.unmodifiableList(filesModifiedSource);
@@ -92,23 +110,23 @@ public class ChangeSet {
 
     public boolean hasStuff() {
         return !(dirsAdded.isEmpty()
-                && dirsDeleted.isEmpty()
-                && filesAdded.isEmpty()
-                && filesDeleted.isEmpty()
-                && filesModified.isEmpty()
-                && filesMovedFrom.isEmpty()
-                && filesMovedTo.isEmpty()
-                && filesMovedModified.isEmpty()
-                && filesCopiedFrom.isEmpty()
-                && filesCopiedTo.isEmpty()
-                && filesCopiedModified.isEmpty());
+            && dirsDeleted.isEmpty()
+            && filesAdded.isEmpty()
+            && filesDeleted.isEmpty()
+            && filesModified.isEmpty()
+            && filesMovedFrom.isEmpty()
+            && filesMovedTo.isEmpty()
+            && filesMovedModified.isEmpty()
+            && filesCopiedFrom.isEmpty()
+            && filesCopiedTo.isEmpty()
+            && filesCopiedModified.isEmpty());
     }
 
     @Override
     public String toString() {
         return "ChangeSet{" + "dir.add=#" + dirsAdded.size() + ", dir.del=#" + dirsDeleted.size() + ", file.add=#" + filesAdded.size() + ", file.del=#" + filesDeleted.size() + ", file.mod=#" + filesModified.size() + ", file.mov=#" + filesMovedFrom.size() + ", file.cop=#" + filesCopiedFrom.size() + '}';
     }
-    
+
     public void log(Logger logger) {
         PrintStream ps = LoggerFactory.getInfoPrintStream(logger);
         ps.println("Dirs to add:");

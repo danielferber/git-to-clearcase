@@ -16,10 +16,12 @@ public class DiffTreeTask implements Runnable {
 
     private final GitCommander commander;
     private final ChangeContext context;
+    private final ChangeConfig changeConfig;
 
     public DiffTreeTask(ChangeContext context, GitConfig gitConfig, ChangeConfig changeConfig) {
         this.commander = new GitCommander(gitConfig);
         this.context = context;
+        this.changeConfig = changeConfig;
         
         // fails on inconsistent config
         if (changeConfig.getCounterStampOverride() == null) {
@@ -33,8 +35,7 @@ public class DiffTreeTask implements Runnable {
     @Override
     public void run() {
         String targetCommit = commander.readCommit();
-        context.setTargetCommit(targetCommit);
-        String sourceCommit = context.getSourceCommit();
+        String sourceCommit = changeConfig.getCommitStampOverride() != null ? changeConfig.getCommitStampOverride() : changeConfig.readCommitStampFromFile();
         ChangeSet changeset = commander.diffTree(sourceCommit, targetCommit);
         context.addChangeSet(changeset);
     }

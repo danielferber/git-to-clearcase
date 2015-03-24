@@ -12,7 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,6 +23,7 @@ import java.util.TreeSet;
  * @author x7ws
  */
 public class CompareTask implements Runnable {
+
     private final ChangeContext context;
 
     private final Path sourceRootDir;
@@ -47,7 +50,7 @@ public class CompareTask implements Runnable {
             this.relativeFileCollection = fileCollection;
             this.innerDir = innerDir;
         }
-        
+
         @Override
         public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
             final Path path = outerDir.relativize(file);
@@ -72,7 +75,6 @@ public class CompareTask implements Runnable {
         }
     };
 
-    
     @Override
     public void run() {
         Meter meter = Meter.getCurrentInstance();
@@ -84,34 +86,33 @@ public class CompareTask implements Runnable {
 
         /* Scan both directories. */
         meter.sub("scan.vob").m("ClearCase VOB scan.").run(new Visitor(destRootDir, destRootDir.resolve(innerPath), relativeDestDirs, relativeDestFiles));
-        meter.sub("scan.git").m("GIT repository scan.").run(new Visitor(sourceRootDir, sourceRootDir.resolve(innerPath),relativeSourceDirs, relativeSourceFiles));
+        meter.sub("scan.git").m("GIT repository scan.").run(new Visitor(sourceRootDir, sourceRootDir.resolve(innerPath), relativeSourceDirs, relativeSourceFiles));
 
         /* Calculate trivial changes. */
-        final Set<Path> dirsAdded = new TreeSet<>(relativeSourceDirs);
-        dirsAdded.removeAll(relativeDestDirs);
-        final Set<Path> dirsDeleted = new TreeSet<>(relativeDestDirs);
-        dirsDeleted.removeAll(relativeSourceDirs);
-        final Set<Path> filesAdded = new TreeSet<>(relativeSourceFiles);
-        filesAdded.removeAll(relativeDestFiles);
-        final Set<Path> filesDeleted = new TreeSet<>(relativeDestFiles);
-        filesDeleted.removeAll(relativeSourceFiles);
+        final Set<Path> relativeDirsAdded = new TreeSet<>(relativeSourceDirs);
+        relativeDirsAdded.removeAll(relativeDestDirs);
+        final Set<Path> relativeDirsDeleted = new TreeSet<>(relativeDestDirs);
+        relativeDirsDeleted.removeAll(relativeSourceDirs);
+        final Set<Path> relativeFilesAdded = new TreeSet<>(relativeSourceFiles);
+        relativeFilesAdded.removeAll(relativeDestFiles);
+        final Set<Path> relativeFilesDeleted = new TreeSet<>(relativeDestFiles);
+        relativeFilesDeleted.removeAll(relativeSourceFiles);
 
         /* Calculate change on compasiron. */
-        final Set<Path> filesToCompare = new TreeSet<>(relativeDestFiles);
-        filesToCompare.retainAll(relativeSourceFiles);
-        final Set<Path> filesModified = new TreeSet<>();
-        final Set<Path> filesModifiedSource = new TreeSet<>();
+        final Set<Path> relativeFilesToCompare = new TreeSet<>(relativeDestFiles);
+        relativeFilesToCompare.retainAll(relativeSourceFiles);
+        final Set<Path> relativeFilesModified = new TreeSet<>();
 
-        final Meter m2 = meter.sub("scan.compare").m("Compare file by file.").iterations(filesToCompare.size());
+        final Meter m2 = meter.sub("scan.compare").m("Compare file by file.").iterations(relativeFilesToCompare.size());
         m2.run(() -> {
-            for (final Path relativeFile : filesToCompare) {
+            for (final Path relativeFile : relativeFilesToCompare) {
                 final Path sourceFile = sourceRootDir.resolve(relativeFile);
                 final Path destFile = destRootDir.resolve(relativeFile);
-                try { final long sourceSize = Files.size(sourceFile);
+                try {
+                    final long sourceSize = Files.size(sourceFile);
                     final long destSize = Files.size(destFile);
                     if (sourceSize != destSize) {
-                        filesModified.add(relativeFile);
-                        filesModifiedSource.add(sourceFile.toAbsolutePath());
+                        relativeFilesModified.add(relativeFile);
                         continue;
                     }
                 } catch (IOException e) {
@@ -122,26 +123,44 @@ public class CompareTask implements Runnable {
         });
 
         /* Comparison does not detect moved or copied files. */
-        final Set<Path> filesMovedFrom = Collections.emptySet();
-        final Set<Path> filesMovedTo = Collections.emptySet();
-        final Set<Path> filesMovedModified = Collections.emptySet();
-        final Set<Path> filesMovedSource = Collections.emptySet();
-        final Set<Path> filesCopiedFrom = Collections.emptySet();
-        final Set<Path> filesCopiedTo = Collections.emptySet();
-        final Set<Path> filesCopiedModified = Collections.emptySet();
-        final Set<Path> filesCopiedSource = Collections.emptySet();
-        
+        final List<Path> dirsAdded = new ArrayList<>(relativeDirsAdded);
+        final List<Path> dirsDeleted = new ArrayList<>(relativeDirsDeleted);
+        final List<Path> filesAdded = new ArrayList<>(relativeFilesAdded.size());
+        final List<Path> filesAddedSource = new ArrayList<>(relativeFilesAdded.size());
+        for (Path file : relativeFilesAdded) {
+            filesAdded.add(file);
+            filesAddedSource.add(sourceRootDir.resolve(file));
+        }
+        final List<Path> filesDeleted = new ArrayList<>(relativeFilesDeleted);
+        final List<Path> filesModified = new ArrayList<>(relativeFilesModified.size());
+        final List<Path> filesModifiedSource = new ArrayList<>(relativeFilesModified.size());
+        for (Path file : relativeFilesModified) {
+            filesModified.add(file);
+            filesModifiedSource.add(sourceRootDir.resolve(file));
+        }
+        final List<Path> filesMovedFrom = Collections.emptyList();
+        final List<Path> filesMovedTo = Collections.emptyList();
+        final List<Path> filesMovedModified = Collections.emptyList();
+        final List<Path> filesMovedSource = Collections.emptyList();
+        final List<Path> filesCopiedFrom = Collections.emptyList();
+        final List<Path> filesCopiedTo = Collections.emptyList();
+        final List<Path> filesCopiedModified = Collections.emptyList();
+        final List<Path> filesCopiedSource = Collections.emptyList();
+
         /* Report change set. */
         ChangeSet changeSet = ChangeSet.createFileChangeSet(
-                dirsAdded, dirsDeleted,
-                filesAdded, filesDeleted,
-                filesModified, filesModifiedSource, filesMovedFrom, filesMovedTo, filesMovedModified,
-                filesMovedSource, filesCopiedFrom, filesCopiedTo, filesCopiedModified, filesCopiedSource);
+            dirsAdded,
+            dirsDeleted,
+            filesAdded, filesAddedSource,
+            filesDeleted,
+            filesModified, filesModifiedSource,
+            filesMovedFrom, filesMovedTo, filesMovedModified, filesMovedSource,
+            filesCopiedFrom, filesCopiedTo, filesCopiedModified, filesCopiedSource);
         context.addChangeSet(changeSet);
     }
 
 //    private static boolean compare(final InputStream input1, final InputStream input2) throws IOException {
-      //                try (
+    //                try (
 //                        InputStream i1 = new FileInputStream(gitSourceFile);
 //                        InputStream i2 = new FileInputStream(ccTargetFile)) {
 //                    if (!compare(i1, i2)) {

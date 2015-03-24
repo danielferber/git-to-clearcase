@@ -155,6 +155,7 @@ public class GitCommander {
             final List<File> dirsDeleted = new ArrayList<>();
 
             final List<File> filesAdded = new ArrayList<>();
+            final List<File> filesAddedSource = new ArrayList<>();
             final List<File> filesDeleted = new ArrayList<>();
 
             final List<File> filesModified = new ArrayList<>();
@@ -206,6 +207,7 @@ public class GitCommander {
                         } else if (status == 'A') {
                             /* File was added. */
                             filesAdded.add(f1);
+                            filesAddedSource.add(f1.getAbsoluteFile());
                         } else if (status == 'M') {
                             /* File was modified. */
                             filesModified.add(f1);
@@ -229,7 +231,7 @@ public class GitCommander {
                 }
             });
             waitForNullExitValue(p);
-            return new ChangeSet(dirsAdded, dirsDeleted, filesAdded, filesDeleted, filesModified, filesModifiedSource, filesMovedFrom, filesMovedTo, filesMovedModified, filesMovedSource, filesCopiedFrom, filesCopiedTo, filesCopiedModified, filesCopiedSource);
+            return new ChangeSet(dirsAdded, dirsDeleted, filesAdded, filesAddedSource, filesDeleted, filesModified, filesModifiedSource, filesMovedFrom, filesMovedTo, filesMovedModified, filesMovedSource, filesCopiedFrom, filesCopiedTo, filesCopiedModified, filesCopiedSource);
         });
     }
 }

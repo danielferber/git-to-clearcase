@@ -48,8 +48,8 @@ class CommandLine {
     private static final String updateVobCmdStr = "Update vob.";
     private static final String compareCmdStr = "Create change set by comparing vob view with Git repository.";
     private static final String applyCmdStr = "Apply change set on vob view directory.";
-    private static final String lockCmdStr = "Checkout or create stamp files to lock vob view directory.";
-    private static final String readStampCmdStr = "Read stamp files on vob view directory.";
+    private static final String checkoutCmdStr = "Checkout or create stamp files to lock vob view directory.";
+//    private static final String readStampCmdStr = "Read stamp files on vob view directory.";
     private static final String updateStampCmdStr = "Update stamp files on vob view directory.";
 
     private final static OptionParser parser = new OptionParser();
@@ -72,7 +72,7 @@ class CommandLine {
     private final static OptionSpec<Void> updateVobCmdOpt = parser.accepts("update", updateVobCmdStr);
     private final static OptionSpec<File> compareCmdOpt = parser.accepts("compare", compareCmdStr).withRequiredArg().ofType(File.class);
     private final static OptionSpec<Void> applyCmdOpt = parser.accepts("apply", applyCmdStr);
-    private final static OptionSpec<Void> lockCmdOpt = parser.accepts("lock", lockCmdStr);
+//    private final static OptionSpec<Void> lockCmdOpt = parser.accepts("lock", lockCmdStr);
 
     private final static OptionSpec<File> counterStampFileOpt = parser.accepts("counter-stamp", "Counter stamp file within vob view directory.").withRequiredArg().ofType(File.class);
     private final static OptionSpec<File> commitStampFileOpt = parser.accepts("commit-stamp", "Commit stamp file within vob view directory.").withRequiredArg().ofType(File.class);
@@ -105,8 +105,60 @@ class CommandLine {
             });
             return taskQueue;
         }
-        Properties properties = readProperties(options);
-        fillTasks(options, properties, taskQueue);
+        
+        final Properties properties = readProperties(options);
+        final GitConfig gitConfig = new GitConfigValidated(extractGitConfig(options, properties));
+        final GitTasks gitTasks = new GitTasks(gitConfig);
+        final ClearToolConfig ccConfig = new ClearToolConfigValidated(extractClearToolConfig(options, properties));
+        final CCTasks cCTasks = new CCTasks(ccConfig);
+        final ChangeContext changeContext = new ChangeContext();
+        
+        int priorityCounter = 0;
+        ChangeConfig changeConfig = null;
+        ChangeTasks changeTasks = null;
+        ChangeTasks.CheckoutStampTask checkoutStampTask = null;
+        ChangeTasks.UpdateStampTask updateStampTask = null;
+        
+        for (OptionSpec<?> spec : options.specs()) {
+            if (spec == resetCmdOpt) {
+                taskQueue.add(priorityCounter++, resetCmdStr, gitTasks.new Reset());
+            } else if (spec == cleanCmdOpt) {
+                taskQueue.add(priorityCounter++, cleanCmdStr, gitTasks.new Clean());
+            } else if (spec == fastForwardCmdOpt) {
+                taskQueue.add(priorityCounter++, fastForwardCmdStr, gitTasks.new FastForward());
+            } else if (spec == fetchCmdOpt) {
+                taskQueue.add(priorityCounter++, fetchCmdStr, gitTasks.new Fetch());
+            } else if (spec == setupCmdOpt) {
+                taskQueue.add(priorityCounter++, setupCmdStr, gitTasks.new SetUpRepository());
+            } else if (spec == pullCmdOpt) {
+                taskQueue.add(priorityCounter++, pullCmdStr, gitTasks.new Pull());
+            } else if (spec == findCheckoutCmdOpt) {
+                taskQueue.add(priorityCounter++, findCheckoutCmdStr, cCTasks.new FindCheckouts());
+            } else if (spec == checkinAllCmdOpt) {
+                taskQueue.add(priorityCounter++, checkinAllCmdStr, cCTasks.new CheckinAll());
+            } else if (spec == updateVobCmdOpt) {
+                taskQueue.add(priorityCounter++, updateVobCmdStr, cCTasks.new UpdateVob());
+//            } else if (spec == lockCmdOpt) {
+//                changeTasks = extractChangeTasks(changeTasks, changeContext, extractChangeConfig(changeConfig, ccConfig, options, properties), ccConfig);
+//                taskQueue.add(priorityCounter++, lockCmdStr, changeTasks.new CheckoutStampTask());
+            } else if (spec == compareCmdOpt) {
+                taskQueue.add(priorityCounter++, compareCmdStr, new CompareTask(changeContext, gitConfig.getRepositoryAbsoluteDir().toPath(), ccConfig.getVobViewAbsoluteDir().toPath(), options.valueOf(compareCmdOpt).toPath()));
+            } else if (spec == diffTreeOpt) {
+                if (updateStampTask == null) {
+                    changeConfig = extractChangeConfig(changeConfig, ccConfig, options, properties);
+                    changeTasks = extractChangeTasks(changeTasks, changeContext, changeConfig, ccConfig);
+                    taskQueue.add(priorityCounter++, updateStampCmdStr, updateStampTask = changeTasks.new UpdateStampTask());
+                }
+                taskQueue.add(priorityCounter++, diffTreeCmdStr, new DiffTreeTask(changeContext, gitConfig, changeConfig));
+            } else if (spec == applyCmdOpt) {
+                changeConfig = extractChangeConfig(changeConfig, ccConfig, options, properties);
+                if (checkoutStampTask == null) {
+                    changeTasks = extractChangeTasks(changeTasks, changeContext, changeConfig, ccConfig);
+                    taskQueue.add(priorityCounter++, checkoutCmdStr, checkoutStampTask = changeTasks.new CheckoutStampTask());
+                }
+                taskQueue.add(priorityCounter++, applyCmdStr, new ApplyTask(changeContext, ccConfig, changeConfig));
+            }
+        }
         return taskQueue;
     }
 
@@ -173,53 +225,7 @@ class CommandLine {
         if (current != null) {
             return current;
         }
-        return new ChangeTasks(context, config, ctConfig);
+        return new ChangeTasks(config, ctConfig);
     }
 
-    private static void fillTasks(OptionSet options, Properties properties, TaskQueue taskQueue) {
-        int priorityCounter = 0;
-
-        GitConfig gitConfig = new GitConfigValidated(extractGitConfig(options, properties));
-        GitTasks gitTasks = new GitTasks(gitConfig);
-        ClearToolConfig ccConfig = new ClearToolConfigValidated(extractClearToolConfig(options, properties));
-        CCTasks cCTasks = new CCTasks(ccConfig);
-        ChangeConfig changeConfig = null;
-        ChangeTasks changeTasks = null;
-
-        ChangeContext changeContext = new ChangeContext();
-
-        for (OptionSpec<?> spec : options.specs()) {
-            if (spec == resetCmdOpt) {
-                taskQueue.add(priorityCounter++, resetCmdStr, gitTasks.new Reset());
-            } else if (spec == cleanCmdOpt) {
-                taskQueue.add(priorityCounter++, cleanCmdStr, gitTasks.new Clean());
-            } else if (spec == fastForwardCmdOpt) {
-                taskQueue.add(priorityCounter++, fastForwardCmdStr, gitTasks.new FastForward());
-            } else if (spec == fetchCmdOpt) {
-                taskQueue.add(priorityCounter++, fetchCmdStr, gitTasks.new Fetch());
-            } else if (spec == setupCmdOpt) {
-                taskQueue.add(priorityCounter++, setupCmdStr, gitTasks.new SetUpRepository());
-            } else if (spec == pullCmdOpt) {
-                taskQueue.add(priorityCounter++, pullCmdStr, gitTasks.new Pull());
-            } else if (spec == findCheckoutCmdOpt) {
-                taskQueue.add(priorityCounter++, findCheckoutCmdStr, cCTasks.new FindCheckouts());
-            } else if (spec == checkinAllCmdOpt) {
-                taskQueue.add(priorityCounter++, checkinAllCmdStr, cCTasks.new CheckinAll());
-            } else if (spec == updateVobCmdOpt) {
-                taskQueue.add(priorityCounter++, updateVobCmdStr, cCTasks.new UpdateVob());
-            } else if (spec == lockCmdOpt) {
-                changeTasks = extractChangeTasks(changeTasks, changeContext, extractChangeConfig(changeConfig, ccConfig, options, properties), ccConfig);
-                taskQueue.add(priorityCounter++, lockCmdStr, changeTasks.new LockStampTask());
-            } else if (spec == compareCmdOpt) {
-                taskQueue.add(priorityCounter++, compareCmdStr, new CompareTask(changeContext, gitConfig.getRepositoryAbsoluteDir().toPath(), ccConfig.getVobViewAbsoluteDir().toPath(), options.valueOf(compareCmdOpt).toPath()));
-            } else if (spec == diffTreeOpt) {
-                taskQueue.add(priorityCounter++, readStampCmdStr, changeTasks.new ReadStampTask());
-                changeConfig = extractChangeConfig(changeConfig, ccConfig, options, properties);
-                taskQueue.add(priorityCounter++, diffTreeCmdStr, new DiffTreeTask(changeContext, gitConfig, changeConfig));
-            } else if (spec == applyCmdOpt) {
-                taskQueue.add(priorityCounter++, applyCmdStr, new ApplyTask(changeContext, ccConfig));
-                taskQueue.add(priorityCounter++, updateStampCmdStr, changeTasks.new UpdateStampTask());
-            }
-        }
-    }
 }
