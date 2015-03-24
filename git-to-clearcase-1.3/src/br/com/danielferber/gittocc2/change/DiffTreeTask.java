@@ -38,5 +38,6 @@ public class DiffTreeTask implements Runnable {
         String sourceCommit = changeConfig.getCommitStampOverride() != null ? changeConfig.getCommitStampOverride() : changeConfig.readCommitStampFromFile();
         ChangeSet changeset = commander.diffTree(sourceCommit, targetCommit);
         context.addChangeSet(changeset);
+        context.setTargetCommit(targetCommit);
     }
 }

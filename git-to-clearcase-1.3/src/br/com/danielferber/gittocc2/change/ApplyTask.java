@@ -208,5 +208,7 @@ public class ApplyTask implements Runnable {
                 });
             }
         }
+        
+        changeConfig.writeCommitStampFromFile(null);
     }
 }

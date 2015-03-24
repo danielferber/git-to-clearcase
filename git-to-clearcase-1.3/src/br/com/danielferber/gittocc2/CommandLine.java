@@ -49,7 +49,7 @@ class CommandLine {
     private static final String compareCmdStr = "Create change set by comparing vob view with Git repository.";
     private static final String applyCmdStr = "Apply change set on vob view directory.";
     private static final String checkoutCmdStr = "Checkout or create stamp files to lock vob view directory.";
-//    private static final String readStampCmdStr = "Read stamp files on vob view directory.";
+    private static final String writeStampCmdStr = "Write stamp files on vob view directory.";
     private static final String updateStampCmdStr = "Update stamp files on vob view directory.";
 
     private final static OptionParser parser = new OptionParser();
@@ -155,6 +155,7 @@ class CommandLine {
                 if (checkoutStampTask == null) {
                     changeTasks = extractChangeTasks(changeTasks, changeContext, changeConfig, ccConfig);
                     taskQueue.add(priorityCounter++, checkoutCmdStr, checkoutStampTask = changeTasks.new CheckoutStampTask());
+                    taskQueue.add(priorityCounter++, writeStampCmdStr, changeTasks.new WriteStampTask());
                 }
                 taskQueue.add(priorityCounter++, applyCmdStr, new ApplyTask(changeContext, ccConfig, changeConfig));
             }
@@ -225,7 +226,7 @@ class CommandLine {
         if (current != null) {
             return current;
         }
-        return new ChangeTasks(config, ctConfig);
+        return new ChangeTasks(context, config, ctConfig);
     }
 
 }

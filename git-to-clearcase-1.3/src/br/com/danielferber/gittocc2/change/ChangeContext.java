@@ -16,7 +16,7 @@ public class ChangeContext {
 
     private Queue<ChangeSet> changeSetCollection = new LinkedList<>();
 //    private String sourceCommit = null;
-//    private String targetCommit = null;
+    private String targetCommit = null;
 //    private Long sourceCounter = null;
 //    private Long targetCounter = null;
 
@@ -35,15 +35,15 @@ public class ChangeContext {
 //    public void setSourceCommit(String sourceCommit) {
 //        this.sourceCommit = sourceCommit;
 //    }
-//
-//    public String getTargetCommit() {
-//        return targetCommit;
-//    }
-//
-//    public void setTargetCommit(String targetCommit) {
-//        this.targetCommit = targetCommit;
-//    }
-//
+
+    public String getTargetCommit() {
+        return targetCommit;
+    }
+
+    public void setTargetCommit(String targetCommit) {
+        this.targetCommit = targetCommit;
+    }
+
 //    public Long getSourceCounter() {
 //        return sourceCounter;
 //    }

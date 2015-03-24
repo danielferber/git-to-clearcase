@@ -618,6 +618,12 @@ public class ClearToolCommander {
         m.ok();
     }
 
+    public void unsetActivity() {
+        taskMeter.sub("activity.unset").run(() -> {
+            pb.reset("setactivity").command("setactivity").arguments("-none").create().waitFor();
+        });
+    }
+    
     /*
      * FIND CHECKOUTs.
      */

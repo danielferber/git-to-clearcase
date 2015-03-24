@@ -14,12 +14,14 @@ import br.com.danielferber.gittocc2.config.ConfigException;
  * @author Daniel Felix Ferber
  */
 public class ChangeTasks {
+    private final ChangeContext context;
 
     private final ChangeConfig config;
     private final ClearToolConfig ctConfig;
     private ClearToolCommander ctCommander;
 
-    public ChangeTasks(ChangeConfig config, ClearToolConfig ctConfig) {
+    public ChangeTasks(ChangeContext context, ChangeConfig config, ClearToolConfig ctConfig) {
+        this.context = context;
         this.config = config;
         this.ctConfig = ctConfig;
     }
@@ -62,6 +64,27 @@ public class ChangeTasks {
         public void run() {
             commander.update(config.getCommitStampAbsoluteFile());
             commander.update(config.getCounterStampAbsoluteFile());
+        }
+    }
+
+    public class WriteStampTask implements Runnable {
+
+        final ClearToolCommander commander = extractClearToolCommander();
+
+        public WriteStampTask() {
+            // Fails for inconsistent config.
+            config.getCommitStampAbsoluteFile();
+            config.getCounterStampAbsoluteFile();
+        }
+
+        @Override
+        public void run() {
+            commander.checkoutFile(config.getCommitStampAbsoluteFile());
+            commander.checkoutFile(config.getCounterStampAbsoluteFile());
+            config.writeCommitStampFromFile(context.getTargetCommit());
+            long counter = config.readCounterStampFromFile();
+            counter ++;
+            config.writeCounterStampFromFile(counter);
         }
     }
 }

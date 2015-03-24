@@ -58,4 +58,25 @@ public class CCTasks {
             }
         }
     }
+
+    public class UnsetActivity implements Runnable {
+
+        final ClearToolCommander commander = extractClearToolCommander();
+
+        @Override
+        public void run() {
+            commander.unsetActivity();
+        }
+    }
+
+    public class SetActivity implements Runnable {
+
+        final ClearToolCommander commander = extractClearToolCommander();
+
+        @Override
+        public void run() {
+            commander.setActivity(null, true);
+        }
+    }
+
 }
