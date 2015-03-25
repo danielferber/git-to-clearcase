@@ -5,9 +5,9 @@
  */
 package br.com.danielferber.gittocc2.change;
 
+import br.com.danielferber.gittocc2.cc.ClearToolConfig;
 import br.com.danielferber.gittocc2.config.ConfigProperties;
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Properties;
 
 public class ChangeConfigProperties extends ChangeConfigImpl {
@@ -16,16 +16,17 @@ public class ChangeConfigProperties extends ChangeConfigImpl {
     public static final String PROP_COUNTER_STAMP_FILE = "stamp.counter.file";
     public static final String PROP_COMMIT_STAMP_OVERRIDE = "stamp.commit.override";
     public static final String PROP_COUNTER_STAMP_OVERRIDE = "stamp.counter.override";
+    public static final String PROP_ACTIVIY_NAME = "activity.name";
 
     private final ConfigProperties properties;
     private final String prefix;
 
-    public ChangeConfigProperties(Path stampAbsoluteRootDir,  final Properties properties) {
-        this(stampAbsoluteRootDir, properties, "");
+    public ChangeConfigProperties(final ClearToolConfig clearToolConfig,  final Properties properties) {
+        this(clearToolConfig, properties, "");
     }
 
-    public ChangeConfigProperties(Path stampAbsoluteRootDir, final Properties properties, final String prefix) {
-        super(stampAbsoluteRootDir);
+    public ChangeConfigProperties(final ClearToolConfig clearToolConfig, final Properties properties, final String prefix) {
+        super(clearToolConfig);
         this.properties = new ConfigProperties(properties);
         this.prefix = prefix;
     }
@@ -50,6 +51,11 @@ public class ChangeConfigProperties extends ChangeConfigImpl {
         return properties.getLong(prefix + PROP_COUNTER_STAMP_OVERRIDE);
     }
 
+    @Override
+    public String getActiviyName() {
+        return properties.getString(prefix + PROP_ACTIVIY_NAME);
+    }
+
     public ChangeConfigProperties setCommitStampFile(final File file) {
         properties.setFile(prefix + PROP_COMMIT_STAMP_FILE, file);
         return this;
@@ -67,6 +73,11 @@ public class ChangeConfigProperties extends ChangeConfigImpl {
 
     public ChangeConfigProperties setCommitStampOverride(final String value) {
         properties.setString(prefix + PROP_COMMIT_STAMP_OVERRIDE, value);
+        return this;
+    }
+    
+    public ChangeConfigProperties setActivityName(final String name) {
+        properties.setString(prefix + PROP_ACTIVIY_NAME, name);
         return this;
     }
 }

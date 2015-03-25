@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.change;
+package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.File;
@@ -19,7 +19,10 @@ import org.slf4j.Logger;
  * @author x7ws
  */
 public class ChangeSet {
-
+    /**
+     * 
+     */
+    public final String commit;
     /**
      * List of view private directories to add to clearcase.
      */
@@ -49,6 +52,7 @@ public class ChangeSet {
     public final List<File> filesCopiedSource;
 
     public static ChangeSet createFileChangeSet(
+        final String commit,
         final List<Path> dirsAdded,
         final List<Path> dirsDeleted,
         final List<Path> filesAdded, final List<Path> filesAddedSource,
@@ -57,6 +61,7 @@ public class ChangeSet {
         final List<Path> filesMovedFrom, final List<Path> filesMovedTo, final List<Path> filesMovedModified, final List<Path> filesMovedSource,
         final List<Path> filesCopiedFrom, final List<Path> filesCopiedTo, final List<Path> filesCopiedModified, final List<Path> filesCopiedSource) {
         return new ChangeSet(
+            commit,
             pathToFile(dirsAdded),
             pathToFile(dirsDeleted),
             pathToFile(filesAdded), pathToFile(filesAddedSource),
@@ -75,6 +80,7 @@ public class ChangeSet {
     }
 
     public ChangeSet(
+        final String commit,
         final List<File> dirsAdded,
         final List<File> dirsDeleted,
         final List<File> filesAdded, final List<File> filesAddedSource,
@@ -82,6 +88,7 @@ public class ChangeSet {
         final List<File> filesModified, final List<File> filesModifiedSource,
         final List<File> filesMovedFrom, final List<File> filesMovedTo, final List<File> filesMovedModified, final List<File> filesMovedSource,
         final List<File> filesCopiedFrom, final List<File> filesCopiedTo, final List<File> filesCopiedModified, final List<File> filesCopiedSource) {
+        this.commit = commit;
         this.dirsAdded = Collections.unmodifiableList(dirsAdded);
         this.dirsDeleted = Collections.unmodifiableList(dirsDeleted);
         this.filesAdded = Collections.unmodifiableList(filesAdded);

@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.change;
+package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.gittocc2.cc.ClearToolCommander;
 import br.com.danielferber.gittocc2.cc.ClearToolConfig;
+import br.com.danielferber.gittocc2.change.ChangeConfig;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.io.File;
 import java.io.IOException;
@@ -23,11 +24,11 @@ import java.util.TreeSet;
  */
 public class ApplyTask implements Runnable {
 
-    private final ChangeContext changeContext;
+    private final Context changeContext;
     private final ChangeConfig changeConfig;
     private final ClearToolCommander ctCommander;
 
-    public ApplyTask(ChangeContext changeContext, ClearToolConfig ccConfig, ChangeConfig changeConfig) {
+    public ApplyTask(Context changeContext, ClearToolConfig ccConfig, ChangeConfig changeConfig) {
         this.changeContext = changeContext;
         this.changeConfig = changeConfig;
         this.ctCommander = new ClearToolCommander(ccConfig);
@@ -83,6 +84,9 @@ public class ApplyTask implements Runnable {
         while (targetIt.hasNext()) {
             final File sourceFile = sourceIt.next();
             final File targetFile = targetIt.next();
+            if (sourceFile == null) {
+                continue;
+            }
             try {
                 Files.copy(sourceFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (final IOException e) {
@@ -95,7 +99,7 @@ public class ApplyTask implements Runnable {
     @Override
     public void run() {
         final Meter m = Meter.getCurrentInstance();
-        ChangeSet diff = changeContext.nextChangeSet();
+        ChangeSet diff = changeContext.getChangeSet();
         if (diff == null) {
             return;
         }
@@ -208,7 +212,5 @@ public class ApplyTask implements Runnable {
                 });
             }
         }
-        
-        changeConfig.writeCommitStampFromFile(null);
     }
 }

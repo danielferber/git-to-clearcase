@@ -11,6 +11,11 @@ public class ChangeConfigValidated implements ChangeConfig {
 
     private final ChangeConfig config;
 
+    @Override
+    public String getActiviyName() {
+        return config.getActiviyName();
+    }
+
     public ChangeConfigValidated(ChangeConfig config) {
         this.config = config;
     }
@@ -43,25 +48,5 @@ public class ChangeConfigValidated implements ChangeConfig {
     @Override
     public Long getCounterStampOverride() {
         return config.getCounterStampOverride();
-    }
-
-    @Override
-    public String readCommitStampFromFile() {
-        return config.readCommitStampFromFile();
-    }
-
-    @Override
-    public long readCounterStampFromFile() {
-        return config.readCounterStampFromFile();
-    }
-
-    @Override
-    public void writeCommitStampFromFile(String commit) {
-        config.writeCommitStampFromFile(commit);
-    }
-
-    @Override
-    public void writeCounterStampFromFile(long counter) {
-        config.writeCounterStampFromFile(counter);
     }
 }

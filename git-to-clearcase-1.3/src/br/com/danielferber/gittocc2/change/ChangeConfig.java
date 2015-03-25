@@ -12,15 +12,11 @@ import java.io.File;
  * @author x7ws
  */
 public interface ChangeConfig {
+    String getActiviyName();
     File getCommitStampFile();
     File getCounterStampFile();
     File getCommitStampAbsoluteFile();
     File getCounterStampAbsoluteFile();
     String getCommitStampOverride();
     Long getCounterStampOverride();
-
-    String readCommitStampFromFile();
-    long readCounterStampFromFile();
-    void writeCommitStampFromFile(String commit);
-    void writeCounterStampFromFile(long counter);
 }

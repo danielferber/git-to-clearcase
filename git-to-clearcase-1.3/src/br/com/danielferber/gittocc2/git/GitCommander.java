@@ -4,7 +4,6 @@
  */
 package br.com.danielferber.gittocc2.git;
 
-import br.com.danielferber.gittocc2.change.ChangeSet;
 import br.com.danielferber.gittocc2.process.CommandLineProcess;
 import br.com.danielferber.gittocc2.process.CommandLineProcessBuilder;
 import br.com.danielferber.gittocc2.process.LineSplittingWriter;
@@ -14,7 +13,6 @@ import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.MeterFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -144,32 +142,21 @@ public class GitCommander {
         return sb.toString();
     }
 
-    public ChangeSet diffTree(final String fromCommit, final String toCommit) {
-        return meter.sub("diffTree").ctx("from", fromCommit).ctx("to", toCommit).safeCall(() -> {
+    public void diffTree(
+        final String fromCommit, final String toCommit,
+        final List<File> dirsAdded,
+        final List<File> dirsDeleted,
+        final List<File> filesAdded, final List<File> filesAddedSource,
+        final List<File> filesDeleted,
+        final List<File> filesModified, final List<File> filesModifiedSource,
+        final List<File> filesMovedFrom, final List<File> filesMovedTo, final List<File> filesMovedModified, final List<File> filesMovedSource,
+        final List<File> filesCopiedFrom, final List<File> filesCopiedTo, final List<File> filesCopiedModified, final List<File> filesCopiedSource) {
+ 
+        meter.sub("diffTree").ctx("from", fromCommit).ctx("to", toCommit).run(() -> {
             final CommandLineProcess p = pb.reset("diff-tree").command("diff-tree")
                 .parameter("find-copies", "30%").parameter("find-copies-harder")
                 .parameter("find-renames", "30%").shortParameter("r")
                 .shortParameter("t").parameter("raw").argument(fromCommit).argument(toCommit).create();
-
-            final List<File> dirsAdded = new ArrayList<>();
-            final List<File> dirsDeleted = new ArrayList<>();
-
-            final List<File> filesAdded = new ArrayList<>();
-            final List<File> filesAddedSource = new ArrayList<>();
-            final List<File> filesDeleted = new ArrayList<>();
-
-            final List<File> filesModified = new ArrayList<>();
-            final List<File> filesModifiedSource = new ArrayList<>();
-
-            final List<File> filesMovedFrom = new ArrayList<>();
-            final List<File> filesMovedTo = new ArrayList<>();
-            final List<File> filesMovedModified = new ArrayList<>();
-            final List<File> filesMovedSource = new ArrayList<>();
-
-            final List<File> filesCopiedFrom = new ArrayList<>();
-            final List<File> filesCopiedTo = new ArrayList<>();
-            final List<File> filesCopiedModified = new ArrayList<>();
-            final List<File> filesCopiedSource = new ArrayList<>();
 
             p.addOutWriter(new LineSplittingWriter() {
                 @Override
@@ -231,7 +218,6 @@ public class GitCommander {
                 }
             });
             waitForNullExitValue(p);
-            return new ChangeSet(dirsAdded, dirsDeleted, filesAdded, filesAddedSource, filesDeleted, filesModified, filesModifiedSource, filesMovedFrom, filesMovedTo, filesMovedModified, filesMovedSource, filesCopiedFrom, filesCopiedTo, filesCopiedModified, filesCopiedSource);
         });
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2.change;
+package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.io.IOException;
@@ -24,13 +24,13 @@ import java.util.TreeSet;
  */
 public class CompareTask implements Runnable {
 
-    private final ChangeContext context;
+    private final Context context;
 
     private final Path sourceRootDir;
     private final Path destRootDir;
     private final Path innerPath;
 
-    public CompareTask(ChangeContext context, final Path sourceRootDir, final Path destRootDir, final Path innerPath) {
+    public CompareTask(Context context, final Path sourceRootDir, final Path destRootDir, final Path innerPath) {
         this.context = context;
         this.sourceRootDir = sourceRootDir;
         this.destRootDir = destRootDir;
@@ -149,6 +149,7 @@ public class CompareTask implements Runnable {
 
         /* Report change set. */
         ChangeSet changeSet = ChangeSet.createFileChangeSet(
+            context.getCurrentCommitStamp(),
             dirsAdded,
             dirsDeleted,
             filesAdded, filesAddedSource,
@@ -156,7 +157,7 @@ public class CompareTask implements Runnable {
             filesModified, filesModifiedSource,
             filesMovedFrom, filesMovedTo, filesMovedModified, filesMovedSource,
             filesCopiedFrom, filesCopiedTo, filesCopiedModified, filesCopiedSource);
-        context.addChangeSet(changeSet);
+        context.setChangeSet(changeSet);
     }
 
 //    private static boolean compare(final InputStream input1, final InputStream input2) throws IOException {

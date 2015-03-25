@@ -27,7 +27,7 @@ public class CCTasks {
         this.config = config;
     }
 
-    public class FindCheckouts implements Runnable {
+    public class LoadCheckouts implements Runnable {
 
         final ClearToolCommander commander = extractClearToolCommander();
 

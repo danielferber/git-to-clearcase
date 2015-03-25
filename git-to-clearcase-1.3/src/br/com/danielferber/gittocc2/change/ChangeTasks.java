@@ -5,6 +5,7 @@
  */
 package br.com.danielferber.gittocc2.change;
 
+import br.com.danielferber.gittocc2.Context;
 import br.com.danielferber.gittocc2.cc.ClearToolCommander;
 import br.com.danielferber.gittocc2.cc.ClearToolConfig;
 import br.com.danielferber.gittocc2.cc.ClearToolException;
@@ -19,13 +20,13 @@ import org.apache.commons.lang3.text.StrSubstitutor;
  */
 public class ChangeTasks {
 
-    private final ChangeContext context;
+    private final Context context;
 
     private final ChangeConfig config;
     private final ClearToolConfig ctConfig;
     private ClearToolCommander ctCommander;
 
-    public ChangeTasks(ChangeContext context, ChangeConfig config, ClearToolConfig ctConfig) {
+    public ChangeTasks(Context context, ChangeConfig config, ClearToolConfig ctConfig) {
         this.context = context;
         this.config = config;
         this.ctConfig = ctConfig;
