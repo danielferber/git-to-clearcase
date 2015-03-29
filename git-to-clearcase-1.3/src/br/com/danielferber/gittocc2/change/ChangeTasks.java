@@ -6,10 +6,11 @@
 package br.com.danielferber.gittocc2.change;
 
 import br.com.danielferber.gittocc2.Context;
-import br.com.danielferber.gittocc2.cc.ClearToolCommander;
-import br.com.danielferber.gittocc2.cc.ClearToolConfig;
-import br.com.danielferber.gittocc2.cc.ClearToolException;
+import br.com.danielferber.gittocc2.cc.CcCommander;
+import br.com.danielferber.gittocc2.cc.CcConfig;
+import br.com.danielferber.gittocc2.cc.CclException;
 import br.com.danielferber.gittocc2.config.ConfigException;
+import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.util.Date;
 import java.util.HashMap;
 import org.apache.commons.lang3.text.StrSubstitutor;
@@ -23,42 +24,57 @@ public class ChangeTasks {
     private final Context context;
 
     private final ChangeConfig config;
-    private final ClearToolConfig ctConfig;
-    private ClearToolCommander ctCommander;
+    private final CcConfig ctConfig;
+    private CcCommander ctCommander;
 
-    public ChangeTasks(Context context, ChangeConfig config, ClearToolConfig ctConfig) {
+    public ChangeTasks(Context context, ChangeConfig config, CcConfig ctConfig) {
         this.context = context;
         this.config = config;
         this.ctConfig = ctConfig;
     }
 
-    private ClearToolCommander extractClearToolCommander() throws ConfigException {
+    private CcCommander extractClearToolCommander() throws ConfigException {
         if (ctCommander == null) {
-            ctCommander = new ClearToolCommander(ctConfig);
+            ctCommander = new CcCommander(ctConfig);
         }
         return ctCommander;
     }
 
-    public class CheckoutStampTask implements Runnable {
+    public class WriteStampTask implements Runnable {
 
-        final ClearToolCommander commander = extractClearToolCommander();
+        final CcCommander commander = extractClearToolCommander();
 
-        public CheckoutStampTask() {
+        public WriteStampTask() {
             // Fails for inconsistent config.
-            config.getCommitStampAbsoluteFile();
-            config.getCounterStampAbsoluteFile();
+            if (config.hasCommitStampFile()) {
+                config.getCommitStampAbsoluteFile();
+            }
+            if (config.hasCounterStampFile()) {
+                config.getCounterStampAbsoluteFile();
+            }
         }
 
         @Override
         public void run() {
-            commander.checkoutFile(config.getCommitStampAbsoluteFile());
-            commander.checkoutFile(config.getCounterStampAbsoluteFile());
+            final Meter m = Meter.getCurrentInstance();
+            if (config.hasCommitStampFile()) {
+                commander.checkoutFile(config.getCommitStampAbsoluteFile());
+                final String commit = context.getCurrentCommitStamp();
+                context.writeCommitStampFile(commit);
+                m.ctx("commit", commit).ctx("commitStampFile", config.getCommitStampAbsoluteFile());
+            }
+            if (config.hasCounterStampFile()) {
+                commander.checkoutFile(config.getCounterStampAbsoluteFile());
+                final long counter = context.getCurrentCounterStamp() + 1;
+                context.writeCounterStampFile(counter);
+                m.ctx("counter", counter).ctx("counterStampFile", config.getCommitStampAbsoluteFile());
+            }
         }
     }
 
     public class UpdateStampTask implements Runnable {
 
-        final ClearToolCommander commander = extractClearToolCommander();
+        final CcCommander commander = extractClearToolCommander();
 
         public UpdateStampTask() {
             // Fails for inconsistent config.
@@ -73,49 +89,24 @@ public class ChangeTasks {
         }
     }
 
-    public class WriteStampTask implements Runnable {
-
-        final ClearToolCommander commander = extractClearToolCommander();
-
-        public WriteStampTask() {
-            // Fails for inconsistent config.
-            config.getCommitStampAbsoluteFile();
-            config.getCounterStampAbsoluteFile();
-        }
-
-        @Override
-        public void run() {
-            commander.checkoutFile(config.getCommitStampAbsoluteFile());
-            commander.checkoutFile(config.getCounterStampAbsoluteFile());
-            config.writeCommitStampFromFile(context.getTargetCommit());
-            long counter = config.readCounterStampFromFile();
-            counter++;
-            config.writeCounterStampFromFile(counter);
-        }
-    }
-
     public class DefineActivityStampTask implements Runnable {
 
-        final ClearToolCommander commander = extractClearToolCommander();
-        private final String activityName;
-
-        public DefineActivityStampTask(String activityName) {
-            this.activityName = activityName;
-        }
+        final CcCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {
             final HashMap<String, Object> map = new HashMap<>();
-            map.put("commit", context.getTargetCommit());
+            map.put("commit", context.getCurrentCommitStamp());
             map.put("date", new Date());
-            map.put("count", context.getCounter());
+            map.put("count", context.getCurrentCounterStamp());
             final StrSubstitutor sub = new StrSubstitutor(map);
-            final String taskName = sub.replace(activityName);
+            final String activityName = sub.replace(config.getActiviyName());
             try {
-                ctCommander.setActivity(taskName);
-            } catch (ClearToolException.ActivityNotFound e) {
-                ctCommander.createActivity(taskName);
+                ctCommander.setActivity(activityName);
+            } catch (CclException.ActivityNotFound e) {
+                ctCommander.createActivity(activityName);
             }
+            Meter.getCurrentInstance().ctx("activity", activityName);
         }
     }
 }

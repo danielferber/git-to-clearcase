@@ -7,7 +7,7 @@ package br.com.danielferber.gittocc2.cc;
 import java.io.File;
 
 
-abstract class ClearToolConfigImpl implements ClearToolConfig {
+abstract class CcConfigImpl implements CcConfig {
 
     @Override
     public File getClearToolAbsoluteExec() {

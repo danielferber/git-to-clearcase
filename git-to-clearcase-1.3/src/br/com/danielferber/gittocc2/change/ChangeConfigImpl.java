@@ -5,15 +5,30 @@
  */
 package br.com.danielferber.gittocc2.change;
 
-import br.com.danielferber.gittocc2.cc.ClearToolConfig;
+import br.com.danielferber.gittocc2.cc.CcConfig;
 import java.io.File;
 
-public abstract class ChangeConfigImpl implements ChangeConfig {
+abstract class ChangeConfigImpl implements ChangeConfig {
 
-    private final ClearToolConfig clearToolConfig;
+    private final CcConfig clearToolConfig;
 
-    public ChangeConfigImpl(ClearToolConfig clearToolConfig) {
+    public ChangeConfigImpl(CcConfig clearToolConfig) {
         this.clearToolConfig = clearToolConfig;
+    }
+
+    @Override
+    public boolean doDefineActivity() {
+        return this.getActiviyName() != null;
+    }
+
+    @Override
+    public boolean hasCommitStampFile() {
+        return this.getCommitStampFile() != null;
+    }
+
+    @Override
+    public boolean hasCounterStampFile() {
+        return this.getCounterStampFile() != null;
     }
 
     @Override

@@ -12,6 +12,21 @@ public class ChangeConfigValidated implements ChangeConfig {
     private final ChangeConfig config;
 
     @Override
+    public boolean doDefineActivity() {
+        return config.doDefineActivity();
+    }
+
+    @Override
+    public boolean hasCommitStampFile() {
+        return config.hasCommitStampFile();
+    }
+
+    @Override
+    public boolean hasCounterStampFile() {
+        return config.hasCounterStampFile();
+    }
+
+    @Override
     public String getActiviyName() {
         return config.getActiviyName();
     }

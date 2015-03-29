@@ -7,7 +7,7 @@ import java.io.PrintStream;
  *
  * @author Daniel
  */
-public interface ClearToolConfig {
+public interface CcConfig {
 
     /**
      * @return Path to the cleartool executable.
@@ -31,7 +31,7 @@ public interface ClearToolConfig {
 
     final class Utils {
 
-        public static void printConfig(PrintStream ps, ClearToolConfig config) {
+        public static void printConfig(PrintStream ps, CcConfig config) {
             ps.println("Cleartool properties:");
             ps.println(" * Executable file: " + config.getClearToolExec());
             ps.println("    - resolves to: " + config.getClearToolAbsoluteExec());

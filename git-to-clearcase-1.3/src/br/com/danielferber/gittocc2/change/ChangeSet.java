@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.danielferber.gittocc2;
+package br.com.danielferber.gittocc2.change;
 
 import br.com.danielferber.slf4jtoys.slf4j.logger.LoggerFactory;
 import java.io.File;
@@ -122,11 +122,7 @@ public class ChangeSet {
             && filesDeleted.isEmpty()
             && filesModified.isEmpty()
             && filesMovedFrom.isEmpty()
-            && filesMovedTo.isEmpty()
-            && filesMovedModified.isEmpty()
-            && filesCopiedFrom.isEmpty()
-            && filesCopiedTo.isEmpty()
-            && filesCopiedModified.isEmpty());
+            && filesCopiedFrom.isEmpty());
     }
 
     @Override

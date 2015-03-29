@@ -5,8 +5,9 @@
  */
 package br.com.danielferber.gittocc2;
 
-import br.com.danielferber.gittocc2.cc.ClearToolCommander;
-import br.com.danielferber.gittocc2.cc.ClearToolConfig;
+import br.com.danielferber.gittocc2.change.ChangeSet;
+import br.com.danielferber.gittocc2.cc.CcCommander;
+import br.com.danielferber.gittocc2.cc.CcConfig;
 import br.com.danielferber.gittocc2.change.ChangeConfig;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.io.File;
@@ -26,12 +27,12 @@ public class ApplyTask implements Runnable {
 
     private final Context changeContext;
     private final ChangeConfig changeConfig;
-    private final ClearToolCommander ctCommander;
+    private final CcCommander ctCommander;
 
-    public ApplyTask(Context changeContext, ClearToolConfig ccConfig, ChangeConfig changeConfig) {
+    public ApplyTask(Context changeContext, CcConfig ccConfig, ChangeConfig changeConfig) {
         this.changeContext = changeContext;
         this.changeConfig = changeConfig;
-        this.ctCommander = new ClearToolCommander(ccConfig);
+        this.ctCommander = new CcCommander(ccConfig);
     }
 
     private static Collection<File> roots(final List<File> files) {

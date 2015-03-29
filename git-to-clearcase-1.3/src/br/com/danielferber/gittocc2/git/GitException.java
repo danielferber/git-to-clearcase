@@ -4,7 +4,7 @@
  */
 package br.com.danielferber.gittocc2.git;
 
-import br.com.danielferber.gittocc2.cc.ClearToolException;
+import br.com.danielferber.gittocc2.cc.CclException;
 
 /**
  *
@@ -12,7 +12,7 @@ import br.com.danielferber.gittocc2.cc.ClearToolException;
  */
 public class GitException extends RuntimeException {
 
-    public static class NonNullExitValue extends ClearToolException {
+    public static class NonNullExitValue extends CclException {
 
         private final int exitValue;
 

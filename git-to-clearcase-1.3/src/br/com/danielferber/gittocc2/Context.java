@@ -6,6 +6,7 @@
 package br.com.danielferber.gittocc2;
 
 import br.com.danielferber.gittocc2.change.ChangeConfig;
+import br.com.danielferber.gittocc2.change.ChangeSet;
 import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -33,35 +34,63 @@ public class Context {
         return changeSet;
     }
 
-    public String getCurrentCommitStamp() {
+    public static class NoCurrentCommitStamp extends RuntimeException {
+        
+    }
+
+    public String getCurrentCommitStamp() throws NoCurrentCommitStamp {
         String commit = changeConfig.getCommitStampOverride();
-        return commit != null ? commit : readCommitStampFromFile();
+        if (commit != null) {
+            return commit;
+        }
+        if (changeConfig.hasCommitStampFile()) {
+            return readCommitStampFile();
+        }
+        throw new NoCurrentCommitStamp();
     }
 
-    public long getCounterCommitStamp() {
+    public static class NoCurrentCounterStamp extends RuntimeException {
+        
+    }
+    
+    public long getCurrentCounterStamp() throws NoCurrentCounterStamp {
         Long counter = changeConfig.getCounterStampOverride();
-        return counter != null ? counter : readCounterStampFromFile();
+        if (counter != null) {
+            return counter;
+        }
+        if (changeConfig.hasCounterStampFile()) {
+            return readCounterStampFile();
+        }
+        throw new NoCurrentCounterStamp();
     }
 
-    public String readCommitStampFromFile() {
+    public static class NoCommitStampFile extends RuntimeException {
+        
+    }
+
+    public String readCommitStampFile() {
         try (Scanner scanner = new Scanner(changeConfig.getCommitStampAbsoluteFile())) {
             final String result = scanner.next();
             return result;
         } catch (final FileNotFoundException ex) {
-            throw new ConfigException("Commit stamp file not readable.", ex);
+            throw new NoCommitStampFile();
         }
     }
 
-    public long readCounterStampFromFile() {
+    public static class NoCommitCounterFile extends RuntimeException {
+        
+    }
+    
+    public long readCounterStampFile() {
         try (Scanner scanner = new Scanner(changeConfig.getCounterStampAbsoluteFile())) {
             final long result = scanner.nextLong();
             return result;
         } catch (final FileNotFoundException ex) {
-            throw new ConfigException("Counter stamp file not readable.", ex);
+            throw new NoCommitCounterFile();
         }
     }
 
-    public void writeCommitStampFromFile(String commit) {
+    public void writeCommitStampFile(String commit) {
         try (FileWriter writer = new FileWriter(changeConfig.getCommitStampAbsoluteFile())) {
             writer.write(commit + "\n");
         } catch (final IOException ex) {
@@ -69,7 +98,7 @@ public class Context {
         }
     }
 
-    public void writeCounterStampFromFile(long counter) {
+    public void writeCounterStampFile(long counter) {
         try (FileWriter writer = new FileWriter(changeConfig.getCounterStampAbsoluteFile())) {
             writer.write(Long.toString(counter) + "\n");
         } catch (final IOException ex) {

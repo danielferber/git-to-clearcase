@@ -7,7 +7,7 @@ package br.com.danielferber.gittocc2.git;
 
 import java.io.File;
 
-public abstract class GitConfigImpl implements GitConfig {
+abstract class GitConfigImpl implements GitConfig {
 
     @Override
     public File getGitAbsoluteExec() {

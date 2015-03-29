@@ -10,33 +10,33 @@ import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
-public final class ClearToolConfigProperties extends ClearToolConfigImpl {
+public final class CcConfigProperties extends CcConfigImpl {
 
     public static final String PROP_VOB_VIEW_DIR = "vobview.dir";
     public static final String PROP_CLEAR_TOOL_EXEC = "cleartool.exec";
     private final ConfigProperties properties;
 
-    public ClearToolConfigProperties(final ClearToolConfig other) {
+    public CcConfigProperties(final CcConfig other) {
         this.properties = new ConfigProperties();
         this.setClearToolExec(other.getClearToolExec());
         this.setVobViewDir(other.getVobViewDir());
     }
 
-    public ClearToolConfigProperties(final Map<String, String> map) {
+    public CcConfigProperties(final Map<String, String> map) {
         this(map, "");
     }
 
-    public ClearToolConfigProperties(final Map<String, String> map, final String prefix) {
+    public CcConfigProperties(final Map<String, String> map, final String prefix) {
         this.properties = new ConfigProperties();
         this.properties.putAll(map);
 
     }
 
-    public ClearToolConfigProperties(final Properties properties) {
+    public CcConfigProperties(final Properties properties) {
         this(properties, "");
     }
 
-    public ClearToolConfigProperties(final Properties properties, final String prefix) {
+    public CcConfigProperties(final Properties properties, final String prefix) {
         this.properties = new ConfigProperties(properties);
     }
 
@@ -50,12 +50,12 @@ public final class ClearToolConfigProperties extends ClearToolConfigImpl {
         return properties.getFile(PROP_VOB_VIEW_DIR);
     }
 
-    public ClearToolConfig setClearToolExec(final File file) {
+    public CcConfig setClearToolExec(final File file) {
         properties.setFile(PROP_CLEAR_TOOL_EXEC, file);
         return this;
     }
 
-    public ClearToolConfig setVobViewDir(final File dir) {
+    public CcConfig setVobViewDir(final File dir) {
         properties.setFile(PROP_VOB_VIEW_DIR, dir);
         return this;
     }

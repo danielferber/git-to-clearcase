@@ -5,6 +5,7 @@
  */
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.gittocc2.change.ChangeSet;
 import br.com.danielferber.slf4jtoys.slf4j.profiler.meter.Meter;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;

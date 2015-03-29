@@ -11,25 +11,25 @@ import br.com.danielferber.gittocc2.config.ConfigException;
  *
  * @author Daniel Felix Ferber
  */
-public class CCTasks {
+public class CcTasks {
 
-    private final ClearToolConfig config;
-    private ClearToolCommander commander;
+    private final CcConfig config;
+    private CcCommander commander;
 
-    private ClearToolCommander extractClearToolCommander() throws ConfigException {
+    private CcCommander extractClearToolCommander() throws ConfigException {
         if (commander == null) {
-            commander = new ClearToolCommander(config);
+            commander = new CcCommander(config);
         }
         return commander;
     }
 
-    public CCTasks(ClearToolConfig config) {
+    public CcTasks(CcConfig config) {
         this.config = config;
     }
 
     public class LoadCheckouts implements Runnable {
 
-        final ClearToolCommander commander = extractClearToolCommander();
+        final CcCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {
@@ -39,7 +39,7 @@ public class CCTasks {
 
     public class UpdateVob implements Runnable {
 
-        final ClearToolCommander commander = extractClearToolCommander();
+        final CcCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {
@@ -49,7 +49,7 @@ public class CCTasks {
 
     public class CheckinAll implements Runnable {
 
-        final ClearToolCommander commander = extractClearToolCommander();
+        final CcCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {
@@ -61,7 +61,7 @@ public class CCTasks {
 
     public class UnsetActivity implements Runnable {
 
-        final ClearToolCommander commander = extractClearToolCommander();
+        final CcCommander commander = extractClearToolCommander();
 
         @Override
         public void run() {

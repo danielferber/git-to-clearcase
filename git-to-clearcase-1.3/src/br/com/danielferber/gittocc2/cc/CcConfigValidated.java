@@ -9,11 +9,11 @@ import br.com.danielferber.gittocc2.config.ConfigException;
 import java.io.File;
 
 
-public class ClearToolConfigValidated implements ClearToolConfig {
+public class CcConfigValidated implements CcConfig {
 
-    private final ClearToolConfig config;
+    private final CcConfig config;
 
-    public ClearToolConfigValidated(ClearToolConfig config) {
+    public CcConfigValidated(CcConfig config) {
         this.config = config;
     }
 

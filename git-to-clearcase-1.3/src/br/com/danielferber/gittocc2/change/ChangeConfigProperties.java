@@ -5,7 +5,7 @@
  */
 package br.com.danielferber.gittocc2.change;
 
-import br.com.danielferber.gittocc2.cc.ClearToolConfig;
+import br.com.danielferber.gittocc2.cc.CcConfig;
 import br.com.danielferber.gittocc2.config.ConfigProperties;
 import java.io.File;
 import java.util.Properties;
@@ -21,11 +21,11 @@ public class ChangeConfigProperties extends ChangeConfigImpl {
     private final ConfigProperties properties;
     private final String prefix;
 
-    public ChangeConfigProperties(final ClearToolConfig clearToolConfig,  final Properties properties) {
+    public ChangeConfigProperties(final CcConfig clearToolConfig,  final Properties properties) {
         this(clearToolConfig, properties, "");
     }
 
-    public ChangeConfigProperties(final ClearToolConfig clearToolConfig, final Properties properties, final String prefix) {
+    public ChangeConfigProperties(final CcConfig clearToolConfig, final Properties properties, final String prefix) {
         super(clearToolConfig);
         this.properties = new ConfigProperties(properties);
         this.prefix = prefix;

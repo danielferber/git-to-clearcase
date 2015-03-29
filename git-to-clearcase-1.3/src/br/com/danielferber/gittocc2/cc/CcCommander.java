@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  *
  * @author Daniel Felix Ferber
  */
-public class ClearToolCommander {
+public class CcCommander {
 
     /**
      * Command line process builder able to create cleartool.exe instances.
@@ -45,23 +45,30 @@ public class ClearToolCommander {
      */
     final Meter taskMeter = MeterFactory.getMeter("ClearToolCommander");
 
-    public ClearToolCommander(final ClearToolConfig config) {
+    public CcCommander(final CcConfig config) {
         this.pb = new CommandLineProcessBuilder(config.getVobViewDir(), config.getClearToolExec(), LoggerFactory.getLogger("ct"));
     }
 
+    public static enum CcStatus {
+        Checkout,
+        Checkin,
+        Make,
+        Locked
+    }
+    
     /**
-     * Check out a single directory.
+     * Check out a collection of one or more directories.
      *
-     * @throws ClearToolException if one checkout fails.
+     * @throws CclException if one checkout fails.
      */
     public void checkoutDir(File... dir) {
         checkoutDirs(Arrays.asList(dir));
     }
 
     /**
-     * Check out a single file.
+     * Check out a collection of one or more files.
      *
-     * @throws ClearToolException if one checkout fails.
+     * @throws CclException if one checkout fails.
      */
     public void checkoutFile(File... file) {
         checkoutFiles(Arrays.asList(file));
@@ -75,9 +82,9 @@ public class ClearToolCommander {
     static final Pattern checkoutDirAlready = Pattern.compile("cleartool: Error: Element \"(.*)\" is already checked out to view \"(.*)\"\\.");
 
     /**
-     * Check out multiples directories.
+     * Check out a collection of one or more directories.
      *
-     * @throws ClearToolException if one checkout fails.
+     * @throws CclException if one checkout fails.
      */
     public void checkoutDirs(final Collection<File> dirs) {
         final Meter m = taskMeter.sub("checkout.dirs").iterations(dirs.size()).start();
@@ -99,11 +106,11 @@ public class ClearToolCommander {
                     protected void processLine(final String line) {
                         Matcher matcher = checkoutDirUpdateInProgress.matcher(line);
                         if (matcher.find()) {
-                            throw new ClearToolException.UpdateInProgress();
+                            throw new CclException.UpdateInProgress();
                         }
                         matcher = checkoutDirNoActivity.matcher(line);
                         if (matcher.find()) {
-                            throw new ClearToolException.NoActivity();
+                            throw new CclException.NoActivity();
                         }
                         matcher = checkoutDirAlready.matcher(line);
                         if (matcher.find()) {
@@ -114,9 +121,9 @@ public class ClearToolCommander {
                 });
                 process.waitFor();
                 Exception exception = process.getException();
-                if (exception instanceof ClearToolException) {
+                if (exception instanceof CclException) {
                     m.fail(exception);
-                    throw (ClearToolException) exception;
+                    throw (CclException) exception;
                 } else if (exception != null) {
                     m.fail(exception);
                     throw new RuntimeException(exception);
@@ -137,7 +144,7 @@ public class ClearToolCommander {
     /**
      * Check out multiples files.
      *
-     * @throws ClearToolException if one checkout fails.
+     * @throws CclException if one checkout fails.
      */
     public void checkoutFiles(final Collection<File> files) {
         final Meter m = taskMeter.sub("checkout.files").iterations(files.size()).start();
@@ -159,11 +166,11 @@ public class ClearToolCommander {
                     protected void processLine(final String line) {
                         Matcher matcher = checkoutFileUpdateInProgress.matcher(line);
                         if (matcher.find()) {
-                            throw new ClearToolException.UpdateInProgress();
+                            throw new CclException.UpdateInProgress();
                         }
                         matcher = checkoutFileNoActivity.matcher(line);
                         if (matcher.find()) {
-                            throw new ClearToolException.NoActivity();
+                            throw new CclException.NoActivity();
                         }
                         matcher = checkoutFileAlready.matcher(line);
                         if (matcher.find()) {
@@ -174,9 +181,9 @@ public class ClearToolCommander {
                 });
                 process.waitFor();
                 Exception exception = process.getException();
-                if (exception instanceof ClearToolException) {
+                if (exception instanceof CclException) {
                     m.fail(exception);
-                    throw (ClearToolException) exception;
+                    throw (CclException) exception;
                 } else if (exception != null) {
                     m.fail(exception);
                     throw new RuntimeException(exception);
@@ -283,7 +290,7 @@ public class ClearToolCommander {
      * Checkin all directories that were checked out by this commander.
      */
     public void checkinDirs() {
-        ClearToolCommander.this.checkinDirs(new TreeSet<File>(dirsCheckedOut));
+        CcCommander.this.checkinDirs(new TreeSet<File>(dirsCheckedOut));
     }
 
     /**
@@ -518,7 +525,7 @@ public class ClearToolCommander {
      *
      * @param elements Files or directories to update.
      */
-    public void update(final File... elements) {
+    public final void update(final File... elements) {
         update(Arrays.asList(elements));
     }
 
@@ -590,13 +597,13 @@ public class ClearToolCommander {
                 protected void processLine(java.lang.String line) throws IOException {
                     Matcher matcher = setActivityNotFoundPattern.matcher(line);
                     if (matcher.find()) {
-                        throw new ClearToolException.ActivityNotFound();
+                        throw new CclException.ActivityNotFound();
                     }
                 }
             }).waitFor();
             Exception exception = process.getException();
-            if (exception instanceof ClearToolException) {
-                throw (ClearToolException) exception;
+            if (exception instanceof CclException) {
+                throw (CclException) exception;
             }
         });
     }

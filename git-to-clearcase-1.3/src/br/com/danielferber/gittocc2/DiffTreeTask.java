@@ -5,6 +5,7 @@
  */
 package br.com.danielferber.gittocc2;
 
+import br.com.danielferber.gittocc2.change.ChangeSet;
 import br.com.danielferber.gittocc2.git.GitCommander;
 import br.com.danielferber.gittocc2.git.GitConfig;
 import java.io.File;
